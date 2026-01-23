@@ -1,0 +1,31 @@
+{
+  "name": "biopoint",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "db"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @biopoint/api",
+    "dev:mobile": "npm run start -w @biopoint/mobile",
+    "build:api": "npm run build -w @biopoint/api",
+    "build:shared": "npm run build -w @biopoint/shared",
+    "db:generate": "npm run generate -w @biopoint/db",
+    "db:migrate": "npm run migrate -w @biopoint/db",
+    "db:push": "npm run push -w @biopoint/db",
+    "db:seed": "npm run seed -w @biopoint/db",
+    "db:studio": "npm run studio -w @biopoint/db",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,280 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ Core Auth ============
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile          Profile?
+  refreshTokens    RefreshToken[]
+  stacks           Stack[]
+  labReports       LabReport[]
+  labMarkers       LabMarker[]
+  progressPhotos   ProgressPhoto[]
+  bioPointScores   BioPointScore[]
+  dailyLogs        DailyLog[]
+  complianceEvents ComplianceEvent[]
+  groupMemberships GroupMember[]
+  posts            Post[]
+  auditLogs        AuditLog[]
+  reminderSchedules ReminderSchedule[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+}
+
+// ============ Onboarding & Profile ============
+
+model Profile {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sex                  String?
+  dateOfBirth          DateTime?
+  heightCm             Float?
+  baselineWeightKg     Float?
+  goals                String[]  @default([])
+  dietStyle            String?
+  currentInterventions String?
+
+  // Consent
+  consentNotMedical  Boolean   @default(false)
+  consentDataStorage Boolean   @default(false)
+  consentResearch    Boolean   @default(false)
+  consentResearchAt  DateTime?
+
+  onboardingComplete Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// ============ Stacks (Peptides/Supplements) ============
+
+model Stack {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  goal      String?
+  startDate DateTime @default(now())
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items StackItem[]
+}
+
+model StackItem {
+  id        String  @id @default(cuid())
+  stackId   String
+  stack     Stack   @relation(fields: [stackId], references: [id], onDelete: Cascade)
+  name      String
+  dose      Float
+  unit      String
+  route     String? // SubQ, IM, Oral, etc.
+  frequency String  // Daily, 2x/week, etc.
+  timing    String? // AM, PM, With food, etc.
+  cycleJson Json?   // {daysOn: 5, daysOff: 2}
+  notes     String?
+  isActive  Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  complianceEvents ComplianceEvent[]
+  reminders        ReminderSchedule[]
+}
+
+model ComplianceEvent {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stackItemId String
+  stackItem   StackItem @relation(fields: [stackItemId], references: [id], onDelete: Cascade)
+  takenAt     DateTime  @default(now())
+  notes       String?
+}
+
+model ReminderSchedule {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stackItemId String
+  stackItem   StackItem @relation(fields: [stackItemId], references: [id], onDelete: Cascade)
+  time        String    // "08:00"
+  daysOfWeek  Int[]     // [0,1,2,3,4,5,6] = everyday
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+}
+
+// ============ Labs ============
+
+model LabReport {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename   String
+  s3Key      String
+  uploadedAt DateTime  @default(now())
+  reportDate DateTime?
+  notes      String?
+
+  markers LabMarker[]
+}
+
+model LabMarker {
+  id           String     @id @default(cuid())
+  labReportId  String?
+  labReport    LabReport? @relation(fields: [labReportId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  value        Float
+  unit         String
+  refRangeLow  Float?
+  refRangeHigh Float?
+  recordedAt   DateTime   @default(now())
+  notes        String?
+}
+
+// ============ Progress Photos ============
+
+model ProgressPhoto {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalS3Key   String
+  alignedS3Key    String?
+  category        String   // front, side, back
+  capturedAt      DateTime @default(now())
+  weightKg        Float?
+  notes           String?
+  alignmentStatus String   @default("pending") // pending, processing, done, failed
+  createdAt       DateTime @default(now())
+}
+
+// ============ Daily Tracking ============
+
+model DailyLog {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         DateTime @db.Date
+  weightKg     Float?
+  sleepHours   Float?
+  sleepQuality Int?     // 1-10
+  energyLevel  Int?     // 1-10
+  focusLevel   Int?     // 1-10
+  moodLevel    Int?     // 1-10
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+// ============ BioPoint Score ============
+
+model BioPointScore {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  score     Int      // 0-100
+  breakdown Json     // {sleep: 20, energy: 18, focus: 22, mood: 20, weight: 20}
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+}
+
+// ============ Community ============
+
+model Group {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdById String
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  members   GroupMember[]
+  posts     Post[]
+  templates StackTemplate[]
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  groupId  String
+  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     String   @default("member") // member, admin
+  joinedAt DateTime @default(now())
+
+  @@unique([groupId, userId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StackTemplate {
+  id          String   @id @default(cuid())
+  groupId     String?
+  group       Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  name        String
+  description String?
+  goal        String?
+  itemsJson   Json     // [{name, dose, unit, route, frequency, timing}]
+  forkedFrom  String?
+  forkCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+// ============ Audit Log ============
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String   // CREATE, READ, UPDATE, DELETE
+  entityType String   // LabReport, LabMarker, ProgressPhoto
+  entityId   String
+  metadata   Json?    // Redacted details
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}
