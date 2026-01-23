@@ -11,11 +11,9 @@ out/
 
 # Environment files - CRITICAL: Never commit these
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*.local
+.env.*
+!.env.example
+!.env.template
 
 # IDE - VS Code, IntelliJ, Vim
 .vscode/
