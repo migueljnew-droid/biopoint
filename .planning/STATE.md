@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Get BioPoint's risk score from 2.5/10 to below 2.0/10 and deploy a production-ready, HIPAA-compliant health tracking app to Render + App Store.
-**Current focus:** Phase 1 COMPLETE — ready for Phase 2: Code Quality & CI Hardening
+**Current focus:** Phase 2: Code Quality & CI Hardening — PLANNED, ready to execute
 
 ## Current Position
 
-Phase: 1 of 6 (PHI Security Fixes) — COMPLETE
-Plan: 3 of 3 in current phase (all done)
-Status: Phase 1 complete, ready to plan Phase 2
-Last activity: 2026-02-19 -- Phase 1 executed in 2 waves (3 plans, 8 requirements addressed)
+Phase: 2 of 6 (Code Quality & CI Hardening) — PLANNED
+Plan: 0 of 3 in current phase (ready to execute)
+Status: Phase 2 plans created and verified, ready to execute
+Last activity: 2026-02-19 -- Phase 2 planned (3 plans, 7 requirements, 2 waves)
 
 Progress: [████░░░░░░░░░░░░░░░░] 17%
 
@@ -52,6 +52,15 @@ Recent decisions affecting current work:
 - Roadmap: 6 phases derived from 45 requirements (SEC/CODE/COMP/INFRA/TEST/MON/APPS)
 - Research: Render HIPAA workspace = $250/month minimum (budget increase from planned $20/month)
 
+### Phase 2 Decisions
+
+- Wave 1: Plans 02-01 + 02-02 execute in parallel (touch different files)
+- Wave 2: Plan 02-03 (CI) depends on both Wave 1 plans
+- prismaRequestId.ts deletion moved from 02-02 to 02-01 (avoid parallel verify conflict)
+- FastifyRequest augmentation via declaration merging (official Fastify TS pattern)
+- `decorateRequest` calls for runtime safety alongside compile-time types
+- Test file casts also eliminated (25 casts across 7 test files)
+
 ### Pending Todos
 
 None for current phase.
@@ -60,7 +69,7 @@ None for current phase.
 
 - Cloudflare R2 BAA coverage is uncertain -- may need to migrate to AWS S3 (COMP-02)
 - Render HIPAA workspace cost ($250+/month) vs original $20/month budget
-- Pre-existing TypeScript errors (4 total, all in test JS file) — will be addressed in Phase 2
+- ROADMAP success criterion 1 references `packages/api/src/` but actual path is `apps/api/src/` — plans use correct path
 
 ## Phase 1 Summary
 
@@ -82,5 +91,6 @@ None for current phase.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 1 complete, ready to plan Phase 2
+Stopped at: Phase 2 planned, ready to execute
 Resume file: None
+Next action: /gsd:execute-phase 2
