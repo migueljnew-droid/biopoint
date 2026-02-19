@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 4 of 6 (Infrastructure & Deployment) — IN PROGRESS
-Plan: 3 of 4 complete (04-01 Fastify v5, 04-02 Redis rate limiter, 04-03 PHI monitoring [DONE], 04-04 Fly.io deploy [NEXT])
-Status: Phase 4 executing — 04-03 PHI monitoring hardening complete, 04-04 Fly.io deploy is next
-Last activity: 2026-02-19 -- Completed 04-03-PLAN.md (PHI monitoring hardening)
+Plan: 2 of 4 complete (04-01 Fastify v5 [DONE], 04-02 Redis rate limiter [NEXT], 04-03 PHI monitoring [DONE out-of-order], 04-04 Fly.io deploy [PENDING])
+Status: Phase 4 executing — 04-01 Fastify v5 upgrade complete, 04-02 Redis rate limiter is next
+Last activity: 2026-02-19 -- Completed 04-01-PLAN.md (Fastify v5 + LabMarker indexes)
 
 Progress: [██████████░░░░░░░░░░] 50%
 
@@ -37,6 +37,7 @@ Progress: [██████████░░░░░░░░░░] 50%
 
 *Updated after each plan completion*
 | Phase 04 P03 | 3 | 3 tasks | 3 files |
+| Phase 04 P01 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -53,6 +54,9 @@ Recent decisions affecting current work:
 - Phase 1: Request-ID tracing moved from $use middleware to $extends $allOperations hook
 - Phase 1: Connection pool params appended to DATABASE_URL via getConnectionUrl() helper
 - Roadmap: 6 phases derived from 45 requirements (SEC/CODE/COMP/INFRA/TEST/MON/APPS)
+- [04-01]: reply.sent remains valid in Fastify v5 types — plan listed it as deprecated but type definitions confirm it still exists
+- [04-01]: Migration SQL created manually — prisma migrate dev requires interactive TTY, not available in automated environments
+- [04-01]: DIRECT_URL uses Neon direct endpoint (no -pooler suffix) for migration compatibility with PgBouncer pooler
 - [Phase 04]: censor: '[REDACTED]' replaces remove: true in pino redact — preserves log field structure for debugging while remaining HIPAA-compliant
 - [Phase 04]: Sentry beforeSend scrubs three distinct PHI vectors: breadcrumbs data, event.extra, and user context (email stripped, only opaque id kept)
 - [Phase 04]: maxBreadcrumbs reduced 100 to 20 — 80% reduction in PHI exposure window from Sentry auto-instrumentation
@@ -135,6 +139,6 @@ None for current phase.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 4 planned
+Stopped at: Completed 04-01-PLAN.md (Fastify v5 upgrade + LabMarker indexes + directUrl)
 Resume file: None
-Next action: Execute Phase 4 (/gsd:execute-phase 4)
+Next action: Execute 04-02 (Redis rate limiter)

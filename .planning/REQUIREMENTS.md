@@ -39,9 +39,9 @@ Requirements for Phase 5 (Security Enhancement) + Phase 6 (Production Hardening)
 - [ ] **INFRA-01**: API deployed to Render HIPAA workspace (production environment)
 - [ ] **INFRA-02**: Database running on Neon Pro/Scale with HIPAA add-on
 - [ ] **INFRA-03**: Rate limiter migrated from in-memory to Redis (Render Key Value) for persistence across deploys
-- [ ] **INFRA-04**: Fastify upgraded from v4 (EOL) to v5
-- [ ] **INFRA-05**: `/labs/trends` database index added (eliminates full table scan)
-- [ ] **INFRA-06**: Prisma `directUrl` configured for migrations (separate from pooled connection)
+- [x] **INFRA-04**: Fastify upgraded from v4 (EOL) to v5
+- [x] **INFRA-05**: `/labs/trends` database index added (eliminates full table scan)
+- [x] **INFRA-06**: Prisma `directUrl` configured for migrations (separate from pooled connection)
 - [ ] **INFRA-07**: Production environment variables configured in Fly.io (via Doppler integration or `fly secrets set`)
 
 ### Testing
@@ -132,9 +132,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-01 | Phase 4 | Pending |
 | INFRA-02 | Phase 4 | Pending |
 | INFRA-03 | Phase 4 | Pending |
-| INFRA-04 | Phase 4 | Pending |
-| INFRA-05 | Phase 4 | Pending |
-| INFRA-06 | Phase 4 | Pending |
+| INFRA-04 | Phase 4 | Complete |
+| INFRA-05 | Phase 4 | Complete |
+| INFRA-06 | Phase 4 | Complete |
 | INFRA-07 | Phase 4 | Pending |
 | TEST-01 | Phase 5 | Pending |
 | TEST-02 | Phase 5 | Pending |
