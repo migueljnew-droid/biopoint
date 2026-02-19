@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import type { FoodAnalysisResult } from '@biopoint/shared';
+import { assertNoPhi } from '../utils/deidentify.js';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -12,19 +13,19 @@ const openai = new OpenAI({
  * - Risk level: LOW - food photos rarely contain PHI identifiers
  * - Recommendation: Obtain OpenAI BAA (email baa@openai.com) for zero-retention API
  * - Reviewed: 2026-02-19
+ *
+ * Note: Food photos are NOT PHI per HIPAA (they do not identify an individual in the
+ * context of health care delivery). This assertNoPhi() guard applies to the text prompt
+ * only — it prevents future regressions if someone inadvertently adds user context to
+ * the system prompt. (COMP-04)
  */
 export async function analyzeFoodPhoto(
     imageBase64: string,
     mimeType: string = 'image/jpeg'
 ): Promise<FoodAnalysisResult> {
-    const response = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        temperature: 0.3,
-        max_tokens: 1000,
-        messages: [
-            {
-                role: 'system',
-                content: `You are a nutrition analysis expert. Analyze food photos and return JSON with nutritional estimates.
+    // HIPAA guard: ensure prompt text contains no PHI patterns (COMP-04)
+    // Reference: 45 CFR 164.514(b)(2)(i) — Safe Harbor de-identification required for non-BAA services
+    const systemPrompt = `You are a nutrition analysis expert. Analyze food photos and return JSON with nutritional estimates.
 Always respond with ONLY valid JSON in this exact format:
 {
   "name": "Brief description of the meal",
@@ -39,7 +40,18 @@ Always respond with ONLY valid JSON in this exact format:
   "confidence": 0.85
 }
 Confidence is 0-1 indicating how sure you are of the analysis.
-Be accurate with standard portion sizes. Round to nearest integer for calories, one decimal for grams.`,
+Be accurate with standard portion sizes. Round to nearest integer for calories, one decimal for grams.`;
+
+    assertNoPhi(systemPrompt, 'foodAnalysis system prompt');
+
+    const response = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        temperature: 0.3,
+        max_tokens: 1000,
+        messages: [
+            {
+                role: 'system',
+                content: systemPrompt,
             },
             {
                 role: 'user',
