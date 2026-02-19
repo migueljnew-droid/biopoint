@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.turbo/
+
+# Build output
+dist/
+.next/
+.expo/
+
+# Test fixtures and mocks
+**/__tests__/fixtures/
+**/__mocks__/
+
+# Generated files
+db/prisma/migrations/
+*.generated.ts
+
+# Config and docs
+.planning/
+docs/
+*.md
+*.json
+*.yml
+!.github/workflows/*.yml
+
+# Infrastructure
+infrastructure/
