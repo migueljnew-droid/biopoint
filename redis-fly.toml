@@ -1,0 +1,28 @@
+# Fly.io configuration for self-hosted Redis
+# Used for HIPAA-compliant rate limiting state persistence
+# Deploy separately: fly deploy --config redis-fly.toml --app biopoint-redis
+#
+# IMPORTANT: Deploy in the SAME Fly.io organization as biopoint-api
+# so that the private network (biopoint-redis.internal) is accessible.
+#
+# Setup commands (run once before first deploy):
+#   fly launch --name biopoint-redis --org biopoint-production --image redis:7-alpine --no-deploy
+#   fly volume create redis_data --region iad --size 1 --app biopoint-redis
+#   fly deploy --config redis-fly.toml
+app = 'biopoint-redis'
+primary_region = 'iad'
+
+[build]
+  image = 'redis:7-alpine'
+
+[[mounts]]
+  source = 'redis_data'
+  destination = '/data'
+
+# NO [http_service] — Redis is private network only.
+# biopoint-api connects via: biopoint-redis.internal:6379
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1

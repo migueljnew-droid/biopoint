@@ -1,0 +1,45 @@
+# Fly.io app configuration for biopoint-api
+# Deploy from repo root: fly deploy --config fly.toml
+#
+# NOTE: The Dockerfile at apps/api/Dockerfile uses COPY commands that reference
+# the monorepo root (e.g. COPY apps/api ..., COPY packages/shared ...), so the
+# build context MUST be the repo root. fly.toml lives at repo root accordingly.
+app = 'biopoint-api'
+primary_region = 'iad'  # us-east-1 — closest to Neon default region
+
+[build]
+  dockerfile = 'apps/api/Dockerfile'
+
+[env]
+  PORT = '3000'
+  NODE_ENV = 'production'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = false   # HIPAA: no cold starts; PHI must be available without latency spikes
+  auto_start_machines = true
+  min_machines_running = 1     # Keep one instance always running
+
+[[http_service.ports]]
+  port = 443
+  handlers = ['tls', 'http']
+
+[[http_service.ports]]
+  port = 80
+  handlers = ['http']
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[checks]
+  [checks.health]
+    grace_period = '10s'
+    interval = '30s'
+    method = 'GET'
+    path = '/health'
+    port = 3000
+    timeout = '5s'
+    type = 'http'
