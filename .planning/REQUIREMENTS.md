@@ -22,8 +22,8 @@ Requirements for Phase 5 (Security Enhancement) + Phase 6 (Production Hardening)
 
 - [ ] **CODE-01**: All 142 `as any` casts eliminated (FastifyRequest interface augmented for `userId`, `userEmail`, `userRole`)
 - [ ] **CODE-02**: `noImplicitAny` enabled in API tsconfig.json
-- [ ] **CODE-03**: Dead code removed (unused `dataIntegrity.ts`, unused `getPrismaConfig`)
-- [ ] **CODE-04**: `automaticLogoff.ts` stats bug fixed
+- [x] **CODE-03**: Dead code removed (unused `dataIntegrity.ts`, unused `getPrismaConfig`)
+- [x] **CODE-04**: `automaticLogoff.ts` stats bug fixed
 - [ ] **CODE-05**: Deprecated Prisma `$use` middleware fully removed (no remaining usages)
 
 ### Compliance
@@ -121,8 +121,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-08 | Phase 1 | Pending |
 | CODE-01 | Phase 2 | Pending |
 | CODE-02 | Phase 2 | Pending |
-| CODE-03 | Phase 2 | Pending |
-| CODE-04 | Phase 2 | Pending |
+| CODE-03 | Phase 2 | Complete |
+| CODE-04 | Phase 2 | Complete |
 | CODE-05 | Phase 2 | Pending |
 | COMP-01 | Phase 3 | Pending |
 | COMP-02 | Phase 3 | Pending |

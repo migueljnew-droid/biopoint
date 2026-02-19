@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Get BioPoint's risk score from 2.5/10 to below 2.0/10 and deploy a production-ready, HIPAA-compliant health tracking app to Render + App Store.
-**Current focus:** Phase 2: Code Quality & CI Hardening — PLANNED, ready to execute
+**Current focus:** Phase 2: Code Quality & CI Hardening — Wave 1 complete (02-01, 02-02), Wave 2 (02-03) ready to execute
 
 ## Current Position
 
-Phase: 2 of 6 (Code Quality & CI Hardening) — PLANNED
-Plan: 0 of 3 in current phase (ready to execute)
-Status: Phase 2 plans created and verified, ready to execute
-Last activity: 2026-02-19 -- Phase 2 planned (3 plans, 7 requirements, 2 waves)
+Phase: 2 of 6 (Code Quality & CI Hardening) — In Progress
+Plan: 2 of 3 in current phase complete (02-01 and 02-02 done)
+Status: Wave 1 complete, Wave 2 (Plan 02-03 CI hardening) ready to execute
+Last activity: 2026-02-19 -- Completed Plan 02-02 (dead code removal + automaticLogoff bug fix)
 
-Progress: [████░░░░░░░░░░░░░░░░] 17%
+Progress: [████░░░░░░░░░░░░░░░░] 22%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~15 min per plan
-- Total execution time: ~45 min
+- Total plans completed: 5 (3 from Phase 1 + 2 from Phase 2 Wave 1)
+- Average duration: ~10 min per plan
+- Total execution time: ~50 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1     | 3     | ~45m  | ~15m     |
+| 2     | 2     | ~5m   | ~3m      |
 
 **Recent Trend:**
-- Last 3 plans: 01-01, 01-02, 01-03 (all completed)
-- Trend: Fast (code-only changes, no infrastructure)
+- Last 2 plans: 02-01, 02-02 (both completed, Wave 1)
+- Trend: Very fast (simple deletions and targeted bug fixes)
 
 *Updated after each plan completion*
 
@@ -60,6 +61,8 @@ Recent decisions affecting current work:
 - FastifyRequest augmentation via declaration merging (official Fastify TS pattern)
 - `decorateRequest` calls for runtime safety alongside compile-time types
 - Test file casts also eliminated (25 casts across 7 test files)
+- [02-02]: Removed getPrismaConfig() only — getDatabaseConfig() and performanceTargets preserved (actively used)
+- [02-02]: getStats() fix uses Object.entries to carry both sessionId key and SessionData value — passes key to isSessionExpired()
 
 ### Pending Todos
 
@@ -88,9 +91,19 @@ None for current phase.
 - TypeScript: only 4 pre-existing errors (JS test file)
 - Tests: 36 pass, 3 fail (pre-existing env/db issues)
 
+## Phase 2 Wave 1 Summary
+
+**Requirements addressed:** CODE-01, CODE-02 (02-01), CODE-03, CODE-04 (02-02)
+
+| Commit | Plan | Changes |
+|--------|------|---------|
+| [02-01 hashes] | 02-01 | TypeScript cast cleanup, prismaRequestId.ts deleted, Fastify declaration merging |
+| 00019f9 | 02-02 | dataIntegrity.ts deleted, getPrismaConfig() removed from database.ts |
+| 3961d40 | 02-02 | automaticLogoff.ts getStats() bug fixed (Object.entries + sessionId) |
+
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 2 planned, ready to execute
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
-Next action: /gsd:execute-phase 2
+Next action: /gsd:execute-phase 2 (Plan 02-03 CI hardening)
