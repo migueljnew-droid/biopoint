@@ -111,13 +111,41 @@ export function initializeSentry(): void {
       profilesSampleRate: 1.0, // Sample all profiles
       
       // Error filtering
-      beforeSend(event, hint) {
-        // Filter out health check errors
-        if (event.transaction?.includes('/health')) {
-          return null;
+      beforeSend(event, _hint) {
+        // Drop health check noise
+        if (event.transaction?.includes('/health')) return null;
+
+        // --- PHI SCRUBBING ---
+        // 1. Scrub PHI from breadcrumb data (auto-instrumentation captures request/response bodies)
+        if (event.breadcrumbs?.values) {
+          event.breadcrumbs.values = event.breadcrumbs.values.map(crumb => {
+            if (crumb.data) {
+              const {
+                email, name, value, notes, dateOfBirth, phi, password, token,
+                ...safe
+              } = crumb.data as Record<string, unknown>;
+              crumb.data = safe;
+            }
+            return crumb;
+          });
         }
-        
-        // Add custom context
+
+        // 2. Scrub PHI from extra context (may contain request body snapshots)
+        if (event.extra) {
+          const {
+            email, name, value, notes, dateOfBirth, phi, password, token,
+            ...safe
+          } = event.extra as Record<string, unknown>;
+          event.extra = safe;
+        }
+
+        // 3. Strip user.email from Sentry user context — keep only opaque ID
+        // User email is a direct identifier and must not be stored in Sentry
+        if (event.user?.email) {
+          event.user = { id: event.user.id };
+        }
+
+        // 4. Add compliance context (non-PHI)
         event.contexts = {
           ...event.contexts,
           app: {
@@ -130,7 +158,7 @@ export function initializeSentry(): void {
             data_classification: 'phi',
           },
         };
-        
+
         return event;
       },
       
@@ -143,7 +171,7 @@ export function initializeSentry(): void {
       ],
       
       // Additional configuration
-      maxBreadcrumbs: 100,
+      maxBreadcrumbs: 20,   // Limit PHI exposure window (was 100)
       attachStacktrace: true,
       
       // Ignore certain error types
