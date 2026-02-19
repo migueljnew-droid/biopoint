@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: PHI Security Fixes** - Eliminate all PHI exposure vectors and encryption bugs in the codebase
 - [x] **Phase 2: Code Quality & CI Hardening** - Clean code, enable strict typing, add SAST/dependency scanning to CI (completed 2026-02-19)
-- [ ] **Phase 3: Compliance & Vendor Agreements** - Execute BAAs with all PHI-handling vendors, implement de-identification layer
+- [x] **Phase 3: Compliance & Vendor Agreements** - Execute BAAs with all PHI-handling vendors, implement de-identification layer (completed 2026-02-19)
 - [ ] **Phase 4: Infrastructure & Deployment** - Deploy production environment on Render HIPAA workspace with monitoring
 - [ ] **Phase 5: Test Coverage** - Achieve 80% test coverage across API and mobile with integration tests
 - [ ] **Phase 6: App Store Submission** - Prepare and submit iOS app to App Store Connect
@@ -73,17 +73,18 @@ Plans:
 **Depends on**: Phase 3 (BAAs must be executed before deploying PHI to vendors)
 **Requirements**: INFRA-01, INFRA-02, INFRA-03, INFRA-04, INFRA-05, INFRA-06, INFRA-07, MON-01, MON-02, MON-03, MON-04
 **Success Criteria** (what must be TRUE):
-  1. API responds to requests at production URL on Render HIPAA workspace
-  2. Database is running on Neon Pro/Scale with HIPAA add-on and Prisma directUrl configured for migrations
+  1. API responds to requests at production URL on Fly.io HIPAA workspace (NOTE: Render replaced by Fly.io per Phase 3 decision)
+  2. Database is running on Neon Scale with HIPAA add-on and Prisma directUrl configured for migrations
   3. Rate limiter persists state across deploys (Redis-backed, not in-memory)
   4. Fastify is version 5.x (not EOL v4) and all routes respond correctly
   5. Datadog logs and Sentry error reports contain zero PHI fields (masking/scrubbing verified)
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: Fastify v5 upgrade and database optimization (framework upgrade, /labs/trends index, Prisma directUrl)
-- [ ] 04-02: Production deployment (Render HIPAA workspace, Neon Pro, Redis rate limiter, env vars)
-- [ ] 04-03: Monitoring configuration (Datadog PHI masking, Sentry scrubbing, alerting, health checks)
+- [ ] 04-01-PLAN.md — Fastify v5 upgrade, LabMarker composite index, Prisma directUrl (Wave 1)
+- [ ] 04-02-PLAN.md — Redis rate limiter migration (ioredis + @fastify/rate-limit v10 global plugin) (Wave 2)
+- [ ] 04-03-PLAN.md — PHI monitoring hardening (pino redact + Sentry beforeSend scrubbing) (Wave 1)
+- [ ] 04-04-PLAN.md — Fly.io deployment configs + production deployment checkpoint (Wave 3)
 
 ### Phase 5: Test Coverage
 **Goal**: 80% test coverage across API route handlers, middleware, services, and mobile components, with integration tests proving encryption and audit logging work correctly
@@ -127,8 +128,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. PHI Security Fixes | 3/3 | Complete | 2026-02-19 |
 | 2. Code Quality & CI Hardening | 3/3 | Complete   | 2026-02-19 |
-| 3. Compliance & Vendor Agreements | 1/2 | In Progress|  |
-| 4. Infrastructure & Deployment | 0/3 | Not started | - |
+| 3. Compliance & Vendor Agreements | 2/2 | Complete | 2026-02-19 |
+| 4. Infrastructure & Deployment | 0/4 | Not started | - |
 | 5. Test Coverage | 0/3 | Not started | - |
 | 6. App Store Submission | 0/2 | Not started | - |
 
