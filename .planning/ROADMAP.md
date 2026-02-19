@@ -31,12 +31,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. API error responses never contain the string `[DECRYPTION_FAILED]` -- a proper error message is returned instead
   4. Audit log has entries for queries that return zero results (not just queries with data)
   5. Prisma encryption uses `$extends()` and an integration test proves DB columns store ciphertext
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: PHI exposure remediation (Gemini disable, OpenAI audit, content-type validation)
-- [ ] 01-02: Encryption and audit fixes (LabMarker plaintext, decryption sentinel, audit log, Prisma migration)
-- [ ] 01-03: Connection pool and database fixes (wire pool params, add /labs/trends index)
+- [ ] 01-01-PLAN.md -- PHI exposure remediation (Gemini disable, S3 content-type validation, OpenAI audit)
+- [ ] 01-02-PLAN.md -- Decryption sentinel fix and audit log unconditional logging
+- [ ] 01-03-PLAN.md -- Prisma $extends migration, LabMarker plaintext fix, connection pool wiring
 
 ### Phase 2: Code Quality & CI Hardening
 **Goal**: The codebase has zero `as any` casts, strict TypeScript checking, no dead code, and every push is scanned for vulnerabilities
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. PHI Security Fixes | 0/3 | Not started | - |
+| 1. PHI Security Fixes | 0/3 | Planned | - |
 | 2. Code Quality & CI Hardening | 0/3 | Not started | - |
 | 3. Compliance & Vendor Agreements | 0/2 | Not started | - |
 | 4. Infrastructure & Deployment | 0/3 | Not started | - |
