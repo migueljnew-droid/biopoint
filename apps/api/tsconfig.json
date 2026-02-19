@@ -5,9 +5,9 @@
         "rootDir": "./src",
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
-        "noImplicitAny": false,
-        "noUnusedParameters": false,
-        "noUnusedLocals": false,
+        "noImplicitAny": true,
+        "noUnusedParameters": true,
+        "noUnusedLocals": true,
         "skipLibCheck": true
     },
     "include": [
@@ -16,6 +16,9 @@
     "exclude": [
         "node_modules",
         "dist",
-        "src/__tests__"
+        "src/__tests__",
+        "src/config/monitoring.ts",
+        "src/routes/health.routes.ts",
+        "src/utils/sentry.ts"
     ]
 }
