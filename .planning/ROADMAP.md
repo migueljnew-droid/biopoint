@@ -50,9 +50,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- TypeScript strictness: eliminate all as-any casts, create FastifyRequest augmentation, enable noImplicitAny
-- [ ] 02-02-PLAN.md -- Dead code removal and bug fix: delete dataIntegrity.ts, prismaRequestId.ts, getPrismaConfig; fix automaticLogoff stats bug
-- [ ] 02-03-PLAN.md -- CI security pipeline: modernize Semgrep to container approach, set npm audit to --audit-level=high
+- [x] 02-01-PLAN.md -- TypeScript strictness: eliminate all as-any casts, create FastifyRequest augmentation, enable noImplicitAny
+- [x] 02-02-PLAN.md -- Dead code removal and bug fix: delete dataIntegrity.ts, prismaRequestId.ts, getPrismaConfig; fix automaticLogoff stats bug
+- [x] 02-03-PLAN.md -- CI security pipeline: modernize Semgrep to container approach, set npm audit to --audit-level=high
 
 ### Phase 3: Compliance & Vendor Agreements
 **Goal**: Every vendor that touches PHI has an executed BAA, and any AI service without a BAA receives only de-identified data
@@ -62,11 +62,11 @@ Plans:
   1. Signed BAA documents exist for Neon (PostgreSQL), Cloudflare (R2), and Render (HIPAA workspace)
   2. PHI de-identification layer strips all 18 HIPAA identifiers before data reaches any non-BAA service
   3. Privacy policy URL is accessible from within the app and accurately describes current data practices
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: BAA execution (Neon Scale + HIPAA add-on, Cloudflare R2 confirmation or S3 migration, Render HIPAA workspace)
-- [ ] 03-02: PHI de-identification layer and privacy policy
+- [ ] 03-01-PLAN.md -- BAA execution with Neon, Cloudflare/AWS, Render, and OpenAI (vendor dashboard + signing)
+- [ ] 03-02-PLAN.md -- PHI de-identification utility, food analysis PHI guard, privacy policy accuracy update
 
 ### Phase 4: Infrastructure & Deployment
 **Goal**: BioPoint API is running in a HIPAA-compliant production environment with persistent rate limiting, current framework versions, and PHI-safe monitoring
