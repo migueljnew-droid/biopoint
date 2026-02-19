@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Get BioPoint's risk score from 2.5/10 to below 2.0/10 and deploy a production-ready, HIPAA-compliant health tracking app to Fly.io + App Store.
-**Current focus:** Phase 3 complete — moving to Phase 4: Infrastructure & Deployment.
+**Current focus:** Phase 4: Infrastructure & Deployment — executing plans.
 
 ## Current Position
 
-Phase: 4 of 6 (Infrastructure & Deployment) — PLANNED
-Plan: 0 of 4 complete (04-01 Fastify v5, 04-02 Redis rate limiter, 04-03 PHI monitoring, 04-04 Fly.io deploy)
-Status: Phase 4 planned — 4 plans across 3 waves, verified by plan-checker, ready to execute
-Last activity: 2026-02-19 -- Phase 4 planned (research + 4 plans + verification passed)
+Phase: 4 of 6 (Infrastructure & Deployment) — IN PROGRESS
+Plan: 3 of 4 complete (04-01 Fastify v5, 04-02 Redis rate limiter, 04-03 PHI monitoring [DONE], 04-04 Fly.io deploy [NEXT])
+Status: Phase 4 executing — 04-03 PHI monitoring hardening complete, 04-04 Fly.io deploy is next
+Last activity: 2026-02-19 -- Completed 04-03-PLAN.md (PHI monitoring hardening)
 
 Progress: [██████████░░░░░░░░░░] 50%
 
@@ -36,6 +36,7 @@ Progress: [██████████░░░░░░░░░░] 50%
 - Trend: Very fast (utility code + documentation)
 
 *Updated after each plan completion*
+| Phase 04 P03 | 3 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -52,6 +53,9 @@ Recent decisions affecting current work:
 - Phase 1: Request-ID tracing moved from $use middleware to $extends $allOperations hook
 - Phase 1: Connection pool params appended to DATABASE_URL via getConnectionUrl() helper
 - Roadmap: 6 phases derived from 45 requirements (SEC/CODE/COMP/INFRA/TEST/MON/APPS)
+- [Phase 04]: censor: '[REDACTED]' replaces remove: true in pino redact — preserves log field structure for debugging while remaining HIPAA-compliant
+- [Phase 04]: Sentry beforeSend scrubs three distinct PHI vectors: breadcrumbs data, event.extra, and user context (email stripped, only opaque id kept)
+- [Phase 04]: maxBreadcrumbs reduced 100 to 20 — 80% reduction in PHI exposure window from Sentry auto-instrumentation
 
 ### Phase 2 Decisions
 

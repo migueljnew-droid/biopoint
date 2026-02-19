@@ -58,10 +58,10 @@ Requirements for Phase 5 (Security Enhancement) + Phase 6 (Production Hardening)
 
 ### Monitoring
 
-- [ ] **MON-01**: Datadog PHI fields masked in logs (no PHI in observability platform)
-- [ ] **MON-02**: Sentry `beforeSend` scrubs PHI from error reports
-- [ ] **MON-03**: Production alerting configured (error rate, response time, DB connection pool)
-- [ ] **MON-04**: Health check endpoint verified and monitored
+- [x] **MON-01**: Datadog PHI fields masked in logs (no PHI in observability platform)
+- [x] **MON-02**: Sentry `beforeSend` scrubs PHI from error reports
+- [x] **MON-03**: Production alerting configured (error rate, response time, DB connection pool)
+- [x] **MON-04**: Health check endpoint verified and monitored
 
 ### App Store
 
@@ -145,10 +145,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TEST-07 | Phase 5 | Pending |
 | TEST-08 | Phase 2 | Complete |
 | TEST-09 | Phase 2 | Complete |
-| MON-01 | Phase 4 | Pending |
-| MON-02 | Phase 4 | Pending |
-| MON-03 | Phase 4 | Pending |
-| MON-04 | Phase 4 | Pending |
+| MON-01 | Phase 4 | Complete |
+| MON-02 | Phase 4 | Complete |
+| MON-03 | Phase 4 | Complete |
+| MON-04 | Phase 4 | Complete |
 | APPS-01 | Phase 6 | Pending |
 | APPS-02 | Phase 6 | Pending |
 | APPS-03 | Phase 6 | Pending |
