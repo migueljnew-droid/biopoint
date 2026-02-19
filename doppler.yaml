@@ -35,6 +35,15 @@ setup:
         # Rate Limiting
         - RATE_LIMIT_MAX
         - RATE_LIMIT_WINDOW
+
+        # Redis (rate limit state persistence)
+        - REDIS_HOST           # e.g. biopoint-redis.internal (Fly.io private network hostname)
+        - REDIS_PORT           # 6379
+
+        # Observability
+        - SERVICE_VERSION      # e.g. '1.0.0'
+        - HEALTH_CHECK_TOKEN   # Token for /health/db endpoint
+        - DIRECT_URL           # Neon direct connection string (no -pooler suffix) for migrations
     
     # Service-specific configurations
     services:
@@ -59,6 +68,11 @@ setup:
           - DATADOG_ENABLED      # 'true' in production
           - SENTRY_DSN           # Sentry project DSN
           - SENTRY_ENABLED       # 'true' in production
+          - REDIS_HOST           # e.g. biopoint-redis.internal (Fly.io private network hostname)
+          - REDIS_PORT           # 6379
+          - DIRECT_URL           # Neon direct connection string (no -pooler suffix) for migrations
+          - SERVICE_VERSION      # e.g. '1.0.0'
+          - HEALTH_CHECK_TOKEN   # Token for /health/db endpoint
       
       mobile:
         path: apps/mobile

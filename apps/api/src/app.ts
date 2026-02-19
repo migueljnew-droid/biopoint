@@ -7,7 +7,7 @@ import { prisma, setDbRequestContext, clearDbRequestContext } from '@biopoint/db
 import { createAuditLog } from './middleware/auditLog.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { createRequestLogger, logRequest, logResponse } from './utils/logger.js';
-import { registerRateLimits } from './middleware/rateLimit.js';
+import { registerRateLimits, redisClient } from './middleware/rateLimit.js';
 import { adminRoutes } from './routes/admin.js';
 import { adminS3Routes } from './routes/admin-s3.js';
 import { authRoutes } from './routes/auth.js';
@@ -228,22 +228,58 @@ export async function createServer(options: CreateServerOptions = {}) {
         contentSecurityPolicy: false,
     });
 
-    // We implement our own route-aware rate limiting in `registerRateLimits`.
-    // Keep @fastify/rate-limit registered (for potential per-route use) but disable global behavior
-    // so it doesn't override our headers or limits.
+    // Global rate limiting via Redis (replaces DatabaseRateLimitStore for request-level limits).
+    // When REDIS_HOST is set, state persists across restarts/deploys so attackers cannot bypass
+    // auth rate limits by triggering a redeploy. Falls back to in-memory when Redis is not configured.
     await app.register(rateLimit, {
-        global: false,
-        addHeaders: {
-            'x-ratelimit-limit': false,
-            'x-ratelimit-remaining': false,
-            'x-ratelimit-reset': false,
-            'retry-after': false,
-        },
-        addHeadersOnExceeding: {
-            'x-ratelimit-limit': false,
-            'x-ratelimit-remaining': false,
-            'x-ratelimit-reset': false,
-        },
+        global: true,
+        max: 100,
+        timeWindow: '1 minute',
+        // Redis store when available; falls back to in-memory when Redis not configured
+        ...(redisClient ? {
+            redis: redisClient,
+            nameSpace: 'biopoint-rl-',
+        } : {}),
+        skipOnError: true,        // Fail-open if Redis is unreachable (don't block requests)
+        keyGenerator: (request) => request.ip,
+        // Per-route config overrides use route-level config.rateLimit
+    });
+
+    // Apply per-prefix rate limit overrides via onRoute hook.
+    // login: 20/min — low ceiling at transport layer, account lockout is the primary defense
+    // other auth: 5/15min — brute-force prevention for registration/refresh/etc
+    // health/public: 1000/hr — generous for monitoring systems
+    // PHI endpoints (labs/photos/profile): 200/min — per-user clinical data throughput
+    // presign: 50/hr — S3 upload URL generation
+    app.addHook('onRoute', (routeOptions) => {
+        const url = routeOptions.url;
+
+        if (url.includes('/auth/login')) {
+            routeOptions.config = {
+                ...routeOptions.config,
+                rateLimit: { max: 20, timeWindow: '1 minute' },
+            };
+        } else if (url.includes('/auth')) {
+            routeOptions.config = {
+                ...routeOptions.config,
+                rateLimit: { max: 5, timeWindow: '15 minutes' },
+            };
+        } else if (url.includes('/health')) {
+            routeOptions.config = {
+                ...routeOptions.config,
+                rateLimit: { max: 1000, timeWindow: '1 hour' },
+            };
+        } else if (url.includes('/labs') || url.includes('/photos') || url.includes('/profile')) {
+            routeOptions.config = {
+                ...routeOptions.config,
+                rateLimit: { max: 200, timeWindow: '1 minute' },
+            };
+        } else if (url.includes('/presign')) {
+            routeOptions.config = {
+                ...routeOptions.config,
+                rateLimit: { max: 50, timeWindow: '1 hour' },
+            };
+        }
     });
 
     if (!options.disableRateLimit) {
