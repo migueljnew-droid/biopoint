@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 ## Current Position
 
-Phase: 3 of 6 (Compliance & Vendor Agreements) — COMPLETE
-Plan: 2 of 2 complete (03-01 BAAs deferred to pre-launch, 03-02 de-identification + privacy done)
-Status: Phase 3 complete — all code changes shipped, BAA signing deferred to pre-launch
-Last activity: 2026-02-19 -- Phase 3 complete (vendor tracker updated, deidentify.ts, privacy policy)
+Phase: 4 of 6 (Infrastructure & Deployment) — PLANNED
+Plan: 0 of 4 complete (04-01 Fastify v5, 04-02 Redis rate limiter, 04-03 PHI monitoring, 04-04 Fly.io deploy)
+Status: Phase 4 planned — 4 plans across 3 waves, verified by plan-checker, ready to execute
+Last activity: 2026-02-19 -- Phase 4 planned (research + 4 plans + verification passed)
 
 Progress: [██████████░░░░░░░░░░] 50%
 
@@ -86,7 +86,7 @@ None for current phase.
 
 - Cloudflare R2 BAA coverage is uncertain -- may need to migrate to AWS S3 (deferred to pre-launch)
 - ROADMAP success criterion 1 references `packages/api/src/` but actual path is `apps/api/src/` — plans use correct path
-- Phase 4 ROADMAP references Render — needs updating to Fly.io
+- Phase 4 ROADMAP references Render — updated to Fly.io in REQUIREMENTS.md (INFRA-07)
 
 ## Phase 1 Summary
 
@@ -131,6 +131,6 @@ None for current phase.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 3 complete
+Stopped at: Phase 4 planned
 Resume file: None
-Next action: Phase 3 verification, then Phase 4 planning
+Next action: Execute Phase 4 (/gsd:execute-phase 4)
