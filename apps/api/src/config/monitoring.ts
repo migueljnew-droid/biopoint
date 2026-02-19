@@ -557,6 +557,20 @@ export function initializeMonitoring(): {
   };
 }
 
+/**
+ * Production alert thresholds (MON-03).
+ * These are read by the health check routes and the Fly.io deploy script
+ * to emit structured metrics that Datadog converts into monitors.
+ */
+export const ALERT_THRESHOLDS = {
+  /** Error rate: alert if >1% of requests are 5xx in a 5-minute window */
+  errorRatePercent: 1.0,
+  /** Response time: alert if p95 latency exceeds 2000ms */
+  responseTimeP95Ms: 2000,
+  /** DB connection pool: alert if >80% of pool slots are in use */
+  dbPoolUsagePercent: 80,
+} as const;
+
 export default {
   initializeMonitoring,
   createLogger,

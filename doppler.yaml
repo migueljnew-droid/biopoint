@@ -1,0 +1,153 @@
+# Doppler Configuration for BioPoint
+# This file defines the project structure and environment mappings
+
+setup:
+  - project: biopoint
+    description: "BioPoint - Healthcare Data Platform"
+    environments:
+      - dev
+      - staging
+      - production
+    
+    # Root level secrets (shared across all services)
+    root:
+      secrets:
+        # Database Configuration
+        - DATABASE_URL
+        
+        # JWT Authentication
+        - JWT_SECRET
+        - JWT_ACCESS_EXPIRES
+        - JWT_REFRESH_EXPIRES
+        
+        # Cloud Storage (Cloudflare R2)
+        - AWS_REGION
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+        - S3_BUCKET
+        - S3_ENDPOINT
+        
+        # Server Configuration
+        - PORT
+        - NODE_ENV
+        - CORS_ORIGIN
+        
+        # Rate Limiting
+        - RATE_LIMIT_MAX
+        - RATE_LIMIT_WINDOW
+    
+    # Service-specific configurations
+    services:
+      api:
+        path: apps/api
+        secrets:
+          - DATABASE_URL
+          - JWT_SECRET
+          - JWT_ACCESS_EXPIRES
+          - JWT_REFRESH_EXPIRES
+          - AWS_REGION
+          - AWS_ACCESS_KEY_ID
+          - AWS_SECRET_ACCESS_KEY
+          - S3_BUCKET
+          - S3_ENDPOINT
+          - PORT
+          - NODE_ENV
+          - CORS_ORIGIN
+          - RATE_LIMIT_MAX
+          - RATE_LIMIT_WINDOW
+          - DATADOG_API_KEY      # Datadog API key for monitor creation
+          - DATADOG_ENABLED      # 'true' in production
+          - SENTRY_DSN           # Sentry project DSN
+          - SENTRY_ENABLED       # 'true' in production
+      
+      mobile:
+        path: apps/mobile
+        secrets:
+          - API_BASE_URL
+          - APP_ENV
+      
+      db:
+        path: db
+        secrets:
+          - DATABASE_URL
+          - NODE_ENV
+
+# Environment-specific configurations
+environments:
+  dev:
+    description: "Development environment"
+    configs:
+      PORT: 3000
+      NODE_ENV: development
+      JWT_ACCESS_EXPIRES: 15m
+      JWT_REFRESH_EXPIRES: 7d
+      RATE_LIMIT_MAX: 1000
+      RATE_LIMIT_WINDOW: 1m
+      CORS_ORIGIN: "http://localhost:3001"
+      AWS_REGION: auto
+      S3_BUCKET: biopoint-uploads-dev
+      API_BASE_URL: "http://localhost:3000"
+      APP_ENV: development
+  
+  staging:
+    description: "Staging environment"
+    configs:
+      PORT: 3000
+      NODE_ENV: staging
+      JWT_ACCESS_EXPIRES: 15m
+      JWT_REFRESH_EXPIRES: 7d
+      RATE_LIMIT_MAX: 500
+      RATE_LIMIT_WINDOW: 1m
+      CORS_ORIGIN: "https://staging.biopoint.health"
+      AWS_REGION: auto
+      S3_BUCKET: biopoint-uploads-staging
+      API_BASE_URL: "https://api-staging.biopoint.health"
+      APP_ENV: staging
+  
+  production:
+    description: "Production environment"
+    configs:
+      PORT: 3000
+      NODE_ENV: production
+      JWT_ACCESS_EXPIRES: 15m
+      JWT_REFRESH_EXPIRES: 7d
+      RATE_LIMIT_MAX: 100
+      RATE_LIMIT_WINDOW: 1m
+      CORS_ORIGIN: "https://app.biopoint.health"
+      AWS_REGION: auto
+      S3_BUCKET: biopoint-uploads-prod
+      API_BASE_URL: "https://api.biopoint.health"
+      APP_ENV: production
+
+# Access control
+access:
+  # Who can manage secrets
+  managers:
+    - role: owner
+    - role: admin
+  
+  # Who can read secrets
+  readers:
+    - role: developer
+    - role: ci
+    - role: production
+
+# Integration settings
+integrations:
+  github:
+    enabled: true
+    environments:
+      - dev
+      - staging
+      - production
+  
+  vercel:
+    enabled: true
+    environments:
+      - staging
+      - production
+  
+  docker:
+    enabled: true
+    environments:
+      - all
