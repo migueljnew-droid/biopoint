@@ -39,6 +39,7 @@ Progress: [██████████░░░░░░░░░░] 50%
 | Phase 04 P03 | 3 | 3 tasks | 3 files |
 | Phase 04 P01 | 5 | 2 tasks | 3 files |
 | Phase 04 P02 | 6 | 2 tasks | 4 files |
+| Phase 04 P04 | 4 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,8 @@ Recent decisions affecting current work:
 - [Phase 04-02]: Named { Redis } import from ioredis required for ESM+CJS interop under TypeScript strict mode (not default import)
 - [Phase 04-02]: redisClient is null when REDIS_HOST unset — test env and pre-Redis deploys fall back to @fastify/rate-limit in-memory store
 - [Phase 04-02]: skipOnError: true on global plugin — fail-open if Redis unreachable to avoid blocking users for infrastructure failure
+- [Phase 04-infrastructure-deployment]: fly.toml placed at monorepo root (not apps/api/) — Dockerfile COPY commands use monorepo-relative paths requiring root build context; dockerfile = 'apps/api/Dockerfile'
+- [Phase 04-infrastructure-deployment]: Self-hosted Redis on Fly.io (biopoint-redis.internal) preferred over Upstash to avoid separate Enterprise HIPAA BAA requirement
 
 ### Phase 2 Decisions
 
