@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { prisma } from '@biopoint/db';
+// prisma import removed — not used in this middleware
 
 // Configuration constants
 const WEB_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes for web applications
@@ -257,8 +257,8 @@ export async function automaticLogoffMiddleware(
     request: FastifyRequest,
     reply: FastifyReply
 ): Promise<void> {
-    const logger = (request as any).log || request.log;
-    const userId = (request as any).userId;
+    const logger = request.log;
+    const userId = request.userId;
     const userAgent = request.headers['user-agent'];
     const ipAddress = getClientIp(request);
     
@@ -332,8 +332,8 @@ export async function automaticLogoffMiddleware(
         }
         
         // Store session info in request for later use
-        (request as any).sessionId = sessionId;
-        (request as any).sessionTimeout = deviceType === 'mobile' ? 5 * 60 * 1000 : 15 * 60 * 1000;
+        request.sessionId = sessionId;
+        request.sessionTimeout = deviceType === 'mobile' ? 5 * 60 * 1000 : 15 * 60 * 1000;
         
     } catch (error) {
         logger.error({
@@ -370,8 +370,7 @@ async function logAutomaticLogoff(
             },
         });
     } catch (error) {
-        const logger = (request as any).log || request.log;
-        logger.error({ error }, 'Failed to log automatic logoff event');
+        request.log.error({ error }, 'Failed to log automatic logoff event');
     }
 }
 

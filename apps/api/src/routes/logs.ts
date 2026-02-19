@@ -9,7 +9,7 @@ export async function logsRoutes(app: FastifyInstance) {
 
     // Create or update daily log
     app.post('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = DailyLogSchema.parse(request.body);
 
         const date = new Date(body.date);
@@ -80,7 +80,7 @@ export async function logsRoutes(app: FastifyInstance) {
 
     // Get logs (paginated)
     app.get('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const query = request.query as { page?: string; limit?: string };
         const page = parseInt(query.page || '1');
         const limit = parseInt(query.limit || '30');
@@ -125,7 +125,7 @@ export async function logsRoutes(app: FastifyInstance) {
 
     // Get log by date
     app.get('/:date', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { date } = request.params as { date: string };
 
         const log = await prisma.dailyLog.findUnique({

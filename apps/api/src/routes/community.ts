@@ -1,22 +1,30 @@
 import type { FastifyInstance } from 'fastify';
-import { prisma } from '@biopoint/db';
+import { prisma, Prisma } from '@biopoint/db';
 import { CreateGroupSchema, CreatePostSchema, ForkTemplateSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
+
+function getUserHandle(userId: string): string {
+    const suffix = userId.slice(-6);
+    return `user_${suffix}`;
+}
+
+function getUserAvatar(userId: string): string {
+    const char = userId.slice(0, 1) || 'U';
+    return char.toUpperCase();
+}
 
 export async function communityRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
 
-    app.addHook('preHandler', authMiddleware);
-
     // Get leaderboard
     app.get('/leaderboard', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
 
         // 1. Get real top scores
         const recentScores = await prisma.bioPointScore.findMany({
             orderBy: { score: 'desc' },
             take: 50,
-            include: { user: { select: { email: true } } }
+            select: { userId: true, score: true },
         });
 
         const uniqueLeaders = new Map();
@@ -24,10 +32,10 @@ export async function communityRoutes(app: FastifyInstance) {
             if (!uniqueLeaders.has(s.userId)) {
                 uniqueLeaders.set(s.userId, {
                     id: s.userId,
-                    name: s.user.email.split('@')[0],
+                    name: getUserHandle(s.userId),
                     score: s.score,
                     trend: '+0',
-                    avatar: s.user.email[0].toUpperCase(),
+                    avatar: getUserAvatar(s.userId),
                     elite: s.score >= 90,
                     isUser: s.userId === userId
                 });
@@ -42,16 +50,16 @@ export async function communityRoutes(app: FastifyInstance) {
             const userLastScore = await prisma.bioPointScore.findFirst({
                 where: { userId },
                 orderBy: { date: 'desc' },
-                include: { user: { select: { email: true } } }
+                select: { userId: true, score: true },
             });
 
             if (userLastScore) {
                 leaderboard.push({
                     id: userId,
-                    name: userLastScore.user.email.split('@')[0],
+                    name: getUserHandle(userId),
                     score: userLastScore.score,
                     trend: '+0',
-                    avatar: userLastScore.user.email[0].toUpperCase(),
+                    avatar: getUserAvatar(userId),
                     elite: userLastScore.score >= 90,
                     isUser: true
                 });
@@ -75,7 +83,7 @@ export async function communityRoutes(app: FastifyInstance) {
 
     // List groups
     app.get('/groups', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const groups = await prisma.group.findMany({
             where: { isPublic: true },
             include: { _count: { select: { members: true } }, members: { where: { userId } } },
@@ -90,7 +98,7 @@ export async function communityRoutes(app: FastifyInstance) {
 
     // Create group
     app.post('/groups', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = CreateGroupSchema.parse(request.body);
 
         const group = await prisma.group.create({
@@ -105,7 +113,7 @@ export async function communityRoutes(app: FastifyInstance) {
 
     // Get group
     app.get('/groups/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const group = await prisma.group.findUnique({
@@ -120,7 +128,7 @@ export async function communityRoutes(app: FastifyInstance) {
 
     // Join group
     app.post('/groups/:id/join', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const group = await prisma.group.findUnique({ where: { id } });
@@ -137,7 +145,7 @@ export async function communityRoutes(app: FastifyInstance) {
 
     // Leave group
     app.post('/groups/:id/leave', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         await prisma.groupMember.deleteMany({ where: { groupId: id, userId } });
         return { success: true };
@@ -151,18 +159,17 @@ export async function communityRoutes(app: FastifyInstance) {
 
         const posts = await prisma.post.findMany({
             where: { groupId: id },
-            include: { user: { select: { email: true } } },
             orderBy: { createdAt: 'desc' },
         });
 
         return posts.map((p) => ({
-            id: p.id, groupId: p.groupId, userId: p.userId, authorEmail: p.user.email, content: p.content, createdAt: p.createdAt.toISOString(),
+            id: p.id, groupId: p.groupId, userId: p.userId, authorHandle: getUserHandle(p.userId), content: p.content, createdAt: p.createdAt.toISOString(),
         }));
     });
 
     // Create post
     app.post('/groups/:id/posts', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const body = CreatePostSchema.parse(request.body);
 
@@ -171,10 +178,9 @@ export async function communityRoutes(app: FastifyInstance) {
 
         const post = await prisma.post.create({
             data: { groupId: id, userId, content: body.content },
-            include: { user: { select: { email: true } } },
         });
 
-        return { id: post.id, groupId: post.groupId, userId: post.userId, authorEmail: post.user.email, content: post.content, createdAt: post.createdAt.toISOString() };
+        return { id: post.id, groupId: post.groupId, userId: post.userId, authorHandle: getUserHandle(post.userId), content: post.content, createdAt: post.createdAt.toISOString() };
     });
 
     // List templates
@@ -187,18 +193,30 @@ export async function communityRoutes(app: FastifyInstance) {
 
     // Fork template
     app.post('/templates/:id/fork', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const body = ForkTemplateSchema.parse(request.body);
 
         const template = await prisma.stackTemplate.findUnique({ where: { id } });
         if (!template) return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Template not found' });
 
-        const items = template.itemsJson as any[];
+        interface TemplateItem { name: string; dose: number; unit: string; route?: string; frequency: string; timing?: string; }
+        const rawItems = (template.itemsJson as Prisma.JsonArray) ?? [];
+        const typedItems = rawItems.map((item) => {
+            const i = item as Record<string, unknown>;
+            return {
+                name: String(i['name'] ?? ''),
+                dose: Number(i['dose'] ?? 0),
+                unit: String(i['unit'] ?? ''),
+                route: i['route'] !== undefined ? String(i['route']) : undefined,
+                frequency: String(i['frequency'] ?? 'Daily'),
+                timing: i['timing'] !== undefined ? String(i['timing']) : undefined,
+            } satisfies TemplateItem;
+        });
         const stack = await prisma.stack.create({
             data: {
                 userId, name: body.stackName || template.name, goal: template.goal,
-                items: { create: items.map((item: any) => ({ name: item.name, dose: item.dose, unit: item.unit, route: item.route, frequency: item.frequency, timing: item.timing })) },
+                items: { create: typedItems },
             },
             include: { items: true },
         });

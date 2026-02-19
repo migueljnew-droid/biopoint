@@ -6,7 +6,7 @@ const MIN_COHORT_SIZE = 50;
 
 export async function researchRoutes(app: FastifyInstance) {
     // Admin-only research aggregates
-    app.get('/aggregates', { preHandler: adminMiddleware }, async (request, reply) => {
+    app.get('/aggregates', { preHandler: adminMiddleware }, async (_request, reply) => {
         // Count research participants
         const participantCount = await prisma.profile.count({
             where: { consentResearch: true },

@@ -11,9 +11,16 @@ import {
     revokeRefreshToken,
     parseAccessTokenExpiry,
 } from '../utils/auth.js';
+import { createNotificationService } from '../services/notificationService.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { sanitizationMiddleware } from '../middleware/sanitization.js';
+import { recordFailedLogin, recordSuccessfulLogin, getAccountLockoutInfo } from '../middleware/rateLimit.js';
 
 export async function authRoutes(app: FastifyInstance) {
+    const notificationService = createNotificationService();
+    // Apply input sanitization to all auth routes
+    app.addHook('preHandler', sanitizationMiddleware);
+
     // Register
     app.post('/register', async (request, reply) => {
         const body = RegisterSchema.parse(request.body);
@@ -75,6 +82,12 @@ export async function authRoutes(app: FastifyInstance) {
     // Login
     app.post('/login', async (request, reply) => {
         const body = LoginSchema.parse(request.body);
+        const clientIp = request.ip;
+        const lockoutConfig = {
+            maxAttempts: 5,
+            lockoutDurationMs: 15 * 60 * 1000,
+            progressiveDelays: [0, 1, 2, 4, 8],
+        };
 
         const user = await prisma.user.findUnique({
             where: { email: body.email },
@@ -88,6 +101,26 @@ export async function authRoutes(app: FastifyInstance) {
         });
 
         if (!user) {
+            // Record failed login attempt for account lockout
+            const attemptCount = await recordFailedLogin(body.email, clientIp, lockoutConfig);
+
+            // Under high concurrency, multiple requests can pass the preHandler lockout check
+            // before the lock is set. Once we're beyond the allowed attempts, return a lockout
+            // response immediately (without waiting for a subsequent request).
+            if (attemptCount > lockoutConfig.maxAttempts) {
+                const lockoutInfo = await getAccountLockoutInfo(body.email);
+                if (lockoutInfo.isLocked) {
+                    const remainingTime = Math.ceil((lockoutInfo.remainingTime || 0) / 1000);
+                    reply.header('Retry-After', remainingTime);
+                    return reply.status(429).send({
+                        error: 'Account Temporarily Locked',
+                        message: 'Account temporarily locked due to multiple failed login attempts.',
+                        retryAfter: remainingTime,
+                        lockedUntil: lockoutInfo.lockedUntil,
+                    });
+                }
+            }
+
             return reply.status(401).send({
                 statusCode: 401,
                 error: 'Unauthorized',
@@ -97,12 +130,61 @@ export async function authRoutes(app: FastifyInstance) {
 
         const validPassword = await verifyPassword(body.password, user.passwordHash);
         if (!validPassword) {
+            // Record failed login attempt for account lockout
+            const attemptCount = await recordFailedLogin(body.email, clientIp, lockoutConfig);
+
+            if (attemptCount > lockoutConfig.maxAttempts) {
+                const lockoutInfo = await getAccountLockoutInfo(body.email);
+                if (lockoutInfo.isLocked) {
+                    const remainingTime = Math.ceil((lockoutInfo.remainingTime || 0) / 1000);
+                    reply.header('Retry-After', remainingTime);
+                    return reply.status(429).send({
+                        error: 'Account Temporarily Locked',
+                        message: 'Account temporarily locked due to multiple failed login attempts.',
+                        retryAfter: remainingTime,
+                        lockedUntil: lockoutInfo.lockedUntil,
+                    });
+                }
+            }
+
+            // Check if account is now locked and send notification
+            const lockoutInfo = await prisma.accountLockout.findUnique({
+                where: { identifier: body.email },
+            });
+
+            if (lockoutInfo?.lockedUntil && lockoutInfo.lockedUntil > new Date()) {
+                // Send account lockout notification
+                await notificationService.sendAccountLockoutNotification({
+                    type: 'account_lockout',
+                    email: body.email,
+                    userId: user.id,
+                    ipAddress: clientIp,
+                    timestamp: new Date(),
+                    metadata: {
+                        failedAttempts: 5,
+                        lockoutDuration: 15,
+                    },
+                });
+
+                // Log security event
+                await notificationService.logSecurityEvent({
+                    type: 'account_lockout',
+                    email: body.email,
+                    userId: user.id,
+                    ipAddress: clientIp,
+                    timestamp: new Date(),
+                });
+            }
+
             return reply.status(401).send({
                 statusCode: 401,
                 error: 'Unauthorized',
                 message: 'Invalid email or password',
             });
         }
+
+        // Record successful login (resets failed attempts)
+        await recordSuccessfulLogin(body.email);
 
         // Generate tokens
         const accessToken = generateAccessToken({
@@ -171,7 +253,7 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     // Logout
-    app.post('/logout', async (request, reply) => {
+    app.post('/logout', async (request, _reply) => {
         const body = RefreshTokenSchema.parse(request.body);
         await revokeRefreshToken(body.refreshToken);
         return { success: true };
@@ -179,7 +261,7 @@ export async function authRoutes(app: FastifyInstance) {
 
     // Get current user
     app.get('/me', { preHandler: authMiddleware }, async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
 
         const user = await prisma.user.findUnique({
             where: { id: userId },

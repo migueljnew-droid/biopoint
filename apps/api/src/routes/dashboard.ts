@@ -1,13 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { prisma } from '@biopoint/db';
 import { authMiddleware } from '../middleware/auth.js';
+import { createAuditLog } from '../middleware/auditLog.js';
 
 export async function dashboardRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
 
     // Get dashboard data
     app.get('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -79,6 +80,32 @@ export async function dashboardRoutes(app: FastifyInstance) {
             },
         });
 
+        // Get active fasting session
+        const activeFasting = await prisma.fastingSession.findFirst({
+            where: { userId, status: 'ACTIVE' },
+            include: { protocol: { select: { name: true } } },
+        });
+
+        // Get today's nutrition summary
+        const todayFoodLog = await prisma.foodLog.findUnique({
+            where: { userId_date: { userId, date: today } },
+        });
+
+        // Audit log for dashboard access (contains PHI data)
+        await createAuditLog(request, {
+            action: 'READ',
+            entityType: 'BioPointScore',
+            entityId: 'dashboard',
+            metadata: {
+                hasBioPointScore: !!bioPointScore,
+                hasTodayLog: !!todayLog,
+                recentLogsCount: recentLogs.length,
+                scoreHistoryCount: scoreHistoryData.length,
+                activeStacks,
+                weeklyComplianceEvents: complianceEvents,
+            },
+        });
+
         return {
             bioPointScore: bioPointScore
                 ? {
@@ -115,12 +142,26 @@ export async function dashboardRoutes(app: FastifyInstance) {
             scoreHistory: scoreHistoryData.map(s => ({ date: s.date.toISOString(), score: s.score })),
             activeStacks,
             weeklyComplianceEvents: complianceEvents,
+            activeFasting: activeFasting
+                ? {
+                    id: activeFasting.id,
+                    protocolName: activeFasting.protocol.name,
+                    startedAt: activeFasting.startedAt.toISOString(),
+                    targetEndAt: activeFasting.targetEndAt.toISOString(),
+                }
+                : null,
+            todayNutrition: todayFoodLog
+                ? {
+                    totalCalories: todayFoodLog.totalCalories,
+                    mealCount: todayFoodLog.mealCount,
+                }
+                : null,
         };
     });
 
     // Calculate and store BioPoint score
     app.post('/calculate', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
@@ -158,25 +199,53 @@ export async function dashboardRoutes(app: FastifyInstance) {
             },
         });
 
-        // Calculate Compliance Score (0-20)
-        // If no active items, full points (or 0? Let's give full points for maintenance if nothing to take, or maybe neutral 10? Let's go with 20 for perfect adherence to "nothing")
-        // But if they have items, it's ratio * 20.
+        // Calculate Compliance Score (0-16)
         let complianceScore = 0;
         if (activeItemCount === 0) {
-            complianceScore = 20;
+            complianceScore = 16;
         } else {
-            // Cap at 100% (in case of double logging bugs or extra credit)
             const ratio = Math.min(1, complianceCount / activeItemCount);
-            complianceScore = Math.round(ratio * 20);
+            complianceScore = Math.round(ratio * 16);
         }
 
-        // Calculate score (max 20 points each category)
+        // Fasting Score (0-9): 0 if no fast, 5 if active, 9 if completed today
+        let fastingScore = 0;
+        const completedFastToday = await prisma.fastingSession.findFirst({
+            where: {
+                userId,
+                status: 'COMPLETED',
+                endedAt: { gte: today, lt: tomorrow },
+            },
+        });
+        const activeFastSession = await prisma.fastingSession.findFirst({
+            where: { userId, status: 'ACTIVE' },
+        });
+        if (completedFastToday) {
+            fastingScore = 9;
+        } else if (activeFastSession) {
+            fastingScore = 5;
+        }
+
+        // Nutrition Score (0-9): scaled by meals logged today
+        let nutritionScore = 0;
+        const todayFoodLog = await prisma.foodLog.findUnique({
+            where: { userId_date: { userId, date: today } },
+        });
+        if (todayFoodLog) {
+            if (todayFoodLog.mealCount >= 3) nutritionScore = 9;
+            else if (todayFoodLog.mealCount === 2) nutritionScore = 6;
+            else if (todayFoodLog.mealCount === 1) nutritionScore = 3;
+        }
+
+        // Calculate score: sleep(18) + energy(16) + focus(16) + mood(16) + compliance(16) + fasting(9) + nutrition(9) = 100
         const breakdown = {
             sleep: calculateSleepScore(log?.sleepHours ?? null, log?.sleepQuality ?? null),
-            energy: (log?.energyLevel ?? 5) * 2,
-            focus: (log?.focusLevel ?? 5) * 2,
-            mood: (log?.moodLevel ?? 5) * 2,
+            energy: Math.round((log?.energyLevel ?? 5) * 1.6),
+            focus: Math.round((log?.focusLevel ?? 5) * 1.6),
+            mood: Math.round((log?.moodLevel ?? 5) * 1.6),
             compliance: complianceScore,
+            fasting: fastingScore,
+            nutrition: nutritionScore,
         };
 
         const score = Math.min(100, Object.values(breakdown).reduce((a, b) => a + b, 0));
@@ -209,29 +278,29 @@ export async function dashboardRoutes(app: FastifyInstance) {
 }
 
 function calculateSleepScore(hours: number | null, quality: number | null): number {
-    if (!hours && !quality) return 10; // Neutral
+    if (!hours && !quality) return 9; // Neutral
 
     let score = 0;
 
-    // Hours score (0-10)
+    // Hours score (0-9)
     if (hours) {
         if (hours >= 7 && hours <= 9) {
-            score += 10;
+            score += 9;
         } else if (hours >= 6 || hours <= 10) {
-            score += 7;
+            score += 6;
         } else {
-            score += 4;
+            score += 3;
         }
     } else {
-        score += 5;
+        score += 4;
     }
 
-    // Quality score (0-10)
+    // Quality score (0-9)
     if (quality) {
-        score += quality;
+        score += Math.round(quality * 0.9);
     } else {
-        score += 5;
+        score += 4;
     }
 
-    return Math.min(20, score);
+    return Math.min(18, score);
 }

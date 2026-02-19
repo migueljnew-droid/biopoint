@@ -14,7 +14,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // List stacks
     app.get('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
 
         const stacks = await prisma.stack.findMany({
             where: { userId },
@@ -51,7 +51,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Create stack
     app.post('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = CreateStackSchema.parse(request.body);
 
         const stack = await prisma.stack.create({
@@ -77,7 +77,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Get stack by ID
     app.get('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const stack = await prisma.stack.findFirst({
@@ -122,7 +122,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Update stack
     app.put('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const body = UpdateStackSchema.parse(request.body);
 
@@ -173,7 +173,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Delete stack
     app.delete('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const existing = await prisma.stack.findFirst({
@@ -195,7 +195,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Add item to stack
     app.post('/:id/items', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const body = CreateStackItemSchema.parse(request.body);
 
@@ -243,7 +243,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Update stack item
     app.put('/:id/items/:itemId', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id, itemId } = request.params as { id: string; itemId: string };
         const body = UpdateStackItemSchema.parse(request.body);
 
@@ -291,7 +291,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Delete stack item
     app.delete('/:id/items/:itemId', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id, itemId } = request.params as { id: string; itemId: string };
 
         const stack = await prisma.stack.findFirst({
@@ -313,7 +313,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Log compliance event
     app.post('/compliance', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = ComplianceEventSchema.parse(request.body);
 
         const event = await prisma.complianceEvent.create({
@@ -341,7 +341,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Get compliance history
     app.get('/compliance', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const query = request.query as { days?: string };
         const days = parseInt(query.days || '7');
 
@@ -371,7 +371,7 @@ export async function stacksRoutes(app: FastifyInstance) {
     });
     // List reminders for an item
     app.get('/items/:itemId/reminders', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { itemId } = request.params as { itemId: string };
 
         const reminders = await prisma.reminderSchedule.findMany({
@@ -386,7 +386,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Create reminder
     app.post('/items/:itemId/reminders', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { itemId } = request.params as { itemId: string };
         const body = request.body as { time: string; daysOfWeek: number[] }; // Simple validation for now
 
@@ -413,7 +413,7 @@ export async function stacksRoutes(app: FastifyInstance) {
 
     // Delete reminder
     app.delete('/items/:itemId/reminders/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const reminder = await prisma.reminderSchedule.findFirst({

@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
@@ -49,6 +50,18 @@ export interface CreateServerOptions {
     prefixes?: string[];
 }
 
+interface MarkerTrend {
+    markerName: string;
+    unit: string | null;
+    dataPoints: {
+        date: string;
+        value: number | null;
+        refRangeLow: number | null;
+        refRangeHigh: number | null;
+    }[];
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function registerRoutesForPrefix(app: any, prefix: string) {
     const base = prefix === '/' ? '' : prefix;
     const withPrefix = (path: string) => `${base}${path}`;
@@ -73,7 +86,7 @@ async function registerRoutesForPrefix(app: any, prefix: string) {
     await app.register(accountDeletionRoutes, { prefix: withPrefix('/user') });
 
     // BioPoint history endpoint
-    app.get(withPrefix('/biopoint/history'), { preHandler: authMiddleware }, async (request: any, reply: any) => {
+    app.get(withPrefix('/biopoint/history'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {
         const userId = request.userId;
         const scores = await prisma.bioPointScore.findMany({
             where: { userId },
@@ -93,7 +106,7 @@ async function registerRoutesForPrefix(app: any, prefix: string) {
     });
 
     // Lab marker endpoints
-    app.get(withPrefix('/markers'), { preHandler: authMiddleware }, async (request: any, reply: any) => {
+    app.get(withPrefix('/markers'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {
         const userId = request.userId;
         const markers = await prisma.labMarker.findMany({
             where: { userId },
@@ -111,7 +124,7 @@ async function registerRoutesForPrefix(app: any, prefix: string) {
         return markers;
     });
 
-    app.get(withPrefix('/markers/trends'), { preHandler: authMiddleware }, async (request: any, reply: any) => {
+    app.get(withPrefix('/markers/trends'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {
         const userId = request.userId;
         const markers = await prisma.labMarker.findMany({
             where: { userId },
@@ -126,7 +139,7 @@ async function registerRoutesForPrefix(app: any, prefix: string) {
             metadata: { resultCount: markers.length },
         });
 
-        const trends: Record<string, any> = {};
+        const trends: Record<string, MarkerTrend> = {};
         for (const marker of markers) {
             if (!trends[marker.name]) {
                 trends[marker.name] = {
@@ -135,7 +148,7 @@ async function registerRoutesForPrefix(app: any, prefix: string) {
                     dataPoints: [],
                 };
             }
-            trends[marker.name].dataPoints.push({
+            trends[marker.name]!.dataPoints.push({
                 date: marker.recordedAt.toISOString(),
                 value: marker.value,
                 refRangeLow: marker.refRangeLow,
@@ -155,10 +168,17 @@ export async function createServer(options: CreateServerOptions = {}) {
         logger,
         // Respect X-Forwarded-For in request.ip so rate limiting and auditing work correctly behind proxies.
         trustProxy: true,
-        genReqId: (req) => (req.headers['x-request-id'] as string) || undefined,
+        genReqId: (req) => (req.headers['x-request-id'] as string) || '',
         // 10MB to support base64 food photo uploads for AI analysis
         bodyLimit: 10 * 1024 * 1024,
     });
+
+    // Register custom request properties for runtime safety (Fastify requires decorateRequest
+    // before accessing custom properties on the request object in hooks/handlers).
+    app.decorateRequest('userId', '');
+    app.decorateRequest('userEmail', '');
+    app.decorateRequest('userRole', 'USER');
+    app.decorateRequest('startTime', 0);
 
     // Register request ID middleware
     app.addHook('onRequest', requestIdMiddleware);
@@ -168,17 +188,19 @@ export async function createServer(options: CreateServerOptions = {}) {
 
     // Request logging hook (DB query tracing is handled by $extends in @biopoint/db)
     app.addHook('onRequest', async (request, reply) => {
-        const loggerInstance = createRequestLogger(app.log, request);
-        (request as any).log = loggerInstance;
+        const loggerInstance = createRequestLogger(request.log, request);
+        // Override Fastify's default request.log with the request-scoped child logger.
+        // FastifyBaseLogger is the shared base; we use unknown cast for the narrowing.
+        (request as unknown as { log: typeof loggerInstance }).log = loggerInstance;
         setDbRequestContext(request, loggerInstance);
         logRequest(loggerInstance, request, reply);
     });
 
     // Response logging hook
     app.addHook('onResponse', async (request, reply) => {
-        const startTime = (request as any).startTime || Date.now();
+        const startTime = request.startTime || Date.now();
         const responseTime = Math.max(1, Date.now() - startTime);
-        const loggerInstance = (request as any).log || app.log;
+        const loggerInstance = request.log as import('./utils/logger.js').RequestLogger;
 
         logResponse(loggerInstance, request, reply, responseTime);
         clearDbRequestContext();
@@ -186,7 +208,7 @@ export async function createServer(options: CreateServerOptions = {}) {
 
     // Set start time for response time calculation
     app.addHook('onRequest', async (request) => {
-        (request as any).startTime = Date.now();
+        request.startTime = Date.now();
     });
 
     // Register plugins
@@ -233,12 +255,11 @@ export async function createServer(options: CreateServerOptions = {}) {
 
     // Not found handler (include requestId for tracing)
     app.setNotFoundHandler((request, reply) => {
-        const requestId = (request as any).id as string | undefined;
         reply.status(404).send({
             statusCode: 404,
             error: 'Not Found',
             message: 'Route not found',
-            requestId: requestId || 'unknown',
+            requestId: request.id || 'unknown',
         });
     });
 

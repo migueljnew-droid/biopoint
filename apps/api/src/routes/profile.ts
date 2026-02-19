@@ -2,18 +2,31 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '@biopoint/db';
 import { ProfileUpdateSchema, ConsentUpdateSchema, OnboardingSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
+import { createAuditLog } from '../middleware/auditLog.js';
+import { sanitizationMiddleware } from '../middleware/sanitization.js';
 
 export async function profileRoutes(app: FastifyInstance) {
     // Apply auth to all routes
     app.addHook('preHandler', authMiddleware);
+    // Apply input sanitization to profile updates
+    app.addHook('preHandler', sanitizationMiddleware);
 
     // Get profile
     app.get('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
 
         const profile = await prisma.profile.findUnique({
             where: { userId },
         });
+
+        // Audit log for profile access (even if no profile exists)
+        if (profile) {
+            await createAuditLog(request, {
+                action: 'READ',
+                entityType: 'Profile',
+                entityId: profile.id,
+            });
+        }
 
         if (!profile) {
             return {
@@ -54,7 +67,7 @@ export async function profileRoutes(app: FastifyInstance) {
 
     // Update profile
     app.put('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = ProfileUpdateSchema.parse(request.body);
 
         const profile = await prisma.profile.upsert({
@@ -96,7 +109,7 @@ export async function profileRoutes(app: FastifyInstance) {
 
     // Update consent
     app.put('/consent', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = ConsentUpdateSchema.parse(request.body);
 
         const profile = await prisma.profile.upsert({
@@ -126,7 +139,7 @@ export async function profileRoutes(app: FastifyInstance) {
 
     // Complete onboarding
     app.put('/onboarding', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = OnboardingSchema.parse(request.body);
 
         const profile = await prisma.profile.upsert({

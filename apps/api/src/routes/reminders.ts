@@ -7,7 +7,7 @@ export async function remindersRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
 
     app.get('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const reminders = await prisma.reminderSchedule.findMany({
             where: { userId },
             include: { stackItem: { select: { name: true } } },
@@ -21,7 +21,7 @@ export async function remindersRoutes(app: FastifyInstance) {
     });
 
     app.post('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = CreateReminderSchema.parse(request.body);
 
         const reminder = await prisma.reminderSchedule.create({
@@ -33,7 +33,7 @@ export async function remindersRoutes(app: FastifyInstance) {
     });
 
     app.put('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const body = UpdateReminderSchema.parse(request.body);
 
@@ -50,7 +50,7 @@ export async function remindersRoutes(app: FastifyInstance) {
     });
 
     app.delete('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const existing = await prisma.reminderSchedule.findFirst({ where: { id, userId } });

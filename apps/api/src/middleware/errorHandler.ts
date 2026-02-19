@@ -6,7 +6,22 @@ export function errorHandler(
     request: FastifyRequest,
     reply: FastifyReply
 ) {
-    request.log.error(error);
+    const requestId = request.id;
+    const logger = request.log;
+    
+    logger.error({
+        error: {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            statusCode: error.statusCode,
+        },
+        request: {
+            method: request.method,
+            url: request.url,
+            ip: request.ip,
+        }
+    }, 'Request error occurred');
 
     // Zod validation errors
     if (error instanceof ZodError) {
@@ -29,7 +44,7 @@ export function errorHandler(
 
     // Prisma errors
     if (error.name === 'PrismaClientKnownRequestError') {
-        const prismaError = error as any;
+        const prismaError = error as FastifyError & { code?: string };
         if (prismaError.code === 'P2002') {
             return reply.status(409).send({
                 statusCode: 409,
@@ -48,9 +63,17 @@ export function errorHandler(
 
     // Default error response
     const statusCode = error.statusCode || 500;
-    return reply.status(statusCode).send({
+    const response = {
         statusCode,
         error: error.name || 'Internal Server Error',
         message: statusCode === 500 ? 'An unexpected error occurred' : error.message,
-    });
+        requestId: requestId || 'unknown',
+    };
+    
+    // Include request ID in error response for debugging
+    if (requestId) {
+        reply.header('x-request-id', requestId);
+    }
+    
+    return reply.status(statusCode).send(response);
 }

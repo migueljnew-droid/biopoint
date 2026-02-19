@@ -3,7 +3,7 @@ import { prisma } from '@biopoint/db';
 import { CreatePhotoSchema, PhotoPresignSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
 import { createAuditLog } from '../middleware/auditLog.js';
-import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateLegacyDownloadPresignedUrl, generateS3Key } from '../utils/s3.js';
+import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateS3Key } from '../utils/s3.js';
 import { logDownloadAttempt, detectSuspiciousActivity } from '../middleware/s3Security.js';
 
 import { fileUploadSanitizationMiddleware, s3KeyValidationMiddleware } from '../middleware/sanitization.js';
@@ -16,7 +16,7 @@ export async function photosRoutes(app: FastifyInstance) {
     app.addHook('preHandler', s3KeyValidationMiddleware);
 
     app.post('/presign', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = PhotoPresignSchema.parse(request.body);
         const s3Key = generateS3Key(userId, 'photos', body.filename);
         const { uploadUrl, expiresIn } = await generateUploadPresignedUrl(s3Key, body.contentType, 'photos');
@@ -24,7 +24,7 @@ export async function photosRoutes(app: FastifyInstance) {
     });
 
     app.get('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const query = request.query as { category?: string };
         const where: any = { userId };
         if (query.category) where.category = query.category;
@@ -74,7 +74,7 @@ export async function photosRoutes(app: FastifyInstance) {
     });
 
     app.post('/', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = CreatePhotoSchema.parse(request.body);
 
         // SEC-07: Validate uploaded file by magic bytes before accepting
@@ -139,7 +139,7 @@ export async function photosRoutes(app: FastifyInstance) {
     });
 
     app.get('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const photo = await prisma.progressPhoto.findFirst({ where: { id, userId } });
 
@@ -179,7 +179,7 @@ export async function photosRoutes(app: FastifyInstance) {
     });
 
     app.delete('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const photo = await prisma.progressPhoto.findFirst({ where: { id, userId } });
 
@@ -193,7 +193,7 @@ export async function photosRoutes(app: FastifyInstance) {
     });
 
     app.post('/:id/align', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const photo = await prisma.progressPhoto.findFirst({ where: { id, userId } });
 

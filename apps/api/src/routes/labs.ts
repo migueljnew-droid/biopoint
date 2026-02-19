@@ -3,7 +3,7 @@ import { prisma } from '@biopoint/db';
 import { CreateLabReportSchema, CreateLabMarkerSchema, PresignUploadSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
 import { createAuditLog } from '../middleware/auditLog.js';
-import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateLegacyDownloadPresignedUrl, generateS3Key, getFileBuffer } from '../utils/s3.js';
+import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateS3Key, getFileBuffer } from '../utils/s3.js';
 import { logDownloadAttempt, detectSuspiciousActivity } from '../middleware/s3Security.js';
 import { analyzeLabReport } from '../services/analysis.js';
 import { featureFlags } from '../config/featureFlags.js';
@@ -13,7 +13,7 @@ export async function labsRoutes(app: FastifyInstance) {
 
     // Get presigned upload URL
     app.post('/presign', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = PresignUploadSchema.parse(request.body);
 
         const s3Key = generateS3Key(userId, 'labs', body.filename);
@@ -28,7 +28,7 @@ export async function labsRoutes(app: FastifyInstance) {
 
     // List lab reports
     app.get('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
 
         const reports = await prisma.labReport.findMany({
             where: { userId },
@@ -76,7 +76,7 @@ export async function labsRoutes(app: FastifyInstance) {
                     recordedAt: m.recordedAt.toISOString(),
                     notes: m.notes,
                     isInRange:
-                        m.refRangeLow !== null && m.refRangeHigh !== null
+                        m.refRangeLow !== null && m.refRangeHigh !== null && m.value !== null
                             ? m.value >= m.refRangeLow && m.value <= m.refRangeHigh
                             : null,
                 })),
@@ -86,7 +86,7 @@ export async function labsRoutes(app: FastifyInstance) {
 
     // Create lab report
     app.post('/', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const body = CreateLabReportSchema.parse(request.body);
 
         const report = await prisma.labReport.create({
@@ -128,7 +128,7 @@ export async function labsRoutes(app: FastifyInstance) {
 
     // Get biomarker trends
     app.get('/trends', async (request) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
 
         const allMarkers = await prisma.labMarker.findMany({
             where: { userId },
@@ -169,16 +169,20 @@ export async function labsRoutes(app: FastifyInstance) {
         const trends = Object.keys(groups)
             .map((key) => {
                 const history = groups[key];
+                if (!history) return null;
 
                 // Sort by date
                 history.sort((a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime());
 
                 // Use the name from the most recent record as the display name
-                const displayName = history[history.length - 1].name;
+                const lastEntry = history[history.length - 1];
+                const firstEntry = history[0];
+                if (!lastEntry || !firstEntry) return null;
+                const displayName = lastEntry.name;
 
                 return {
                     name: displayName,
-                    unit: history[0].unit,
+                    unit: firstEntry.unit,
                     history: history.map((h) => ({
                         id: h.id,
                         value: h.value,
@@ -188,15 +192,15 @@ export async function labsRoutes(app: FastifyInstance) {
                     })),
                 };
             })
-            // Filter out non-numeric values if any
-            .filter(t => t.history.length > 0);
+            // Filter out non-numeric values and null entries
+            .filter((t): t is NonNullable<typeof t> => t !== null && t.history.length > 0);
 
         return trends;
     });
 
     // Get lab report by ID
     app.get('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const report = await prisma.labReport.findFirst({
@@ -249,7 +253,7 @@ export async function labsRoutes(app: FastifyInstance) {
                 recordedAt: m.recordedAt.toISOString(),
                 notes: m.notes,
                 isInRange:
-                    m.refRangeLow !== null && m.refRangeHigh !== null
+                    m.refRangeLow !== null && m.refRangeHigh !== null && m.value !== null
                         ? m.value >= m.refRangeLow && m.value <= m.refRangeHigh
                         : null,
             })),
@@ -266,7 +270,7 @@ export async function labsRoutes(app: FastifyInstance) {
             });
         }
 
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const report = await prisma.labReport.findFirst({
@@ -304,8 +308,8 @@ export async function labsRoutes(app: FastifyInstance) {
                 let high: number | null = null;
                 const rangeMatch = m.range.match(/([\d.]+)\s*-\s*([\d.]+)/);
                 if (rangeMatch) {
-                    low = parseFloat(rangeMatch[1]);
-                    high = parseFloat(rangeMatch[2]);
+                    low = parseFloat(rangeMatch[1] ?? '0');
+                    high = parseFloat(rangeMatch[2] ?? '0');
                 }
 
                 await prisma.labMarker.create({
@@ -343,7 +347,7 @@ export async function labsRoutes(app: FastifyInstance) {
 
     // Delete lab report
     app.delete('/:id', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
 
         const report = await prisma.labReport.findFirst({
@@ -371,7 +375,7 @@ export async function labsRoutes(app: FastifyInstance) {
 
     // Add marker to lab report
     app.post('/:id/markers', async (request, reply) => {
-        const userId = (request as any).userId;
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const body = CreateLabMarkerSchema.parse(request.body);
 
@@ -419,7 +423,7 @@ export async function labsRoutes(app: FastifyInstance) {
             recordedAt: marker.recordedAt.toISOString(),
             notes: marker.notes,
             isInRange:
-                marker.refRangeLow !== null && marker.refRangeHigh !== null
+                marker.refRangeLow !== null && marker.refRangeHigh !== null && marker.value !== null
                     ? marker.value >= marker.refRangeLow && marker.value <= marker.refRangeHigh
                     : null,
         };

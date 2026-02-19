@@ -1,8 +1,33 @@
 import type { FastifyRequest } from 'fastify';
-import { prisma } from '@biopoint/db';
+import { prisma, Prisma } from '@biopoint/db';
+import type { RequestLogger } from '../utils/logger.js';
 
-type AuditAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE';
-type PhiEntityType = 'LabReport' | 'LabMarker' | 'ProgressPhoto';
+type AuditAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE' | 'SANITIZE';
+type PhiEntityType =
+    | 'LabReport'
+    | 'LabMarker'
+    | 'ProgressPhoto'
+    | 'Profile'
+    | 'DailyLog'
+    | 'BioPointScore'
+    | 'FastingProtocol'
+    | 'FastingSession'
+    | 'MealEntry'
+    | 'FoodLog'
+    | 'Request'
+    | 'DataExport'
+    | 'ExportNotifications'
+    | 'AccountDeletionRequest'
+    | 'BreachIncident'
+    | 'ComplianceAudit'
+    | 'ConsentWithdrawal'
+    | 'DisclosureLog'
+    | 'S3Url'
+    | 'Stack'
+    | 'CommunityPost'
+    | 'Reminder'
+    | 'UserAccount'
+    | 'ConsentPreferences';
 
 interface AuditContext {
     action: AuditAction;
@@ -15,11 +40,21 @@ export async function createAuditLog(
     request: FastifyRequest,
     context: AuditContext
 ): Promise<void> {
-    const userId = (request as any).userId as string | undefined;
+    const userId = request.userId as string | undefined;
+    const requestId = request.id as string | undefined;
+    const logger = request.log as RequestLogger | undefined;
 
     // Redact sensitive fields from metadata
     const redactedMetadata = context.metadata
         ? redactSensitiveFields(context.metadata)
+        : undefined;
+
+    // Add request ID to metadata if available
+    const enrichedMetadata = redactedMetadata || requestId
+        ? {
+            ...(redactedMetadata || {}),
+            ...(requestId && { reqId: requestId }),
+        }
         : undefined;
 
     try {
@@ -29,13 +64,30 @@ export async function createAuditLog(
                 action: context.action,
                 entityType: context.entityType,
                 entityId: context.entityId,
-                metadata: redactedMetadata as any,
+                metadata: enrichedMetadata as Prisma.InputJsonValue,
                 ipAddress: getClientIp(request),
             },
         });
+
+        // Log audit event if logger is available
+        if (logger) {
+            logger.info({
+                audit: {
+                    action: context.action,
+                    entityType: context.entityType,
+                    entityId: context.entityId,
+                    userId,
+                    metadata: enrichedMetadata,
+                }
+            }, 'Audit log created');
+        }
     } catch (error) {
         // Don't fail the request if audit logging fails
-        request.log.error({ error, context }, 'Failed to create audit log');
+        if (logger) {
+            logger.error({ error, context }, 'Failed to create audit log');
+        } else {
+            request.log.error({ error, context }, 'Failed to create audit log');
+        }
     }
 }
 

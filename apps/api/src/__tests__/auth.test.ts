@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { hashPassword, verifyPassword, generateAccessToken, hashToken } from '../src/utils/auth.js';
+import { describe, it, expect } from 'vitest';
+import { hashPassword, verifyPassword, generateAccessToken, hashToken } from '../utils/auth.js';
 
 describe('Auth Utilities', () => {
     describe('hashPassword', () => {

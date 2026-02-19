@@ -24,7 +24,7 @@ export async function verifyPassword(
 }
 
 export function generateAccessToken(payload: JwtPayload): string {
-    return jwt.sign(payload as object, JWT_SECRET, {
+    return jwt.sign(payload as object, JWT_SECRET!, {
         expiresIn: JWT_ACCESS_EXPIRES as jwt.SignOptions['expiresIn'],
     });
 }

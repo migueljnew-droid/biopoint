@@ -37,10 +37,17 @@ function getConnectionUrl(): string {
 
 // --- Request-context store (set per-request by Fastify hooks in app.ts) ---
 
-let _requestLogger: any = null;
+type DbLogger = {
+    info: (obj: object, msg?: string) => void;
+    warn: (obj: object, msg?: string) => void;
+    error: (obj: object, msg?: string) => void;
+    debug: (obj: object, msg?: string) => void;
+} | null;
+
+let _requestLogger: DbLogger = null;
 
 /** Set the per-request logger so $extends query hooks can trace DB calls. */
-export function setDbRequestContext(_request: any, logger: any): void {
+export function setDbRequestContext(_request: unknown, logger: DbLogger): void {
     _requestLogger = logger;
 }
 
@@ -78,7 +85,7 @@ if (process.env.NODE_ENV !== 'production') {
 export const prisma = basePrisma.$extends({
     query: {
         $allModels: {
-            async $allOperations({ model, operation, args, query }: any) {
+            async $allOperations({ model, operation, args, query }) {
                 const logger = _requestLogger;
                 const startTime = Date.now();
 
@@ -93,7 +100,7 @@ export const prisma = basePrisma.$extends({
                         if (args.update) args.update = await encryptDataObject(model, args.update);
                     } else if (operation === 'createMany' && Array.isArray(args.data)) {
                         args.data = await Promise.all(
-                            args.data.map((d: any) => encryptDataObject(model, d)),
+                            args.data.map((d: Record<string, unknown>) => encryptDataObject(model, d)),
                         );
                     }
                 }
@@ -118,7 +125,7 @@ export const prisma = basePrisma.$extends({
                             result = await decryptRecord(model, result);
                         } else if (operation === 'findMany' && Array.isArray(result)) {
                             result = await Promise.all(
-                                result.map((r: any) => decryptRecord(model, r)),
+                                result.map((r: Record<string, unknown>) => decryptRecord(model, r)),
                             );
                         }
                     }
