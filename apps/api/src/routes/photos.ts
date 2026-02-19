@@ -3,17 +3,24 @@ import { prisma } from '@biopoint/db';
 import { CreatePhotoSchema, PhotoPresignSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
 import { createAuditLog } from '../middleware/auditLog.js';
-import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateS3Key } from '../utils/s3.js';
+import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateLegacyDownloadPresignedUrl, generateS3Key } from '../utils/s3.js';
+import { logDownloadAttempt, detectSuspiciousActivity } from '../middleware/s3Security.js';
+
+import { fileUploadSanitizationMiddleware, s3KeyValidationMiddleware } from '../middleware/sanitization.js';
+import { validateUploadedFileType } from '../middleware/s3Validation.js';
 
 export async function photosRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
+    // Apply file upload sanitization to photo-related endpoints
+    app.addHook('preHandler', fileUploadSanitizationMiddleware);
+    app.addHook('preHandler', s3KeyValidationMiddleware);
 
     app.post('/presign', async (request) => {
         const userId = (request as any).userId;
         const body = PhotoPresignSchema.parse(request.body);
         const s3Key = generateS3Key(userId, 'photos', body.filename);
-        const { uploadUrl } = await generateUploadPresignedUrl(s3Key, body.contentType);
-        return { uploadUrl, s3Key, expiresIn: 3600 };
+        const { uploadUrl, expiresIn } = await generateUploadPresignedUrl(s3Key, body.contentType, 'photos');
+        return { uploadUrl, s3Key, expiresIn };
     });
 
     app.get('/', async (request) => {
@@ -27,23 +34,68 @@ export async function photosRoutes(app: FastifyInstance) {
             orderBy: { capturedAt: 'desc' },
         });
 
-        return Promise.all(photos.map(async (photo) => ({
-            id: photo.id,
-            originalS3Key: photo.originalS3Key,
-            originalUrl: await generateDownloadPresignedUrl(photo.originalS3Key),
-            alignedS3Key: photo.alignedS3Key,
-            alignedUrl: photo.alignedS3Key ? await generateDownloadPresignedUrl(photo.alignedS3Key) : null,
-            category: photo.category,
-            capturedAt: photo.capturedAt.toISOString(),
-            weightKg: photo.weightKg,
-            notes: photo.notes,
-            alignmentStatus: photo.alignmentStatus,
-        })));
+        // Audit log for progress photos list access (SEC-04: log unconditionally, including empty results)
+        await createAuditLog(request, {
+            action: 'READ',
+            entityType: 'ProgressPhoto',
+            entityId: 'list',
+            metadata: { resultCount: photos.length, category: query.category },
+        });
+
+        return Promise.all(photos.map(async (photo) => {
+            // Generate presigned URLs with download tracking
+            const { url: originalUrl, expiresIn: originalExpiresIn } = await generateDownloadPresignedUrl(photo.originalS3Key, 'photos');
+            const alignedUrlData = photo.alignedS3Key ? await generateDownloadPresignedUrl(photo.alignedS3Key, 'photos') : null;
+
+            // Log bulk access for security monitoring
+            await logDownloadAttempt(request, userId, originalUrl, photo.originalS3Key, true);
+            await detectSuspiciousActivity(request, photo.originalS3Key, userId);
+
+            if (photo.alignedS3Key && alignedUrlData) {
+                await logDownloadAttempt(request, userId, alignedUrlData.url, photo.alignedS3Key, true);
+                await detectSuspiciousActivity(request, photo.alignedS3Key, userId);
+            }
+
+            return {
+                id: photo.id,
+                originalS3Key: photo.originalS3Key,
+                originalUrl,
+                originalExpiresIn,
+                alignedS3Key: photo.alignedS3Key,
+                alignedUrl: alignedUrlData?.url || null,
+                alignedExpiresIn: alignedUrlData?.expiresIn || null,
+                category: photo.category,
+                capturedAt: photo.capturedAt.toISOString(),
+                weightKg: photo.weightKg,
+                notes: photo.notes,
+                alignmentStatus: photo.alignmentStatus,
+            };
+        }));
     });
 
-    app.post('/', async (request) => {
+    app.post('/', async (request, reply) => {
         const userId = (request as any).userId;
         const body = CreatePhotoSchema.parse(request.body);
+
+        // SEC-07: Validate uploaded file by magic bytes before accepting
+        const { S3Client } = await import('@aws-sdk/client-s3');
+        const s3Client = new S3Client({
+            region: process.env.AWS_REGION || 'auto',
+            endpoint: process.env.S3_ENDPOINT,
+            credentials: {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+            },
+        });
+        const bucket = process.env.S3_BUCKET || 'biopoint-uploads';
+        const validation = await validateUploadedFileType(s3Client, bucket, body.originalS3Key);
+        if (!validation.valid) {
+            return reply.status(400).send({
+                statusCode: 400,
+                error: 'Bad Request',
+                message: `Uploaded file type is not allowed. Detected: ${validation.detectedType ?? 'unknown'}`,
+            });
+        }
 
         const photo = await prisma.progressPhoto.create({
             data: {
@@ -63,12 +115,21 @@ export async function photosRoutes(app: FastifyInstance) {
             entityId: photo.id,
         });
 
+        // Generate presigned URL with download tracking
+        const { url: originalUrl, expiresIn: originalExpiresIn } = await generateDownloadPresignedUrl(photo.originalS3Key, 'photos');
+
+        // Log download attempt for security monitoring
+        await logDownloadAttempt(request, userId, originalUrl, photo.originalS3Key, true);
+        await detectSuspiciousActivity(request, photo.originalS3Key, userId);
+
         return {
             id: photo.id,
             originalS3Key: photo.originalS3Key,
-            originalUrl: await generateDownloadPresignedUrl(photo.originalS3Key),
+            originalUrl,
+            originalExpiresIn,
             alignedS3Key: null,
             alignedUrl: null,
+            alignedExpiresIn: null,
             category: photo.category,
             capturedAt: photo.capturedAt.toISOString(),
             weightKg: photo.weightKg,
@@ -88,12 +149,27 @@ export async function photosRoutes(app: FastifyInstance) {
 
         await createAuditLog(request, { action: 'READ', entityType: 'ProgressPhoto', entityId: photo.id });
 
+        // Generate presigned URLs with download tracking
+        const { url: originalUrl, expiresIn: originalExpiresIn } = await generateDownloadPresignedUrl(photo.originalS3Key, 'photos');
+        const alignedUrlData = photo.alignedS3Key ? await generateDownloadPresignedUrl(photo.alignedS3Key, 'photos') : null;
+
+        // Log download attempt for security monitoring
+        await logDownloadAttempt(request, userId, originalUrl, photo.originalS3Key, true);
+        await detectSuspiciousActivity(request, photo.originalS3Key, userId);
+
+        if (photo.alignedS3Key && alignedUrlData) {
+            await logDownloadAttempt(request, userId, alignedUrlData.url, photo.alignedS3Key, true);
+            await detectSuspiciousActivity(request, photo.alignedS3Key, userId);
+        }
+
         return {
             id: photo.id,
             originalS3Key: photo.originalS3Key,
-            originalUrl: await generateDownloadPresignedUrl(photo.originalS3Key),
+            originalUrl,
+            originalExpiresIn,
             alignedS3Key: photo.alignedS3Key,
-            alignedUrl: photo.alignedS3Key ? await generateDownloadPresignedUrl(photo.alignedS3Key) : null,
+            alignedUrl: alignedUrlData?.url || null,
+            alignedExpiresIn: alignedUrlData?.expiresIn || null,
             category: photo.category,
             capturedAt: photo.capturedAt.toISOString(),
             weightKg: photo.weightKg,

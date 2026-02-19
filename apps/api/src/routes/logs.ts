@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '@biopoint/db';
 import { DailyLogSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
+import { createAuditLog } from '../middleware/auditLog.js';
 
 export async function logsRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
@@ -95,6 +96,14 @@ export async function logsRoutes(app: FastifyInstance) {
             prisma.dailyLog.count({ where: { userId } }),
         ]);
 
+        // Audit log for daily logs list access (SEC-04: log unconditionally, including empty results)
+        await createAuditLog(request, {
+            action: 'READ',
+            entityType: 'DailyLog',
+            entityId: 'list',
+            metadata: { resultCount: logs.length, page, limit },
+        });
+
         return {
             data: logs.map((log) => ({
                 id: log.id,
@@ -136,6 +145,14 @@ export async function logsRoutes(app: FastifyInstance) {
             });
         }
 
+        // Audit log for daily log access
+        await createAuditLog(request, {
+            action: 'READ',
+            entityType: 'DailyLog',
+            entityId: log.id,
+            metadata: { date: log.date.toISOString() },
+        });
+
         return {
             id: log.id,
             date: log.date.toISOString(),
@@ -155,7 +172,7 @@ function calculateSleepScore(hours: number | null, quality: number | null): numb
     let score = 0;
     if (hours) {
         if (hours >= 7 && hours <= 9) score += 10;
-        else if (hours >= 6 || hours <= 10) score += 7;
+        else if (hours >= 6 && hours <= 10) score += 7;
         else score += 4;
     } else {
         score += 5;

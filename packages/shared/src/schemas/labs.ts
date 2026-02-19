@@ -19,6 +19,8 @@ export const CreateLabMarkerSchema = z.object({
     notes: z.string().max(500).optional(),
 });
 
+// Client-side content-type filter (first-pass).
+// Real enforcement is server-side magic byte validation in s3Validation.ts (SEC-07).
 export const PresignUploadSchema = z.object({
     filename: z.string().min(1).max(255),
     contentType: z.string().regex(/^(application\/pdf|image\/(jpeg|png|webp))$/),

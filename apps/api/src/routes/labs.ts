@@ -3,8 +3,10 @@ import { prisma } from '@biopoint/db';
 import { CreateLabReportSchema, CreateLabMarkerSchema, PresignUploadSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
 import { createAuditLog } from '../middleware/auditLog.js';
-import { generateUploadPresignedUrl, generateS3Key, getFileBuffer } from '../utils/s3.js';
+import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateLegacyDownloadPresignedUrl, generateS3Key, getFileBuffer } from '../utils/s3.js';
+import { logDownloadAttempt, detectSuspiciousActivity } from '../middleware/s3Security.js';
 import { analyzeLabReport } from '../services/analysis.js';
+import { featureFlags } from '../config/featureFlags.js';
 
 export async function labsRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
@@ -15,12 +17,12 @@ export async function labsRoutes(app: FastifyInstance) {
         const body = PresignUploadSchema.parse(request.body);
 
         const s3Key = generateS3Key(userId, 'labs', body.filename);
-        const { uploadUrl } = await generateUploadPresignedUrl(s3Key, body.contentType);
+        const { uploadUrl, expiresIn } = await generateUploadPresignedUrl(s3Key, body.contentType, 'labs');
 
         return {
             uploadUrl,
             s3Key,
-            expiresIn: 3600,
+            expiresIn,
         };
     });
 
@@ -38,28 +40,47 @@ export async function labsRoutes(app: FastifyInstance) {
             orderBy: { uploadedAt: 'desc' },
         });
 
-        return reports.map((report) => ({
-            id: report.id,
-            filename: report.filename,
-            s3Key: report.s3Key,
-            uploadedAt: report.uploadedAt.toISOString(),
-            reportDate: report.reportDate?.toISOString() ?? null,
-            notes: report.notes,
-            markers: report.markers.map((m) => ({
-                id: m.id,
-                labReportId: m.labReportId,
-                name: m.name,
-                value: m.value,
-                unit: m.unit,
-                refRangeLow: m.refRangeLow,
-                refRangeHigh: m.refRangeHigh,
-                recordedAt: m.recordedAt.toISOString(),
-                notes: m.notes,
-                isInRange:
-                    m.refRangeLow !== null && m.refRangeHigh !== null
-                        ? m.value >= m.refRangeLow && m.value <= m.refRangeHigh
-                        : null,
-            })),
+        // Audit log for lab reports list access (SEC-04: log unconditionally, including empty results)
+        await createAuditLog(request, {
+            action: 'READ',
+            entityType: 'LabReport',
+            entityId: 'list',
+            metadata: { resultCount: reports.length },
+        });
+
+        return Promise.all(reports.map(async (report) => {
+            // Generate presigned URL with download tracking for HIPAA compliance
+            const { url: downloadUrl, expiresIn } = await generateDownloadPresignedUrl(report.s3Key, 'labs');
+            
+            // Log download attempt for security monitoring
+            await logDownloadAttempt(request, userId, downloadUrl, report.s3Key, true);
+            await detectSuspiciousActivity(request, report.s3Key, userId);
+            
+            return {
+                id: report.id,
+                filename: report.filename,
+                s3Key: report.s3Key,
+                downloadUrl,
+                expiresIn,
+                uploadedAt: report.uploadedAt.toISOString(),
+                reportDate: report.reportDate?.toISOString() ?? null,
+                notes: report.notes,
+                markers: report.markers.map((m) => ({
+                    id: m.id,
+                    labReportId: m.labReportId,
+                    name: m.name,
+                    value: m.value,
+                    unit: m.unit,
+                    refRangeLow: m.refRangeLow,
+                    refRangeHigh: m.refRangeHigh,
+                    recordedAt: m.recordedAt.toISOString(),
+                    notes: m.notes,
+                    isInRange:
+                        m.refRangeLow !== null && m.refRangeHigh !== null
+                            ? m.value >= m.refRangeLow && m.value <= m.refRangeHigh
+                            : null,
+                })),
+            };
         }));
     });
 
@@ -85,10 +106,19 @@ export async function labsRoutes(app: FastifyInstance) {
             metadata: { filename: body.filename },
         });
 
+        // Generate presigned URL with download tracking for HIPAA compliance
+        const { url: downloadUrl, expiresIn } = await generateDownloadPresignedUrl(report.s3Key, 'labs');
+        
+        // Log download attempt for security monitoring
+        await logDownloadAttempt(request, userId, downloadUrl, report.s3Key, true);
+        await detectSuspiciousActivity(request, report.s3Key, userId);
+        
         return {
             id: report.id,
             filename: report.filename,
             s3Key: report.s3Key,
+            downloadUrl,
+            expiresIn,
             uploadedAt: report.uploadedAt.toISOString(),
             reportDate: report.reportDate?.toISOString() ?? null,
             notes: report.notes,
@@ -112,6 +142,14 @@ export async function labsRoutes(app: FastifyInstance) {
                 refRangeLow: true,
                 refRangeHigh: true,
             },
+        });
+
+        // Audit log for biomarker trends access (SEC-04: log unconditionally, including empty results)
+        await createAuditLog(request, {
+            action: 'READ',
+            entityType: 'LabMarker',
+            entityId: 'trends',
+            metadata: { resultCount: allMarkers.length },
         });
 
         // Group by normalized name
@@ -184,10 +222,19 @@ export async function labsRoutes(app: FastifyInstance) {
             entityId: report.id,
         });
 
+        // Generate presigned URL with download tracking for HIPAA compliance
+        const { url: downloadUrl, expiresIn } = await generateDownloadPresignedUrl(report.s3Key, 'labs');
+        
+        // Log download attempt for security monitoring
+        await logDownloadAttempt(request, userId, downloadUrl, report.s3Key, true);
+        await detectSuspiciousActivity(request, report.s3Key, userId);
+        
         return {
             id: report.id,
             filename: report.filename,
             s3Key: report.s3Key,
+            downloadUrl,
+            expiresIn,
             uploadedAt: report.uploadedAt.toISOString(),
             reportDate: report.reportDate?.toISOString() ?? null,
             notes: report.notes,
@@ -209,8 +256,16 @@ export async function labsRoutes(app: FastifyInstance) {
         };
     });
 
-    // Analyze lab report
+    // Analyze lab report (SEC-01: gated behind feature flag -- Gemini lacks BAA)
     app.post('/:id/analyze', async (request, reply) => {
+        if (!featureFlags.geminiLabAnalysis) {
+            return reply.status(404).send({
+                statusCode: 404,
+                error: 'Not Found',
+                message: 'Lab analysis feature is not currently available',
+            });
+        }
+
         const userId = (request as any).userId;
         const { id } = request.params as { id: string };
 
