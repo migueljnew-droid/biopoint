@@ -4,9 +4,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // Connection pool configuration
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  // Connection pool configuration: DATABASE_URL = pooled (PgBouncer), DIRECT_URL = direct (no pooler)
   // Production: 20 connections (max_pool_size=20)
   // Staging: 10 connections (max_pool_size=10)
   // Development: 5 connections (max_pool_size=5)
@@ -213,6 +214,8 @@ model LabMarker {
 
   @@index([value_encrypted])
   @@index([encryption_version])
+  @@index([userId])                   // range scan by user (eliminates full table scan)
+  @@index([userId, recordedAt])       // compound for sorted trends query: WHERE userId ORDER BY recordedAt
 }
 
 // ============ Progress Photos ============
