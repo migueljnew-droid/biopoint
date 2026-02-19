@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Get BioPoint's risk score from 2.5/10 to below 2.0/10 and deploy a production-ready, HIPAA-compliant health tracking app to Render + App Store.
-**Current focus:** Phase 3: Compliance & Vendor Agreements — planned, ready to execute.
+**Current focus:** Phase 3: Compliance & Vendor Agreements — 1 of 2 plans complete (03-02 done, 03-01 pending).
 
 ## Current Position
 
-Phase: 3 of 6 (Compliance & Vendor Agreements) — PLANNED
-Plan: 0 of 2 complete (03-01 BAA execution, 03-02 de-identification + privacy)
-Status: Phase 3 planned — 2 plans in 1 wave, verified by plan-checker
-Last activity: 2026-02-19 -- Phase 3 planned (research + 2 plans + verification)
+Phase: 3 of 6 (Compliance & Vendor Agreements) — IN PROGRESS
+Plan: 1 of 2 complete (03-02 done — de-identification + privacy; 03-01 BAA execution pending)
+Status: Phase 3 in progress — 03-02 executed, 03-01 BAA execution plan pending
+Last activity: 2026-02-19 -- Executed 03-02 (PHI deidentify utility, foodAnalysis guard, privacy policy)
 
-Progress: [████████░░░░░░░░░░░░] 33%
+Progress: [█████████░░░░░░░░░░░] 38%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6 (3 from Phase 1 + 3 from Phase 2)
+- Total plans completed: 7 (3 from Phase 1 + 3 from Phase 2 + 1 from Phase 3)
 - Average duration: ~8 min per plan
-- Total execution time: ~52 min
+- Total execution time: ~56 min
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [████████░░░░░░░░░░░░] 33%
 |-------|-------|-------|----------|
 | 1     | 3     | ~45m  | ~15m     |
 | 2     | 3     | ~7m   | ~2m      |
+| 3     | 1/2   | ~4m   | ~4m      |
 
 **Recent Trend:**
-- Last 3 plans: 02-01, 02-02, 02-03 (all completed)
-- Trend: Very fast (targeted CI/config changes)
+- Last 4 plans: 02-01, 02-02, 02-03, 03-02 (all completed)
+- Trend: Very fast (targeted utility + UI changes)
 
 *Updated after each plan completion*
 
@@ -67,6 +68,14 @@ Recent decisions affecting current work:
 - [02-03]: npm audit --audit-level=high (not moderate) — avoids transitive-dep noise while blocking exploitable vulns
 - [02-03]: Removed ESLint security step referencing non-existent .eslintrc.security.js (always would have failed)
 - [02-03]: Semgrep scopes to apps/ packages/ db/ only — infrastructure scanned by Checkov/tfsec separately
+
+### Phase 3 Decisions (03-02)
+
+- assertNoPhi() applied as defense-in-depth guard on existing static prompt — prevents future regressions if user context is added
+- PHI_PATTERNS uses lastIndex = 0 reset per iteration — required for global regex reuse in a loop
+- Removed BioPoint Score de-identification claim from privacy policy (feature not implemented) — replaced with accurate AI-assisted features language
+- Ages >89 → both birthYear null and ageRange '90+' per 45 CFR 164.514(b)(2)(i) — specific ages above 89 must not be disclosed
+- Privacy policy helper components (SectionHeader, BulletItem, BodyText) established for future policy updates
 
 ### Pending Todos
 
@@ -108,9 +117,24 @@ None for current phase.
 | 6c552de | 02-03 | Semgrep modernized to semgrep/semgrep container, pull_request trigger added, SARIF upload |
 | 5ceea08 | 02-03 | npm audit --audit-level=high in ci.yml |
 
+## Phase 3 Summary (Partial — 03-02 complete)
+
+**Requirements addressed (03-02):** COMP-04, COMP-05
+
+| Commit | Plan | Changes |
+|--------|------|---------|
+| 303182f | 03-02 | deidentify.ts (3 functions, 2 types, PHI_PATTERNS), foodAnalysis.ts assertNoPhi guard |
+| 11ad90c | 03-02 | privacy.tsx rewrite with BAA disclosure, AI food analysis section, no raw markdown |
+
+**Verification:**
+- deidentify.ts: 3 exported functions, 2 exported types, PHI_PATTERNS covering 10 Safe Harbor categories
+- foodAnalysis.ts: assertNoPhi called on systemPrompt before every OpenAI API call
+- privacy.tsx: No raw ** asterisks, Business Associate section added, AI features disclosed
+- TypeScript: apps/api compiles clean; apps/mobile has pre-existing errors in other files only
+
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 3 planned (2 plans verified, ready to execute)
+Stopped at: Completed 03-02-PLAN.md (PHI de-identification + privacy policy)
 Resume file: None
-Next action: /gsd:execute-phase 3 (Phase 3: Compliance & Vendor Agreements)
+Next action: /gsd:execute-phase 3 plan 01 (Phase 3: BAA execution plan)

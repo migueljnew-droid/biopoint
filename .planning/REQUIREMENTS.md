@@ -31,8 +31,8 @@ Requirements for Phase 5 (Security Enhancement) + Phase 6 (Production Hardening)
 - [ ] **COMP-01**: BAA executed with Neon (PostgreSQL — Scale plan with HIPAA add-on)
 - [ ] **COMP-02**: BAA executed with Cloudflare (R2 storage — Enterprise plan, or migrate to AWS S3 if R2 not covered)
 - [ ] **COMP-03**: BAA executed with Render (HIPAA workspace enabled)
-- [ ] **COMP-04**: PHI de-identification layer implemented for any AI/analytics services that lack BAAs
-- [ ] **COMP-05**: Privacy policy URL accessible in-app and accurate to current data practices
+- [x] **COMP-04**: PHI de-identification layer implemented for any AI/analytics services that lack BAAs
+- [x] **COMP-05**: Privacy policy URL accessible in-app and accurate to current data practices
 
 ### Infrastructure
 
@@ -127,8 +127,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-01 | Phase 3 | Pending |
 | COMP-02 | Phase 3 | Pending |
 | COMP-03 | Phase 3 | Pending |
-| COMP-04 | Phase 3 | Pending |
-| COMP-05 | Phase 3 | Pending |
+| COMP-04 | Phase 3 | Complete |
+| COMP-05 | Phase 3 | Complete |
 | INFRA-01 | Phase 4 | Pending |
 | INFRA-02 | Phase 4 | Pending |
 | INFRA-03 | Phase 4 | Pending |
