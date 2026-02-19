@@ -2,10 +2,9 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
-import { prisma } from '@biopoint/db';
+import { prisma, setDbRequestContext, clearDbRequestContext } from '@biopoint/db';
 import { createAuditLog } from './middleware/auditLog.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
-import { createPrismaRequestMiddleware, setPrismaRequestContext, clearPrismaRequestContext } from './middleware/prismaRequestId.js';
 import { createRequestLogger, logRequest, logResponse } from './utils/logger.js';
 import { registerRateLimits } from './middleware/rateLimit.js';
 import { adminRoutes } from './routes/admin.js';
@@ -167,14 +166,11 @@ export async function createServer(options: CreateServerOptions = {}) {
     // Register global input sanitization middleware
     app.addHook('preHandler', sanitizationMiddleware);
 
-    // Register Prisma request middleware
-    prisma.$use(createPrismaRequestMiddleware(prisma));
-
-    // Request logging hook
+    // Request logging hook (DB query tracing is handled by $extends in @biopoint/db)
     app.addHook('onRequest', async (request, reply) => {
         const loggerInstance = createRequestLogger(app.log, request);
         (request as any).log = loggerInstance;
-        setPrismaRequestContext(prisma, request, loggerInstance);
+        setDbRequestContext(request, loggerInstance);
         logRequest(loggerInstance, request, reply);
     });
 
@@ -185,7 +181,7 @@ export async function createServer(options: CreateServerOptions = {}) {
         const loggerInstance = (request as any).log || app.log;
 
         logResponse(loggerInstance, request, reply, responseTime);
-        clearPrismaRequestContext(prisma);
+        clearDbRequestContext();
     });
 
     // Set start time for response time calculation

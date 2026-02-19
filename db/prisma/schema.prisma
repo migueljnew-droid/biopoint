@@ -1,10 +1,15 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["metrics"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // Connection pool configuration
+  // Production: 20 connections (max_pool_size=20)
+  // Staging: 10 connections (max_pool_size=10)
+  // Development: 5 connections (max_pool_size=5)
 }
 
 // ============ Core Auth ============
@@ -30,6 +35,17 @@ model User {
   posts            Post[]
   auditLogs        AuditLog[]
   reminderSchedules ReminderSchedule[]
+  revokedUrls      RevokedUrl[]       @relation("RevokedByUser")
+  downloadLogs     DownloadLog[]
+  deletionRequests DeletionRequest[]
+  consentRecords   ConsentRecord[]
+  fastingProtocols FastingProtocol[]
+  fastingSessions  FastingSession[]
+  foodLogs         FoodLog[]
+  mealEntries      MealEntry[]
+  disclosureLogs   DisclosureLog[]
+  breachIncidents  BreachIncident[]   @relation("ReportedBy")
+  complianceAudits ComplianceAudit[]  @relation("AuditedBy")
 }
 
 enum Role {
@@ -56,11 +72,16 @@ model Profile {
 
   sex                  String?
   dateOfBirth          DateTime?
+  dateOfBirth_encrypted String?
   heightCm             Float?
   baselineWeightKg     Float?
   goals                String[]  @default([])
   dietStyle            String?
   currentInterventions String?
+
+  // Encryption metadata
+  encryption_version   Int?      @default(1)
+  encryption_metadata  Json?     @default("{}")
 
   // Consent
   consentNotMedical  Boolean   @default(false)
@@ -68,9 +89,18 @@ model Profile {
   consentResearch    Boolean   @default(false)
   consentResearchAt  DateTime?
 
+  // Nutrition targets
+  calorieTarget    Int?
+  proteinTargetG   Float?
+  carbsTargetG     Float?
+  fatTargetG       Float?
+
   onboardingComplete Boolean  @default(false)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+
+  @@index([dateOfBirth_encrypted])
+  @@index([encryption_version])
 }
 
 // ============ Stacks (Peptides/Supplements) ============
@@ -101,12 +131,20 @@ model StackItem {
   timing    String? // AM, PM, With food, etc.
   cycleJson Json?   // {daysOn: 5, daysOff: 2}
   notes     String?
+  notes_encrypted String?
   isActive  Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Encryption metadata
+  encryption_version   Int?      @default(1)
+  encryption_metadata  Json?     @default("{}")
+
   complianceEvents ComplianceEvent[]
   reminders        ReminderSchedule[]
+
+  @@index([notes_encrypted])
+  @@index([encryption_version])
 }
 
 model ComplianceEvent {
@@ -142,8 +180,16 @@ model LabReport {
   uploadedAt DateTime  @default(now())
   reportDate DateTime?
   notes      String?
+  notes_encrypted String?
+
+  // Encryption metadata
+  encryption_version   Int?      @default(1)
+  encryption_metadata  Json?     @default("{}")
 
   markers LabMarker[]
+
+  @@index([notes_encrypted])
+  @@index([encryption_version])
 }
 
 model LabMarker {
@@ -153,12 +199,20 @@ model LabMarker {
   userId       String
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
-  value        Float
+  value        Float?
+  value_encrypted String?
   unit         String
   refRangeLow  Float?
   refRangeHigh Float?
   recordedAt   DateTime   @default(now())
   notes        String?
+
+  // Encryption metadata
+  encryption_version   Int?      @default(1)
+  encryption_metadata  Json?     @default("{}")
+
+  @@index([value_encrypted])
+  @@index([encryption_version])
 }
 
 // ============ Progress Photos ============
@@ -173,8 +227,16 @@ model ProgressPhoto {
   capturedAt      DateTime @default(now())
   weightKg        Float?
   notes           String?
+  notes_encrypted String?
   alignmentStatus String   @default("pending") // pending, processing, done, failed
   createdAt       DateTime @default(now())
+
+  // Encryption metadata
+  encryption_version   Int?      @default(1)
+  encryption_metadata  Json?     @default("{}")
+
+  @@index([notes_encrypted])
+  @@index([encryption_version])
 }
 
 // ============ Daily Tracking ============
@@ -191,10 +253,17 @@ model DailyLog {
   focusLevel   Int?     // 1-10
   moodLevel    Int?     // 1-10
   notes        String?
+  notes_encrypted String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  // Encryption metadata
+  encryption_version   Int?      @default(1)
+  encryption_metadata  Json?     @default("{}")
+
   @@unique([userId, date])
+  @@index([notes_encrypted])
+  @@index([encryption_version])
 }
 
 // ============ BioPoint Score ============
@@ -209,6 +278,108 @@ model BioPointScore {
   createdAt DateTime @default(now())
 
   @@unique([userId, date])
+}
+
+// ============ Fasting & Nutrition ============
+
+enum FastingStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+model FastingProtocol {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String   @unique
+  fastingHours Float
+  eatingHours  Float
+  description  String?
+  icon         String?
+  isSystem     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  sessions FastingSession[]
+
+  @@index([userId])
+  @@index([isSystem])
+}
+
+model FastingSession {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  protocolId    String
+  protocol      FastingProtocol @relation(fields: [protocolId], references: [id])
+  status        FastingStatus @default(ACTIVE)
+  startedAt     DateTime      @default(now())
+  targetEndAt   DateTime
+  endedAt       DateTime?
+  durationMins  Int?
+  notes         String?
+  moodBefore    Int?          // 1-10
+  energyBefore  Int?          // 1-10
+  moodAfter     Int?          // 1-10
+  energyAfter   Int?          // 1-10
+  zonesReached  Json?         // [{zone: "Ketosis", reachedAt: "ISO8601"}, ...]
+  breakingMealId String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, startedAt])
+}
+
+model FoodLog {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         DateTime    @db.Date
+  totalCalories Int        @default(0)
+  totalProteinG Float      @default(0)
+  totalCarbsG   Float      @default(0)
+  totalFatG     Float      @default(0)
+  totalFiberG   Float      @default(0)
+  mealCount    Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  meals MealEntry[]
+
+  @@unique([userId, date])
+}
+
+model MealEntry {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foodLogId    String
+  foodLog      FoodLog  @relation(fields: [foodLogId], references: [id], onDelete: Cascade)
+  mealType     MealType
+  name         String
+  calories     Int
+  proteinG     Float    @default(0)
+  carbsG       Float    @default(0)
+  fatG         Float    @default(0)
+  fiberG       Float    @default(0)
+  servingSize  String?
+  photoUrl     String?
+  aiAnalyzed   Boolean  @default(false)
+  aiConfidence Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([foodLogId])
 }
 
 // ============ Community ============
@@ -277,4 +448,216 @@ model AuditLog {
 
   @@index([userId, createdAt])
   @@index([entityType, entityId])
+}
+
+// ============ S3 Security - URL Revocation ============
+
+model RevokedUrl {
+  id         String   @id @default(cuid())
+  url        String   @unique
+  revokedAt  DateTime @default(now())
+  revokedBy  String   // User ID who revoked the URL
+  reason     String?  // Reason for revocation
+  createdAt  DateTime @default(now())
+  revokedByUser User? @relation("RevokedByUser", fields: [revokedBy], references: [id], onDelete: SetNull)
+
+  @@index([url])
+  @@index([revokedBy, revokedAt])
+}
+
+// ============ S3 Security - Download Tracking ============
+
+model DownloadLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  url          String
+  s3Key        String
+  downloadedAt DateTime @default(now())
+  ipAddress    String?
+  userAgent    String?
+  success      Boolean  @default(true)
+  error        String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, downloadedAt])
+  @@index([url, downloadedAt])
+  @@index([s3Key, downloadedAt])
+}
+
+// ============ Rate Limiting & Account Security ============
+
+model RateLimit {
+  id        String   @id @default(cuid())
+  key       String
+  timestamp DateTime @default(now())
+  count     Int      @default(1)
+
+  @@index([key, timestamp])
+}
+
+model AccountLockout {
+  id             String    @id @default(cuid())
+  identifier     String    @unique(map: "AccountLockout_identifier_key")
+  failedAttempts Json      // Array of {timestamp, ip}
+  lockedUntil    DateTime?
+  lastAttemptAt  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([lockedUntil])
+}
+
+// ============ GDPR Compliance - Account Deletion ============
+
+model DeletionRequest {
+  id             String           @id @default(cuid())
+  userId         String           @unique
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason         String?
+  requestedAt    DateTime         @default(now())
+  scheduledFor   DateTime         // 30 days from request
+  completedAt    DateTime?
+  status         DeletionStatus   @default(PENDING)
+  confirmationToken String        @unique
+  immediateEffect Boolean         @default(false)
+  deletedRecords Json?            // Record of what was deleted
+  
+  @@index([status, scheduledFor])
+  @@index([userId, status])
+}
+
+enum DeletionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+// ============ GDPR Compliance - Consent Management ============
+
+model ConsentRecord {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  marketing           Boolean  @default(false)
+  analytics           Boolean  @default(false)
+  research            Boolean  @default(false)
+  thirdPartySharing   Boolean  @default(false)
+  changedAt           DateTime @default(now())
+  ipAddress           String?
+  userAgent           String?
+  
+  @@index([userId, changedAt])
+  @@index([changedAt])
+}
+
+// ============ HIPAA §164.528 - Accounting of Disclosures ============
+
+model DisclosureLog {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipientName   String   // Who received the PHI
+  recipientType   String   // "covered_entity", "business_associate", "law_enforcement", "public_health", "research"
+  purpose         String   // Purpose of disclosure (treatment, payment, operations, legal, etc.)
+  dataDisclosed   String   // Description of what PHI was shared
+  legalBasis      String   // HIPAA provision authorizing disclosure
+  dateOfDisclosure DateTime @default(now())
+  method          String?  // "electronic", "fax", "mail", "verbal"
+  requestedBy     String?  // Who requested the disclosure
+  approvedBy      String?  // Who approved it
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId, dateOfDisclosure])
+  @@index([recipientType])
+  @@index([dateOfDisclosure])
+}
+
+// ============ Breach Notification (HIPAA §164.400 + GDPR Art. 33/34) ============
+
+enum BreachSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum BreachStatus {
+  DETECTED
+  INVESTIGATING
+  CONTAINED
+  NOTIFIED
+  RESOLVED
+  CLOSED
+}
+
+model BreachIncident {
+  id                  String         @id @default(cuid())
+  reportedById        String
+  reportedBy          User           @relation("ReportedBy", fields: [reportedById], references: [id], onDelete: SetNull)
+  title               String
+  description         String
+  severity            BreachSeverity @default(MEDIUM)
+  status              BreachStatus   @default(DETECTED)
+  dataTypesAffected   String[]       // ["PHI", "PII", "financial", "biometric"]
+  individualsAffected Int            @default(0)
+  discoveredAt        DateTime       @default(now())
+  containedAt         DateTime?
+  // HIPAA: notify HHS within 60 days (>500 individuals = immediate)
+  hhsNotifiedAt       DateTime?
+  // GDPR: notify supervisory authority within 72 hours
+  dpaNotifiedAt       DateTime?
+  // Notify affected individuals
+  individualsNotifiedAt DateTime?
+  rootCause           String?
+  remediationSteps    String?
+  lessonsLearned      String?
+  closedAt            DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  @@index([status])
+  @@index([severity])
+  @@index([discoveredAt])
+  @@index([reportedById])
+}
+
+// ============ Compliance Audit Trail ============
+
+enum AuditFramework {
+  HIPAA
+  GDPR
+  SOC2
+  ISO27001
+}
+
+enum ComplianceStatus {
+  COMPLIANT
+  PARTIAL
+  NON_COMPLIANT
+  NOT_ASSESSED
+}
+
+model ComplianceAudit {
+  id              String           @id @default(cuid())
+  auditedById     String
+  auditedBy       User             @relation("AuditedBy", fields: [auditedById], references: [id], onDelete: SetNull)
+  framework       AuditFramework
+  controlId       String           // e.g., "HIPAA-164.312(a)(1)", "GDPR-Art.32", "SOC2-CC6.1"
+  controlName     String           // Human-readable name
+  status          ComplianceStatus @default(NOT_ASSESSED)
+  findings        String?
+  evidence        String?          // Description or link to evidence
+  remediationPlan String?
+  dueDate         DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([framework, status])
+  @@index([controlId])
+  @@index([auditedById])
+  @@unique([framework, controlId])
 }
