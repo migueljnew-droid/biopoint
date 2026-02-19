@@ -5,34 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Get BioPoint's risk score from 2.5/10 to below 2.0/10 and deploy a production-ready, HIPAA-compliant health tracking app to Render + App Store.
-**Current focus:** Phase 2: Code Quality & CI Hardening — Wave 1 complete (02-01, 02-02), Wave 2 (02-03) ready to execute. 02-01 SUMMARY.md now created.
+**Current focus:** Phase 2 complete. Phase 3: HIPAA Compliance ready to execute.
 
 ## Current Position
 
-Phase: 2 of 6 (Code Quality & CI Hardening) — In Progress
-Plan: 2 of 3 in current phase complete (02-01 and 02-02 done)
-Status: Wave 1 complete, Wave 2 (Plan 02-03 CI hardening) ready to execute
-Last activity: 2026-02-19 -- Completed Plan 02-02 (dead code removal + automaticLogoff bug fix)
+Phase: 2 of 6 (Code Quality & CI Hardening) — COMPLETE
+Plan: 3 of 3 complete (02-01, 02-02, 02-03 all done)
+Status: Phase 2 complete — all CI security gates active
+Last activity: 2026-02-19 -- Completed Plan 02-03 (Semgrep SAST modernization + npm audit high threshold)
 
-Progress: [████░░░░░░░░░░░░░░░░] 22%
+Progress: [████████░░░░░░░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5 (3 from Phase 1 + 2 from Phase 2 Wave 1)
-- Average duration: ~10 min per plan
-- Total execution time: ~50 min
+- Total plans completed: 6 (3 from Phase 1 + 3 from Phase 2)
+- Average duration: ~8 min per plan
+- Total execution time: ~52 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1     | 3     | ~45m  | ~15m     |
-| 2     | 2     | ~5m   | ~3m      |
+| 2     | 3     | ~7m   | ~2m      |
 
 **Recent Trend:**
-- Last 2 plans: 02-01, 02-02 (both completed, Wave 1)
-- Trend: Very fast (simple deletions and targeted bug fixes)
+- Last 3 plans: 02-01, 02-02, 02-03 (all completed)
+- Trend: Very fast (targeted CI/config changes)
 
 *Updated after each plan completion*
 
@@ -63,6 +63,10 @@ Recent decisions affecting current work:
 - Test file casts also eliminated (25 casts across 7 test files)
 - [02-02]: Removed getPrismaConfig() only — getDatabaseConfig() and performanceTargets preserved (actively used)
 - [02-02]: getStats() fix uses Object.entries to carry both sessionId key and SessionData value — passes key to isSessionExpired()
+- [02-03]: docker://semgrep/semgrep:latest over returntocorp/semgrep-action@v1 (deprecated, not maintained)
+- [02-03]: npm audit --audit-level=high (not moderate) — avoids transitive-dep noise while blocking exploitable vulns
+- [02-03]: Removed ESLint security step referencing non-existent .eslintrc.security.js (always would have failed)
+- [02-03]: Semgrep scopes to apps/ packages/ db/ only — infrastructure scanned by Checkov/tfsec separately
 
 ### Pending Todos
 
@@ -91,9 +95,9 @@ None for current phase.
 - TypeScript: only 4 pre-existing errors (JS test file)
 - Tests: 36 pass, 3 fail (pre-existing env/db issues)
 
-## Phase 2 Wave 1 Summary
+## Phase 2 Summary
 
-**Requirements addressed:** CODE-01, CODE-02 (02-01), CODE-03, CODE-04 (02-02)
+**Requirements addressed:** CODE-01, CODE-02 (02-01), CODE-03, CODE-04 (02-02), TEST-08, TEST-09 (02-03)
 
 | Commit | Plan | Changes |
 |--------|------|---------|
@@ -101,10 +105,12 @@ None for current phase.
 | b58d5e6 | 02-01 | noImplicitAny + noUnusedLocals + noUnusedParameters enabled, 42 errors fixed |
 | 00019f9 | 02-02 | dataIntegrity.ts deleted, getPrismaConfig() removed from database.ts |
 | 3961d40 | 02-02 | automaticLogoff.ts getStats() bug fixed (Object.entries + sessionId) |
+| 6c552de | 02-03 | Semgrep modernized to semgrep/semgrep container, pull_request trigger added, SARIF upload |
+| 5ceea08 | 02-03 | npm audit --audit-level=high in ci.yml |
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 02-01-PLAN.md (SUMMARY created)
+Stopped at: Completed 02-03-PLAN.md (Phase 2 complete)
 Resume file: None
-Next action: /gsd:execute-phase 2 (Plan 02-03 CI hardening)
+Next action: /gsd:execute-phase 3 (Phase 3: HIPAA Compliance)

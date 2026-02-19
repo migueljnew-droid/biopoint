@@ -53,8 +53,8 @@ Requirements for Phase 5 (Security Enhancement) + Phase 6 (Production Hardening)
 - [ ] **TEST-05**: Audit log integration test verifies logging on reads, writes, AND empty results
 - [ ] **TEST-06**: Mobile test infrastructure set up (jest-expo + @testing-library/react-native)
 - [ ] **TEST-07**: Mobile component/hook test coverage reaches 80%
-- [ ] **TEST-08**: SAST tool (Semgrep) integrated into CI pipeline
-- [ ] **TEST-09**: npm audit added to CI pipeline with fail-on-high threshold
+- [x] **TEST-08**: SAST tool (Semgrep) integrated into CI pipeline
+- [x] **TEST-09**: npm audit added to CI pipeline with fail-on-high threshold
 
 ### Monitoring
 
@@ -143,8 +143,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TEST-05 | Phase 5 | Pending |
 | TEST-06 | Phase 5 | Pending |
 | TEST-07 | Phase 5 | Pending |
-| TEST-08 | Phase 2 | Pending |
-| TEST-09 | Phase 2 | Pending |
+| TEST-08 | Phase 2 | Complete |
+| TEST-09 | Phase 2 | Complete |
 | MON-01 | Phase 4 | Pending |
 | MON-02 | Phase 4 | Pending |
 | MON-03 | Phase 4 | Pending |
