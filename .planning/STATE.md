@@ -4,24 +4,24 @@
 
 See: .planning/PROJECT.md (updated 2026-02-19)
 
-**Core value:** Get BioPoint's risk score from 2.5/10 to below 2.0/10 and deploy a production-ready, HIPAA-compliant health tracking app to Render + App Store.
-**Current focus:** Phase 3: Compliance & Vendor Agreements — 1 of 2 plans complete (03-02 done, 03-01 pending).
+**Core value:** Get BioPoint's risk score from 2.5/10 to below 2.0/10 and deploy a production-ready, HIPAA-compliant health tracking app to Fly.io + App Store.
+**Current focus:** Phase 3 complete — moving to Phase 4: Infrastructure & Deployment.
 
 ## Current Position
 
-Phase: 3 of 6 (Compliance & Vendor Agreements) — IN PROGRESS
-Plan: 1 of 2 complete (03-02 done — de-identification + privacy; 03-01 BAA execution pending)
-Status: Phase 3 in progress — 03-02 executed, 03-01 BAA execution plan pending
-Last activity: 2026-02-19 -- Executed 03-02 (PHI deidentify utility, foodAnalysis guard, privacy policy)
+Phase: 3 of 6 (Compliance & Vendor Agreements) — COMPLETE
+Plan: 2 of 2 complete (03-01 BAAs deferred to pre-launch, 03-02 de-identification + privacy done)
+Status: Phase 3 complete — all code changes shipped, BAA signing deferred to pre-launch
+Last activity: 2026-02-19 -- Phase 3 complete (vendor tracker updated, deidentify.ts, privacy policy)
 
-Progress: [█████████░░░░░░░░░░░] 38%
+Progress: [██████████░░░░░░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7 (3 from Phase 1 + 3 from Phase 2 + 1 from Phase 3)
+- Total plans completed: 8 (3 from Phase 1 + 3 from Phase 2 + 2 from Phase 3)
 - Average duration: ~8 min per plan
-- Total execution time: ~56 min
+- Total execution time: ~59 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [█████████░░░░░░░░░░░] 38%
 |-------|-------|-------|----------|
 | 1     | 3     | ~45m  | ~15m     |
 | 2     | 3     | ~7m   | ~2m      |
-| 3     | 1/2   | ~4m   | ~4m      |
+| 3     | 2     | ~7m   | ~3.5m    |
 
 **Recent Trend:**
-- Last 4 plans: 02-01, 02-02, 02-03, 03-02 (all completed)
-- Trend: Very fast (targeted utility + UI changes)
+- Last 3 plans: 02-03, 03-02, 03-01 (all completed)
+- Trend: Very fast (utility code + documentation)
 
 *Updated after each plan completion*
 
@@ -52,7 +52,6 @@ Recent decisions affecting current work:
 - Phase 1: Request-ID tracing moved from $use middleware to $extends $allOperations hook
 - Phase 1: Connection pool params appended to DATABASE_URL via getConnectionUrl() helper
 - Roadmap: 6 phases derived from 45 requirements (SEC/CODE/COMP/INFRA/TEST/MON/APPS)
-- Research: Render HIPAA workspace = $250/month minimum (budget increase from planned $20/month)
 
 ### Phase 2 Decisions
 
@@ -69,13 +68,15 @@ Recent decisions affecting current work:
 - [02-03]: Removed ESLint security step referencing non-existent .eslintrc.security.js (always would have failed)
 - [02-03]: Semgrep scopes to apps/ packages/ db/ only — infrastructure scanned by Checkov/tfsec separately
 
-### Phase 3 Decisions (03-02)
+### Phase 3 Decisions
 
-- assertNoPhi() applied as defense-in-depth guard on existing static prompt — prevents future regressions if user context is added
-- PHI_PATTERNS uses lastIndex = 0 reset per iteration — required for global regex reuse in a loop
-- Removed BioPoint Score de-identification claim from privacy policy (feature not implemented) — replaced with accurate AI-assisted features language
-- Ages >89 → both birthYear null and ageRange '90+' per 45 CFR 164.514(b)(2)(i) — specific ages above 89 must not be disclosed
-- Privacy policy helper components (SectionHeader, BulletItem, BodyText) established for future policy updates
+- **Render replaced by Fly.io** — $250/mo HIPAA workspace unaffordable, Fly.io Launch plan ~$30/mo with BAA
+- **All BAAs deferred to pre-launch** — no real PHI in system yet, execute immediately before production deployment
+- assertNoPhi() applied as defense-in-depth guard on existing static prompt — prevents future regressions
+- PHI_PATTERNS uses lastIndex = 0 reset per iteration — required for global regex reuse
+- Removed BioPoint Score de-identification claim from privacy policy (feature not implemented)
+- Ages >89 → both birthYear null and ageRange '90+' per 45 CFR 164.514(b)(2)(i)
+- Privacy policy helper components (SectionHeader, BulletItem, BodyText) established
 
 ### Pending Todos
 
@@ -83,9 +84,9 @@ None for current phase.
 
 ### Blockers/Concerns
 
-- Cloudflare R2 BAA coverage is uncertain -- may need to migrate to AWS S3 (COMP-02)
-- Render HIPAA workspace cost ($250+/month) vs original $20/month budget
+- Cloudflare R2 BAA coverage is uncertain -- may need to migrate to AWS S3 (deferred to pre-launch)
 - ROADMAP success criterion 1 references `packages/api/src/` but actual path is `apps/api/src/` — plans use correct path
+- Phase 4 ROADMAP references Render — needs updating to Fly.io
 
 ## Phase 1 Summary
 
@@ -117,24 +118,19 @@ None for current phase.
 | 6c552de | 02-03 | Semgrep modernized to semgrep/semgrep container, pull_request trigger added, SARIF upload |
 | 5ceea08 | 02-03 | npm audit --audit-level=high in ci.yml |
 
-## Phase 3 Summary (Partial — 03-02 complete)
+## Phase 3 Summary
 
-**Requirements addressed (03-02):** COMP-04, COMP-05
+**Requirements addressed:** COMP-01, COMP-02, COMP-03 (03-01), COMP-04, COMP-05 (03-02)
 
 | Commit | Plan | Changes |
 |--------|------|---------|
 | 303182f | 03-02 | deidentify.ts (3 functions, 2 types, PHI_PATTERNS), foodAnalysis.ts assertNoPhi guard |
 | 11ad90c | 03-02 | privacy.tsx rewrite with BAA disclosure, AI food analysis section, no raw markdown |
-
-**Verification:**
-- deidentify.ts: 3 exported functions, 2 exported types, PHI_PATTERNS covering 10 Safe Harbor categories
-- foodAnalysis.ts: assertNoPhi called on systemPrompt before every OpenAI API call
-- privacy.tsx: No raw ** asterisks, Business Associate section added, AI features disclosed
-- TypeScript: apps/api compiles clean; apps/mobile has pre-existing errors in other files only
+| — | 03-01 | vendor-baa-tracker.md updated: Render→Fly.io, BAAs deferred to pre-launch |
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 03-02-PLAN.md (PHI de-identification + privacy policy)
+Stopped at: Phase 3 complete
 Resume file: None
-Next action: /gsd:execute-phase 3 plan 01 (Phase 3: BAA execution plan)
+Next action: Phase 3 verification, then Phase 4 planning
