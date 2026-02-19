@@ -1,8 +1,33 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { Redis } from 'ioredis';
 import { prisma, Prisma } from '@biopoint/db';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
+
+/**
+ * Create an ioredis client optimized for @fastify/rate-limit.
+ * Returns null if REDIS_HOST is not configured (falls back to in-memory in tests,
+ * and DatabaseRateLimitStore in production until Redis is provisioned).
+ */
+export function createRedisClient(): Redis | null {
+  const host = process.env.REDIS_HOST;
+  const port = parseInt(process.env.REDIS_PORT || '6379', 10);
+
+  if (!host) return null;
+
+  return new Redis({
+    host,
+    port,
+    connectTimeout: 500,       // @fastify/rate-limit recommendation
+    maxRetriesPerRequest: 1,   // @fastify/rate-limit recommendation
+    lazyConnect: true,         // Don't connect until first use
+  });
+}
+
+// Singleton Redis client — shared between rate limiter and any future Redis usage.
+// Null when REDIS_HOST is not set (test env or first-deploy without Redis).
+export const redisClient = createRedisClient();
 
 function getUserIdFromAuthHeader(request: FastifyRequest): string | undefined {
   const header = request.headers?.authorization;
@@ -591,55 +616,11 @@ export const accountLockoutConfig: AccountLockoutConfig = {
     : baseAccountLockoutConfig.progressiveDelays,
 };
 
-// Register rate limiting for different endpoint types
+// Register rate limiting for different endpoint types.
+// NOTE: Request-level rate limiting (per-IP, per-route) is now handled by the global
+// @fastify/rate-limit plugin registered in app.ts with Redis backing. This function
+// only registers the account lockout + progressive delay preHandler for auth/login.
 export async function registerRateLimits(app: FastifyInstance) {
-  // Apply different rate limits based on route patterns
-  app.addHook('onRequest', async (request, reply) => {
-    const url = request.url;
-    const normalizedUrl = url.startsWith('/api/') ? url.slice(4) : url;
-    const method = request.method;
-
-    // Skip rate limiting for OPTIONS requests
-    if (method === 'OPTIONS') {
-      return;
-    }
-
-    let config = rateLimitConfigs.default;
-
-    // Route-specific rate limiting
-    if (normalizedUrl.includes('/presign')) {
-      config = rateLimitConfigs.presign;
-    } else if (normalizedUrl.startsWith('/auth/login') && method === 'POST') {
-      // Login has dedicated protections (account lockout + progressive delays). We still
-      // attach auth attempt headers in a later hook that can see the parsed body.
-      config = rateLimitConfigs.default;
-    } else if (normalizedUrl.startsWith('/auth')) {
-      config = rateLimitConfigs.auth;
-    } else if (normalizedUrl.startsWith('/health')) {
-      config = rateLimitConfigs.public;
-    } else if (normalizedUrl.startsWith('/labs') || normalizedUrl.startsWith('/photos') || normalizedUrl.startsWith('/profile')) {
-      config = rateLimitConfigs.phi;
-    }
-
-    // Apply the rate limiting middleware
-    const middleware = createRateLimitMiddleware(config);
-    await middleware(request, reply);
-  });
-
-  // Post-process rate limit counters (e.g., skipSuccessfulRequests).
-  app.addHook('onResponse', async (request, reply) => {
-    const info = request.rateLimit;
-
-    if (!info?.key) return;
-
-    const isSuccess = reply.statusCode < 400;
-    if (info.skipSuccessfulRequests && isSuccess) {
-      await rateLimitStore.decrement(info.key);
-    } else if (info.skipFailedRequests && !isSuccess) {
-      await rateLimitStore.decrement(info.key);
-    }
-  });
-
   // Apply account lockout and progressive delays to auth endpoints
   app.addHook('preHandler', async (request, reply) => {
     const normalizedUrl = request.url.startsWith('/api/') ? request.url.slice(4) : request.url;
