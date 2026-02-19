@@ -43,16 +43,16 @@ Plans:
 **Depends on**: Phase 1
 **Requirements**: CODE-01, CODE-02, CODE-03, CODE-04, CODE-05, TEST-08, TEST-09
 **Success Criteria** (what must be TRUE):
-  1. `grep -r "as any" packages/api/src/` returns zero matches
+  1. `grep -r "as any" apps/api/src/` returns zero matches
   2. API tsconfig.json has `"noImplicitAny": true` and `tsc --noEmit` passes with zero errors
   3. Files `dataIntegrity.ts` and unused `getPrismaConfig` no longer exist in the codebase
   4. CI pipeline runs Semgrep SAST and `npm audit --audit-level=high` on every push, failing on findings
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TypeScript strictness (eliminate as-any casts, enable noImplicitAny, augment FastifyRequest)
-- [ ] 02-02: Dead code removal and bug fixes (dataIntegrity.ts, getPrismaConfig, automaticLogoff stats, Prisma $use cleanup)
-- [ ] 02-03: CI security pipeline (Semgrep integration, npm audit gate)
+- [ ] 02-01-PLAN.md -- TypeScript strictness: eliminate all as-any casts, create FastifyRequest augmentation, enable noImplicitAny
+- [ ] 02-02-PLAN.md -- Dead code removal and bug fix: delete dataIntegrity.ts, prismaRequestId.ts, getPrismaConfig; fix automaticLogoff stats bug
+- [ ] 02-03-PLAN.md -- CI security pipeline: modernize Semgrep to container approach, set npm audit to --audit-level=high
 
 ### Phase 3: Compliance & Vendor Agreements
 **Goal**: Every vendor that touches PHI has an executed BAA, and any AI service without a BAA receives only de-identified data
@@ -125,8 +125,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. PHI Security Fixes | 0/3 | Planned | - |
-| 2. Code Quality & CI Hardening | 0/3 | Not started | - |
+| 1. PHI Security Fixes | 3/3 | Complete | 2026-02-19 |
+| 2. Code Quality & CI Hardening | 0/3 | Planned | - |
 | 3. Compliance & Vendor Agreements | 0/2 | Not started | - |
 | 4. Infrastructure & Deployment | 0/3 | Not started | - |
 | 5. Test Coverage | 0/3 | Not started | - |
