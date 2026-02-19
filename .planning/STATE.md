@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 4 of 6 (Infrastructure & Deployment) — IN PROGRESS
-Plan: 2 of 4 complete (04-01 Fastify v5 [DONE], 04-02 Redis rate limiter [NEXT], 04-03 PHI monitoring [DONE out-of-order], 04-04 Fly.io deploy [PENDING])
-Status: Phase 4 executing — 04-01 Fastify v5 upgrade complete, 04-02 Redis rate limiter is next
-Last activity: 2026-02-19 -- Completed 04-01-PLAN.md (Fastify v5 + LabMarker indexes)
+Plan: 3 of 4 complete (04-01 Fastify v5 [DONE], 04-02 Redis rate limiter [DONE], 04-03 PHI monitoring [DONE], 04-04 Fly.io deploy [PENDING])
+Status: Phase 4 executing — 04-01, 04-02, 04-03 complete, 04-04 Fly.io deploy is next
+Last activity: 2026-02-19 -- Completed 04-02-PLAN.md (Redis-backed rate limiting)
 
 Progress: [██████████░░░░░░░░░░] 50%
 
@@ -38,6 +38,7 @@ Progress: [██████████░░░░░░░░░░] 50%
 *Updated after each plan completion*
 | Phase 04 P03 | 3 | 3 tasks | 3 files |
 | Phase 04 P01 | 5 | 2 tasks | 3 files |
+| Phase 04 P02 | 6 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,9 @@ Recent decisions affecting current work:
 - [Phase 04]: censor: '[REDACTED]' replaces remove: true in pino redact — preserves log field structure for debugging while remaining HIPAA-compliant
 - [Phase 04]: Sentry beforeSend scrubs three distinct PHI vectors: breadcrumbs data, event.extra, and user context (email stripped, only opaque id kept)
 - [Phase 04]: maxBreadcrumbs reduced 100 to 20 — 80% reduction in PHI exposure window from Sentry auto-instrumentation
+- [Phase 04-02]: Named { Redis } import from ioredis required for ESM+CJS interop under TypeScript strict mode (not default import)
+- [Phase 04-02]: redisClient is null when REDIS_HOST unset — test env and pre-Redis deploys fall back to @fastify/rate-limit in-memory store
+- [Phase 04-02]: skipOnError: true on global plugin — fail-open if Redis unreachable to avoid blocking users for infrastructure failure
 
 ### Phase 2 Decisions
 

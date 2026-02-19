@@ -38,7 +38,7 @@ Requirements for Phase 5 (Security Enhancement) + Phase 6 (Production Hardening)
 
 - [ ] **INFRA-01**: API deployed to Render HIPAA workspace (production environment)
 - [ ] **INFRA-02**: Database running on Neon Pro/Scale with HIPAA add-on
-- [ ] **INFRA-03**: Rate limiter migrated from in-memory to Redis (Render Key Value) for persistence across deploys
+- [x] **INFRA-03**: Rate limiter migrated from in-memory to Redis (Render Key Value) for persistence across deploys
 - [x] **INFRA-04**: Fastify upgraded from v4 (EOL) to v5
 - [x] **INFRA-05**: `/labs/trends` database index added (eliminates full table scan)
 - [x] **INFRA-06**: Prisma `directUrl` configured for migrations (separate from pooled connection)
@@ -131,7 +131,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-05 | Phase 3 | Complete |
 | INFRA-01 | Phase 4 | Pending |
 | INFRA-02 | Phase 4 | Pending |
-| INFRA-03 | Phase 4 | Pending |
+| INFRA-03 | Phase 4 | Complete |
 | INFRA-04 | Phase 4 | Complete |
 | INFRA-05 | Phase 4 | Complete |
 | INFRA-06 | Phase 4 | Complete |
