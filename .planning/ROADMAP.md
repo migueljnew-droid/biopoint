@@ -12,7 +12,7 @@ BioPoint is a health tracking app with HIPAA/GDPR compliance requirements that h
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: PHI Security Fixes** - Eliminate all PHI exposure vectors and encryption bugs in the codebase
+- [x] **Phase 1: PHI Security Fixes** - Eliminate all PHI exposure vectors and encryption bugs in the codebase
 - [ ] **Phase 2: Code Quality & CI Hardening** - Clean code, enable strict typing, add SAST/dependency scanning to CI
 - [ ] **Phase 3: Compliance & Vendor Agreements** - Execute BAAs with all PHI-handling vendors, implement de-identification layer
 - [ ] **Phase 4: Infrastructure & Deployment** - Deploy production environment on Render HIPAA workspace with monitoring
@@ -34,9 +34,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- PHI exposure remediation (Gemini disable, S3 content-type validation, OpenAI audit)
-- [ ] 01-02-PLAN.md -- Decryption sentinel fix and audit log unconditional logging
-- [ ] 01-03-PLAN.md -- Prisma $extends migration, LabMarker plaintext fix, connection pool wiring
+- [x] 01-01-PLAN.md -- PHI exposure remediation (Gemini disable, S3 content-type validation, OpenAI audit)
+- [x] 01-02-PLAN.md -- Decryption sentinel fix and audit log unconditional logging
+- [x] 01-03-PLAN.md -- Prisma $extends migration, LabMarker plaintext fix, connection pool wiring
 
 ### Phase 2: Code Quality & CI Hardening
 **Goal**: The codebase has zero `as any` casts, strict TypeScript checking, no dead code, and every push is scanned for vulnerabilities
