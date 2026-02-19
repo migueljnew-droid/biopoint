@@ -42,7 +42,7 @@ Requirements for Phase 5 (Security Enhancement) + Phase 6 (Production Hardening)
 - [ ] **INFRA-04**: Fastify upgraded from v4 (EOL) to v5
 - [ ] **INFRA-05**: `/labs/trends` database index added (eliminates full table scan)
 - [ ] **INFRA-06**: Prisma `directUrl` configured for migrations (separate from pooled connection)
-- [ ] **INFRA-07**: Production environment variables configured in Render (via Doppler integration or manual sync)
+- [ ] **INFRA-07**: Production environment variables configured in Fly.io (via Doppler integration or `fly secrets set`)
 
 ### Testing
 
