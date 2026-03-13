@@ -1,0 +1,2950 @@
+[
+  {
+    "id": "bpc-157",
+    "name": "BPC-157",
+    "aliases": [
+      "Body Protection Compound-157",
+      "PL 14736"
+    ],
+    "category": "recovery",
+    "goals": [
+      "inflammation",
+      "gut-health",
+      "tissue-repair",
+      "tendon-healing"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 500,
+      "unit": "mcg"
+    },
+    "halfLife": "4 hours",
+    "route": "SubQ",
+    "frequency": "2x daily",
+    "cycleProtocol": "4 weeks on, 2 weeks off",
+    "stackingNotes": "Commonly stacked with TB-500 for enhanced recovery",
+    "citations": [
+      {
+        "title": "BPC 157 and its effects on healing",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22900896/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Gastric pentadecapeptide that promotes healing of tendons, ligaments, muscles, and the GI tract."
+  },
+  {
+    "id": "tb-500",
+    "name": "TB-500",
+    "aliases": [
+      "Thymosin Beta-4",
+      "TB4"
+    ],
+    "category": "recovery",
+    "goals": [
+      "tissue-repair",
+      "inflammation",
+      "wound-healing",
+      "flexibility"
+    ],
+    "typicalDose": {
+      "min": 2000,
+      "max": 5000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "2x weekly",
+    "cycleProtocol": "6 weeks loading, then monthly maintenance",
+    "stackingNotes": "Pairs with BPC-157 for synergistic tissue repair",
+    "citations": [
+      {
+        "title": "Thymosin beta-4 promotes wound healing",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/18981718/",
+        "year": 2008
+      }
+    ],
+    "iuConversion": null,
+    "description": "43-amino acid peptide that upregulates actin to promote cell migration, tissue repair, and angiogenesis throughout the body."
+  },
+  {
+    "id": "tb4-frag",
+    "name": "TB4-FRAG",
+    "aliases": [
+      "TB-500 Fragment",
+      "Ac-SDKP"
+    ],
+    "category": "recovery",
+    "goals": [
+      "tissue-repair",
+      "anti-fibrotic",
+      "cardiovascular-health"
+    ],
+    "typicalDose": {
+      "min": 750,
+      "max": 2000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily",
+    "cycleProtocol": "4-6 weeks on, 2 weeks off",
+    "stackingNotes": "More targeted than full TB-500; anti-fibrotic properties useful for cardiac and lung tissue",
+    "citations": [
+      {
+        "title": "Ac-SDKP prevents cardiac fibrosis",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/15528262/",
+        "year": 2004
+      }
+    ],
+    "iuConversion": null,
+    "description": "Active fragment of Thymosin Beta-4 with potent anti-fibrotic and tissue-repair properties, particularly for cardiac and pulmonary tissue."
+  },
+  {
+    "id": "ghk-cu",
+    "name": "GHK-Cu",
+    "aliases": [
+      "Copper Peptide",
+      "GHK-Copper"
+    ],
+    "category": "recovery",
+    "goals": [
+      "skin-health",
+      "wound-healing",
+      "anti-aging",
+      "hair-growth",
+      "collagen-synthesis"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 3000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ or Topical",
+    "frequency": "Daily",
+    "cycleProtocol": "4-8 weeks on, 4 weeks off",
+    "stackingNotes": "Pairs with BPC-157 for systemic repair; topical form popular for skin and hair",
+    "citations": [
+      {
+        "title": "GHK-Cu regenerative and protective actions",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6073405/",
+        "year": 2018
+      }
+    ],
+    "iuConversion": null,
+    "description": "Naturally occurring copper tripeptide that stimulates collagen, promotes wound healing, reduces inflammation, and has broad regenerative effects on skin and tissue."
+  },
+  {
+    "id": "kpv",
+    "name": "KPV",
+    "aliases": [
+      "Lysine-Proline-Valine",
+      "Alpha-MSH Fragment"
+    ],
+    "category": "recovery",
+    "goals": [
+      "inflammation",
+      "gut-health",
+      "skin-health",
+      "immune-modulation"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 500,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ or Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "4-8 weeks",
+    "stackingNotes": "Pairs with BPC-157 for gut inflammation; also used topically for skin conditions",
+    "citations": [
+      {
+        "title": "KPV anti-inflammatory tripeptide",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/15753639/",
+        "year": 2005
+      }
+    ],
+    "iuConversion": null,
+    "description": "Anti-inflammatory tripeptide derived from alpha-MSH that inhibits NF-kB signaling; used for IBD, skin inflammation, and systemic inflammation."
+  },
+  {
+    "id": "peg-mgf",
+    "name": "PEG-MGF",
+    "aliases": [
+      "PEGylated Mechano Growth Factor"
+    ],
+    "category": "recovery",
+    "goals": [
+      "muscle-repair",
+      "tissue-repair",
+      "recovery"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 400,
+      "unit": "mcg"
+    },
+    "halfLife": "Several days (PEGylated)",
+    "route": "SubQ or IM",
+    "frequency": "2-3x weekly",
+    "cycleProtocol": "4-6 weeks",
+    "stackingNotes": "Use post-workout for localized muscle repair; pairs with IGF-1 LR3",
+    "citations": [
+      {
+        "title": "Mechano growth factor splice variant in muscle repair",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/12832427/",
+        "year": 2003
+      }
+    ],
+    "iuConversion": null,
+    "description": "PEGylated splice variant of IGF-1 that activates satellite cells for muscle repair and growth; PEGylation extends half-life for less frequent dosing."
+  },
+  {
+    "id": "collagen-peptides",
+    "name": "Collagen Peptides",
+    "aliases": [
+      "Hydrolyzed Collagen",
+      "Collagen Type I/III"
+    ],
+    "category": "recovery",
+    "goals": [
+      "joint-health",
+      "skin-health",
+      "gut-health",
+      "tendon-repair"
+    ],
+    "typicalDose": {
+      "min": 10000,
+      "max": 20000,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Take with Vitamin C for enhanced collagen synthesis; pairs with BPC-157 for tendon/joint repair",
+    "citations": [
+      {
+        "title": "Collagen peptides improve knee joint symptoms",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26822714/",
+        "year": 2016
+      }
+    ],
+    "iuConversion": null,
+    "description": "Hydrolyzed collagen protein providing bioactive peptides that stimulate collagen synthesis in joints, skin, tendons, and gut lining."
+  },
+  {
+    "id": "pentadecapeptide",
+    "name": "Pentadecapeptide BPC",
+    "aliases": [
+      "BPC Stable Form",
+      "BPC-157 Arginate"
+    ],
+    "category": "recovery",
+    "goals": [
+      "gut-health",
+      "tissue-repair",
+      "oral-delivery"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 500,
+      "unit": "mcg"
+    },
+    "halfLife": "4-6 hours",
+    "route": "Oral",
+    "frequency": "2x daily on empty stomach",
+    "cycleProtocol": "4-8 weeks on, 2-4 weeks off",
+    "stackingNotes": "Arginate salt form stable for oral dosing targeting upper GI tract",
+    "citations": [
+      {
+        "title": "Stable gastric pentadecapeptide BPC 157 in IBD trials",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22900896/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Stable oral salt form of BPC-157 optimized for GI tract delivery; used for GERD, gastric ulcers, esophagitis, and leaky gut."
+  },
+  {
+    "id": "sermorelin",
+    "name": "Sermorelin",
+    "aliases": [
+      "GRF 1-29",
+      "Geref"
+    ],
+    "category": "recovery",
+    "goals": [
+      "recovery",
+      "growth-hormone",
+      "sleep",
+      "anti-aging"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 500,
+      "unit": "mcg"
+    },
+    "halfLife": "10-20 minutes",
+    "route": "SubQ",
+    "frequency": "Daily before bed",
+    "cycleProtocol": "3-6 months continuous",
+    "stackingNotes": "GHRH analog; pairs with Ipamorelin for synergistic GH release without hunger sides",
+    "citations": [
+      {
+        "title": "Sermorelin for growth hormone deficiency",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/9467534/",
+        "year": 1997
+      }
+    ],
+    "iuConversion": null,
+    "description": "GHRH analog (first 29 amino acids) that stimulates natural pulsatile growth hormone release; used for anti-aging, recovery, and sleep quality improvement."
+  },
+  {
+    "id": "wolverine-peptide",
+    "name": "Wolverine Peptide",
+    "aliases": [
+      "AAGP",
+      "Anti-Aging Gene Peptide"
+    ],
+    "category": "recovery",
+    "goals": [
+      "tissue-repair",
+      "regeneration",
+      "wound-healing"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 500,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily",
+    "cycleProtocol": "4-8 weeks",
+    "stackingNotes": "Newer peptide; often stacked with BPC-157 and TB-500 for comprehensive repair",
+    "citations": [
+      {
+        "title": "Regenerative peptide research",
+        "url": "",
+        "year": 2024
+      }
+    ],
+    "iuConversion": null,
+    "description": "Emerging regenerative peptide named for its tissue-repair properties; promotes accelerated wound healing and tissue regeneration through multiple pathways."
+  },
+  {
+    "id": "semaglutide",
+    "name": "Semaglutide",
+    "aliases": [
+      "Ozempic",
+      "Wegovy",
+      "Rybelsus"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "appetite-suppression",
+      "insulin-sensitivity",
+      "cardiovascular-health"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 2400,
+      "unit": "mcg"
+    },
+    "halfLife": "7 days",
+    "route": "SubQ",
+    "frequency": "Once weekly",
+    "cycleProtocol": "Titrate: 250mcg x4wks, 500mcg x4wks, up to 2400mcg; continuous",
+    "stackingNotes": "GLP-1 agonist; start low to minimize nausea; can pair with Tirzepatide at lower doses",
+    "citations": [
+      {
+        "title": "Once-weekly semaglutide in adults with overweight or obesity",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33567185/",
+        "year": 2021
+      }
+    ],
+    "iuConversion": null,
+    "description": "GLP-1 receptor agonist that reduces appetite, slows gastric emptying, and improves insulin sensitivity; FDA-approved for obesity (Wegovy) and T2D (Ozempic)."
+  },
+  {
+    "id": "tirzepatide",
+    "name": "Tirzepatide",
+    "aliases": [
+      "Mounjaro",
+      "Zepbound"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "appetite-suppression",
+      "insulin-sensitivity"
+    ],
+    "typicalDose": {
+      "min": 2500,
+      "max": 15000,
+      "unit": "mcg"
+    },
+    "halfLife": "5 days",
+    "route": "SubQ",
+    "frequency": "Once weekly",
+    "cycleProtocol": "Titrate from 2.5mg; increase every 4 weeks to max 15mg",
+    "stackingNotes": "Dual GIP/GLP-1 agonist; more effective than semaglutide in head-to-head trials; start low",
+    "citations": [
+      {
+        "title": "Tirzepatide once weekly for treatment of obesity",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/35658024/",
+        "year": 2022
+      }
+    ],
+    "iuConversion": null,
+    "description": "Dual GIP/GLP-1 receptor agonist showing up to 22.5% body weight loss in trials; FDA-approved as Mounjaro (T2D) and Zepbound (obesity)."
+  },
+  {
+    "id": "aod-9604",
+    "name": "AOD-9604",
+    "aliases": [
+      "Advanced Obesity Drug",
+      "HGH Fragment 177-191 modified"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "metabolism",
+      "cartilage-repair"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 500,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily",
+    "cycleProtocol": "12 weeks on, 4 weeks off",
+    "stackingNotes": "Modified HGH fragment that burns fat without affecting blood sugar or growth; pairs with CJC/Ipamorelin",
+    "citations": [
+      {
+        "title": "AOD9604 lipolytic and anti-lipogenic activity",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/11713839/",
+        "year": 2001
+      }
+    ],
+    "iuConversion": null,
+    "description": "Modified fragment of HGH (amino acids 177-191) with a tyrosine addition that stimulates lipolysis and inhibits lipogenesis without affecting IGF-1 or insulin."
+  },
+  {
+    "id": "cjc-1295-dac",
+    "name": "CJC-1295 DAC",
+    "aliases": [
+      "CJC-1295 with DAC",
+      "Drug Affinity Complex"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "growth-hormone",
+      "muscle-growth",
+      "recovery"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 2000,
+      "unit": "mcg"
+    },
+    "halfLife": "8 days (with DAC)",
+    "route": "SubQ",
+    "frequency": "2x weekly",
+    "cycleProtocol": "3-6 months",
+    "stackingNotes": "Long-acting GHRH; pairs with Ipamorelin for synergistic GH pulse; DAC version gives sustained elevation",
+    "citations": [
+      {
+        "title": "CJC-1295 growth hormone releasing effects",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/16352683/",
+        "year": 2006
+      }
+    ],
+    "iuConversion": null,
+    "description": "Modified GHRH analog with Drug Affinity Complex that binds albumin, extending half-life to 8 days; provides sustained GH elevation for fat loss and recovery."
+  },
+  {
+    "id": "ipamorelin",
+    "name": "Ipamorelin",
+    "aliases": [
+      "IPA",
+      "Ipamorelin Acetate"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "growth-hormone",
+      "sleep",
+      "anti-aging"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 300,
+      "unit": "mcg"
+    },
+    "halfLife": "2 hours",
+    "route": "SubQ",
+    "frequency": "2-3x daily",
+    "cycleProtocol": "3-6 months",
+    "stackingNotes": "Cleanest GHRP \u2014 no hunger or cortisol sides; best paired with CJC-1295 for synergistic GH release",
+    "citations": [
+      {
+        "title": "Ipamorelin, a new growth-hormone-releasing peptide",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/9849822/",
+        "year": 1998
+      }
+    ],
+    "iuConversion": null,
+    "description": "Selective growth hormone secretagogue that stimulates GH release without affecting cortisol, prolactin, or appetite; considered the cleanest GHRP available."
+  },
+  {
+    "id": "tesamorelin",
+    "name": "Tesamorelin",
+    "aliases": [
+      "Egrifta",
+      "TH9507"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "visceral-fat",
+      "growth-hormone",
+      "cognitive-enhancement"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 2000,
+      "unit": "mcg"
+    },
+    "halfLife": "26-38 minutes",
+    "route": "SubQ",
+    "frequency": "Daily",
+    "cycleProtocol": "6-12 months; FDA-approved for HIV lipodystrophy",
+    "stackingNotes": "FDA-approved GHRH analog; specifically targets visceral fat; emerging data on cognitive benefits",
+    "citations": [
+      {
+        "title": "Tesamorelin reduces visceral fat in HIV",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20554980/",
+        "year": 2010
+      }
+    ],
+    "iuConversion": null,
+    "description": "FDA-approved GHRH analog that specifically reduces visceral adipose tissue; also shows cognitive benefits through GH-mediated IGF-1 increase."
+  },
+  {
+    "id": "mots-c",
+    "name": "MOTS-c",
+    "aliases": [
+      "Mitochondrial ORF of Twelve S c"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "metabolic-health",
+      "exercise-performance",
+      "insulin-sensitivity"
+    ],
+    "typicalDose": {
+      "min": 5000,
+      "max": 10000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "3-5x weekly",
+    "cycleProtocol": "4-8 weeks",
+    "stackingNotes": "Mitochondrial-derived peptide; activates AMPK like exercise; pairs with Berberine and NMN",
+    "citations": [
+      {
+        "title": "MOTS-c regulates metabolic homeostasis",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/25738459/",
+        "year": 2015
+      }
+    ],
+    "iuConversion": null,
+    "description": "Mitochondrial-derived peptide that activates AMPK and regulates metabolic homeostasis; acts as an exercise mimetic improving insulin sensitivity and fat oxidation."
+  },
+  {
+    "id": "retatrutide",
+    "name": "Retatrutide",
+    "aliases": [
+      "LY3437943",
+      "Triple G"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "appetite-suppression",
+      "insulin-sensitivity"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 12000,
+      "unit": "mcg"
+    },
+    "halfLife": "6 days",
+    "route": "SubQ",
+    "frequency": "Once weekly",
+    "cycleProtocol": "Titrate from 1mg; increase monthly",
+    "stackingNotes": "Triple agonist (GLP-1/GIP/Glucagon); showed 24% weight loss in Phase 2 \u2014 most effective obesity drug tested",
+    "citations": [
+      {
+        "title": "Retatrutide phase 2 trial",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/37385275/",
+        "year": 2023
+      }
+    ],
+    "iuConversion": null,
+    "description": "Triple hormone receptor agonist (GLP-1/GIP/glucagon) showing unprecedented 24% body weight loss in Phase 2 trials; most effective anti-obesity peptide in development."
+  },
+  {
+    "id": "hgh-frag-176-191",
+    "name": "HGH Fragment 176-191",
+    "aliases": [
+      "HGH Frag",
+      "AOD-9604 precursor"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "metabolism"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 500,
+      "unit": "mcg"
+    },
+    "halfLife": "30 minutes",
+    "route": "SubQ",
+    "frequency": "2x daily (morning + pre-bed)",
+    "cycleProtocol": "8-12 weeks on, 4 weeks off",
+    "stackingNotes": "Take fasted for best effect; pairs with AOD-9604 for enhanced lipolysis",
+    "citations": [
+      {
+        "title": "Fat-reducing effects of GH fragment 176-191",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/11713839/",
+        "year": 2001
+      }
+    ],
+    "iuConversion": null,
+    "description": "C-terminal fragment of human growth hormone responsible for its fat-burning properties; stimulates lipolysis without affecting blood sugar or IGF-1 levels."
+  },
+  {
+    "id": "5-amino-1mq",
+    "name": "5-Amino-1MQ",
+    "aliases": [
+      "5-amino-1-methylquinolinium"
+    ],
+    "category": "fat-loss",
+    "goals": [
+      "fat-loss",
+      "metabolism",
+      "nad-boost",
+      "anti-aging"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 150,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "8-12 weeks",
+    "stackingNotes": "NNMT inhibitor that prevents NAD+ depletion; pairs with NMN for comprehensive NAD+ support",
+    "citations": [
+      {
+        "title": "NNMT inhibition for obesity treatment",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/32555455/",
+        "year": 2020
+      }
+    ],
+    "iuConversion": null,
+    "description": "Small molecule NNMT inhibitor that prevents NAD+ degradation, increasing cellular energy metabolism and promoting fat cell shrinkage without stimulant effects."
+  },
+  {
+    "id": "epitalon",
+    "name": "Epitalon",
+    "aliases": [
+      "Epithalon",
+      "Epithalone",
+      "AEDG"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "longevity",
+      "telomere-extension",
+      "sleep"
+    ],
+    "typicalDose": {
+      "min": 5000,
+      "max": 10000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily for 10-20 day courses",
+    "cycleProtocol": "10-20 days on, 4-6 months off",
+    "stackingNotes": "Pairs with Thymalin in Russian longevity protocols; 10-day courses reactivate telomerase",
+    "citations": [
+      {
+        "title": "Peptide bioregulators and anti-aging therapy",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21108702/",
+        "year": 2010
+      }
+    ],
+    "iuConversion": null,
+    "description": "Tetrapeptide (Ala-Glu-Asp-Gly) that activates telomerase to extend telomeres; central to Russian peptide bioregulator longevity protocols showing lifespan extension in human studies."
+  },
+  {
+    "id": "nmn",
+    "name": "NMN",
+    "aliases": [
+      "Nicotinamide Mononucleotide",
+      "Beta-NMN"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "nad-boost",
+      "energy",
+      "mitochondrial-health",
+      "cognitive-enhancement"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 1000,
+      "unit": "mg"
+    },
+    "halfLife": "~3 hours",
+    "route": "Oral or Sublingual",
+    "frequency": "Daily morning",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "NAD+ precursor; pair with TMG to support methylation; Sublingual bypasses first-pass metabolism",
+    "citations": [
+      {
+        "title": "NMN mitigates age-associated physiological decline",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27127236/",
+        "year": 2016
+      }
+    ],
+    "iuConversion": null,
+    "description": "Direct NAD+ precursor that restores cellular NAD+ levels declining with age; improves energy metabolism, DNA repair, and mitochondrial function."
+  },
+  {
+    "id": "nr",
+    "name": "Nicotinamide Riboside",
+    "aliases": [
+      "NR",
+      "Niagen",
+      "TruNiagen"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "nad-boost",
+      "neuroprotection",
+      "cardiovascular-health"
+    ],
+    "typicalDose": {
+      "min": 300,
+      "max": 1000,
+      "unit": "mg"
+    },
+    "halfLife": "~3 hours",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Alternative NAD+ precursor to NMN; better studied in human clinical trials",
+    "citations": [
+      {
+        "title": "Nicotinamide riboside augments NAD+ in humans",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29184669/",
+        "year": 2018
+      }
+    ],
+    "iuConversion": null,
+    "description": "NAD+ precursor vitamin (form of B3) that elevates blood NAD+ levels; better human clinical trial data than NMN with proven safety profile."
+  },
+  {
+    "id": "nad-iv",
+    "name": "NAD+ IV",
+    "aliases": [
+      "NAD+ Infusion",
+      "Intravenous NAD+"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "nad-boost",
+      "energy",
+      "addiction-recovery",
+      "neuroprotection"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 750,
+      "unit": "mg"
+    },
+    "halfLife": "~45 minutes (IV)",
+    "route": "IV",
+    "frequency": "1-4x per month",
+    "cycleProtocol": "Loading: daily x5 days; maintenance: monthly",
+    "stackingNotes": "Bypasses oral absorption issues; popular in longevity clinics; expensive ($500-1000/session)",
+    "citations": [
+      {
+        "title": "NAD+ metabolism and its roles in cellular processes",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/25951377/",
+        "year": 2015
+      }
+    ],
+    "iuConversion": null,
+    "description": "Direct intravenous NAD+ infusion bypassing digestive absorption; used in longevity clinics for rapid NAD+ restoration, addiction recovery, and cognitive enhancement."
+  },
+  {
+    "id": "resveratrol",
+    "name": "Resveratrol",
+    "aliases": [
+      "Trans-Resveratrol",
+      "3,4,5-trihydroxystilbene"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "sirtuin-activation",
+      "cardiovascular-health",
+      "antioxidant"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 1000,
+      "unit": "mg"
+    },
+    "halfLife": "1-3 hours",
+    "route": "Oral",
+    "frequency": "Daily morning with fat",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Sirtuin activator; pairs with NMN for synergistic NAD+/sirtuin pathway activation (Sinclair protocol)",
+    "citations": [
+      {
+        "title": "Resveratrol activates sirtuins",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/14645228/",
+        "year": 2003
+      }
+    ],
+    "iuConversion": null,
+    "description": "Polyphenol sirtuin activator found in red grapes; activates SIRT1 for cellular stress resistance and longevity pathway signaling; core of Sinclair longevity protocol."
+  },
+  {
+    "id": "metformin",
+    "name": "Metformin",
+    "aliases": [
+      "Glucophage",
+      "Metformin HCl"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "longevity",
+      "insulin-sensitivity",
+      "ampk-activation",
+      "cancer-prevention"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 1500,
+      "unit": "mg"
+    },
+    "halfLife": "4-9 hours",
+    "route": "Oral",
+    "frequency": "Daily with meals",
+    "cycleProtocol": "Continuous; skip on heavy exercise days (may blunt mTOR-mediated gains)",
+    "stackingNotes": "AMPK activator; skip on training days to avoid blunting hypertrophy; Berberine is a natural alternative",
+    "citations": [
+      {
+        "title": "Metformin as a tool to target aging",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27060681/",
+        "year": 2016
+      }
+    ],
+    "iuConversion": null,
+    "description": "First-line diabetes drug repurposed as an anti-aging intervention; activates AMPK, improves insulin sensitivity, and is the subject of the TAME (Targeting Aging with Metformin) clinical trial."
+  },
+  {
+    "id": "rapamycin",
+    "name": "Rapamycin",
+    "aliases": [
+      "Sirolimus",
+      "Rapamune"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "longevity",
+      "mtor-inhibition",
+      "immune-modulation"
+    ],
+    "typicalDose": {
+      "min": 1,
+      "max": 6,
+      "unit": "mg"
+    },
+    "halfLife": "62 hours",
+    "route": "Oral",
+    "frequency": "Once weekly",
+    "cycleProtocol": "Pulsed: 3-6mg once weekly; 8 weeks on, 4 weeks off",
+    "stackingNotes": "mTOR inhibitor; do NOT combine with continuous Metformin (opposite pathways); weekly pulsing mimics caloric restriction",
+    "citations": [
+      {
+        "title": "Rapamycin fed late in life extends lifespan",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/19587680/",
+        "year": 2009
+      }
+    ],
+    "iuConversion": null,
+    "description": "mTOR inhibitor that mimics caloric restriction signaling; extends lifespan in every organism tested; used in pulsed weekly dosing for anti-aging in the longevity community."
+  },
+  {
+    "id": "fisetin",
+    "name": "Fisetin",
+    "aliases": [
+      "Fisetin flavonoid"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "senolytic",
+      "antioxidant",
+      "neuroprotection"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 2000,
+      "unit": "mg"
+    },
+    "halfLife": "~3 hours",
+    "route": "Oral",
+    "frequency": "Senolytic: 2-day pulse monthly; daily: 100-500mg",
+    "cycleProtocol": "Senolytic protocol: high-dose 2 days/month; low-dose daily for antioxidant",
+    "stackingNotes": "Most potent natural senolytic; pairs with Quercetin; take with fat for absorption",
+    "citations": [
+      {
+        "title": "Fisetin is a senotherapeutic",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/30279143/",
+        "year": 2018
+      }
+    ],
+    "iuConversion": null,
+    "description": "Flavonoid senolytic that selectively clears senescent zombie cells; most potent natural senolytic identified, also providing antioxidant and neuroprotective benefits."
+  },
+  {
+    "id": "spermidine",
+    "name": "Spermidine",
+    "aliases": [
+      "Wheat Germ Spermidine"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "autophagy",
+      "cardiovascular-health",
+      "cognitive-enhancement"
+    ],
+    "typicalDose": {
+      "min": 1,
+      "max": 6,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Autophagy inducer; complementary to rapamycin (different autophagy pathways); pairs with Fisetin",
+    "citations": [
+      {
+        "title": "Spermidine promotes longevity and healthspan",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27841876/",
+        "year": 2016
+      }
+    ],
+    "iuConversion": null,
+    "description": "Polyamine that induces autophagy (cellular cleanup) through a different pathway than rapamycin; extends lifespan in model organisms and shows cardiovascular benefits in humans."
+  },
+  {
+    "id": "ss-31",
+    "name": "SS-31",
+    "aliases": [
+      "Elamipretide",
+      "Bendavia",
+      "MTP-131"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "mitochondrial-health",
+      "anti-aging",
+      "cardiovascular-health",
+      "exercise-performance"
+    ],
+    "typicalDose": {
+      "min": 5000,
+      "max": 40000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily",
+    "cycleProtocol": "4-8 weeks",
+    "stackingNotes": "Targets cardiolipin in inner mitochondrial membrane; pairs with CoQ10 and NMN for comprehensive mito support",
+    "citations": [
+      {
+        "title": "SS-31 reverses mitochondrial dysfunction",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6588449/",
+        "year": 2019
+      }
+    ],
+    "iuConversion": null,
+    "description": "Mitochondria-targeted peptide that binds cardiolipin in the inner membrane to restore electron transport chain efficiency and reduce oxidative stress."
+  },
+  {
+    "id": "humanin",
+    "name": "Humanin",
+    "aliases": [
+      "HNG",
+      "Humanin G"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "neuroprotection",
+      "anti-aging",
+      "mitochondrial-health",
+      "insulin-sensitivity"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 5000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily",
+    "cycleProtocol": "4-8 weeks",
+    "stackingNotes": "Mitochondrial-derived peptide like MOTS-c; neuroprotective; pairs with SS-31 for mitochondrial optimization",
+    "citations": [
+      {
+        "title": "Humanin: a mitochondrial-derived peptide",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22198574/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Mitochondrial-derived peptide with potent neuroprotective and cytoprotective effects; protects against Alzheimer's-related toxicity and improves insulin sensitivity."
+  },
+  {
+    "id": "coq10",
+    "name": "CoQ10",
+    "aliases": [
+      "Ubiquinol",
+      "Coenzyme Q10",
+      "Ubiquinone"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "mitochondrial-health",
+      "cardiovascular-health",
+      "energy",
+      "anti-aging"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 400,
+      "unit": "mg"
+    },
+    "halfLife": "33 hours",
+    "route": "Oral",
+    "frequency": "Daily with fat",
+    "cycleProtocol": "Continuous; ubiquinol form for age 40+",
+    "stackingNotes": "Essential if on statins; pairs with SS-31 and NMN for mitochondrial stack",
+    "citations": [
+      {
+        "title": "Coenzyme Q10 and mitochondrial function",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/17287824/",
+        "year": 2007
+      }
+    ],
+    "iuConversion": null,
+    "description": "Mitochondrial electron transport chain carrier and fat-soluble antioxidant; declines with age and statin use; ubiquinol form has superior bioavailability."
+  },
+  {
+    "id": "alpha-lipoic-acid",
+    "name": "Alpha-Lipoic Acid",
+    "aliases": [
+      "ALA",
+      "R-ALA",
+      "Thioctic Acid"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "antioxidant",
+      "insulin-sensitivity",
+      "neuroprotection",
+      "anti-aging"
+    ],
+    "typicalDose": {
+      "min": 300,
+      "max": 600,
+      "unit": "mg"
+    },
+    "halfLife": "30 minutes",
+    "route": "Oral",
+    "frequency": "Daily on empty stomach",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Universal antioxidant; R-ALA form is more bioavailable; take away from minerals",
+    "citations": [
+      {
+        "title": "Alpha-lipoic acid molecular mechanisms",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20045725/",
+        "year": 2010
+      }
+    ],
+    "iuConversion": null,
+    "description": "Universal antioxidant that regenerates glutathione, vitamin C, and vitamin E; improves insulin sensitivity and provides neuroprotection; both water- and fat-soluble."
+  },
+  {
+    "id": "tmg",
+    "name": "TMG",
+    "aliases": [
+      "Trimethylglycine",
+      "Betaine Anhydrous"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "methylation-support",
+      "anti-aging",
+      "homocysteine-reduction",
+      "liver-health"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 3000,
+      "unit": "mg"
+    },
+    "halfLife": "17 hours",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous; essential when using NMN/NAD+",
+    "stackingNotes": "Methyl donor preventing SAM-e depletion from NAD+ precursors; essential companion to NMN",
+    "citations": [
+      {
+        "title": "Betaine in human nutrition",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/15321791/",
+        "year": 2004
+      }
+    ],
+    "iuConversion": null,
+    "description": "Methyl donor that prevents SAM-e depletion when using NAD+ precursors; reduces homocysteine and supports liver methylation pathways."
+  },
+  {
+    "id": "taurine",
+    "name": "Taurine",
+    "aliases": [
+      "2-aminoethanesulfonic acid",
+      "L-Taurine"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "anti-aging",
+      "longevity",
+      "cardiovascular-health",
+      "exercise-performance"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 6000,
+      "unit": "mg"
+    },
+    "halfLife": "1-2 hours",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "2023 Nature study showed taurine deficiency drives aging; pairs with creatine for performance",
+    "citations": [
+      {
+        "title": "Taurine deficiency as a driver of aging",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/37289911/",
+        "year": 2023
+      }
+    ],
+    "iuConversion": null,
+    "description": "Conditionally essential sulfonic acid; 2023 Nature study showed taurine supplementation extended healthy lifespan in multiple organisms; highest concentrations in heart and muscle."
+  },
+  {
+    "id": "semax",
+    "name": "Semax",
+    "aliases": [
+      "Semax ACTH 4-10",
+      "MEHFPGP"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "cognitive-enhancement",
+      "focus",
+      "neuroprotection",
+      "bdnf",
+      "mood"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 600,
+      "unit": "mcg"
+    },
+    "halfLife": "~3 minutes (rapid brain uptake)",
+    "route": "Nasal",
+    "frequency": "2-3x daily",
+    "cycleProtocol": "2-4 weeks on, 2 weeks off",
+    "stackingNotes": "Pairs with Selank for anxiolytic + cognitive combo; NASA variant (N-Acetyl Semax Amidate) is more potent",
+    "citations": [
+      {
+        "title": "Semax neuroprotective effects review",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/17430638/",
+        "year": 2007
+      }
+    ],
+    "iuConversion": null,
+    "description": "Synthetic ACTH analog peptide (4-10 fragment) used intranasally for cognitive enhancement, BDNF upregulation, and neuroprotection; developed in Russia as a prescription nootropic."
+  },
+  {
+    "id": "selank",
+    "name": "Selank",
+    "aliases": [
+      "TP-7",
+      "Selanc"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "anxiety-reduction",
+      "cognitive-enhancement",
+      "immune-modulation",
+      "mood"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 750,
+      "unit": "mcg"
+    },
+    "halfLife": "~3 minutes",
+    "route": "Nasal",
+    "frequency": "2-3x daily",
+    "cycleProtocol": "2-4 weeks on, 2 weeks off",
+    "stackingNotes": "Anxiolytic peptide; pairs with Semax for balanced mood + cognition stack; GABA-modulating",
+    "citations": [
+      {
+        "title": "Selank anxiolytic and nootropic peptide",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/18577768/",
+        "year": 2008
+      }
+    ],
+    "iuConversion": null,
+    "description": "Synthetic analog of tuftsin with anxiolytic and nootropic properties; modulates GABA, serotonin, and dopamine systems while boosting immune function; Russian prescription peptide."
+  },
+  {
+    "id": "dihexa",
+    "name": "Dihexa",
+    "aliases": [
+      "N-hexanoic-Tyr-Ile-(6)-aminohexanoic amide"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "cognitive-enhancement",
+      "neuroplasticity",
+      "memory",
+      "nerve-growth"
+    ],
+    "typicalDose": {
+      "min": 10,
+      "max": 40,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral or Sublingual",
+    "frequency": "Daily",
+    "cycleProtocol": "4-8 weeks on, 4 weeks off",
+    "stackingNotes": "10 million times more potent than BDNF at HGF receptor; use with extreme caution; very potent at low doses",
+    "citations": [
+      {
+        "title": "Dihexa cognitive enhancement via HGF",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23103568/",
+        "year": 2013
+      }
+    ],
+    "iuConversion": null,
+    "description": "Small molecule angiotensin IV analog that is 10 million times more potent than BDNF at activating HGF/c-Met receptor for neuroplasticity, synaptogenesis, and memory formation."
+  },
+  {
+    "id": "noopept",
+    "name": "Noopept",
+    "aliases": [
+      "GVS-111",
+      "N-phenylacetyl-L-prolylglycine ethyl ester"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "cognitive-enhancement",
+      "memory",
+      "neuroprotection",
+      "focus"
+    ],
+    "typicalDose": {
+      "min": 10,
+      "max": 30,
+      "unit": "mg"
+    },
+    "halfLife": "~5 minutes (rapid brain uptake)",
+    "route": "Oral or Sublingual",
+    "frequency": "2-3x daily",
+    "cycleProtocol": "1-3 months on, 1 month off",
+    "stackingNotes": "1000x more potent than Piracetam by weight; pairs with Alpha-GPC for choline support",
+    "citations": [
+      {
+        "title": "Noopept neuroprotective properties",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/19240853/",
+        "year": 2009
+      }
+    ],
+    "iuConversion": null,
+    "description": "Dipeptide nootropic 1000x more potent than Piracetam by weight; enhances memory consolidation, increases NGF and BDNF, and provides neuroprotection via antioxidant mechanisms."
+  },
+  {
+    "id": "lions-mane",
+    "name": "Lion's Mane",
+    "aliases": [
+      "Hericium erinaceus",
+      "Yamabushitake"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "cognitive-enhancement",
+      "neuroprotection",
+      "nerve-growth",
+      "gut-health",
+      "mood"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 2000,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous; benefits build over 4-8 weeks",
+    "stackingNotes": "Stimulates NGF; pairs with Noopept and Alpha-GPC for comprehensive cognitive stack",
+    "citations": [
+      {
+        "title": "Lion's mane stimulates nerve growth factor",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24266378/",
+        "year": 2013
+      }
+    ],
+    "iuConversion": null,
+    "description": "Medicinal mushroom that stimulates nerve growth factor (NGF) synthesis through hericenones and erinacines; improves cognitive function, mood, and may support nerve regeneration."
+  },
+  {
+    "id": "alpha-gpc",
+    "name": "Alpha-GPC",
+    "aliases": [
+      "Alpha-glycerophosphocholine",
+      "Choline Alfoscerate"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "cognitive-enhancement",
+      "focus",
+      "power-output",
+      "acetylcholine"
+    ],
+    "typicalDose": {
+      "min": 300,
+      "max": 600,
+      "unit": "mg"
+    },
+    "halfLife": "4-6 hours",
+    "route": "Oral",
+    "frequency": "Daily morning",
+    "cycleProtocol": "Continuous or cycled 5 days on, 2 off",
+    "stackingNotes": "Best choline source for brain; essential when using racetams or Noopept to prevent headaches",
+    "citations": [
+      {
+        "title": "Alpha-GPC cognitive function review",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28166039/",
+        "year": 2017
+      }
+    ],
+    "iuConversion": null,
+    "description": "Most bioavailable choline source that crosses the blood-brain barrier to increase acetylcholine synthesis; also increases power output in athletes."
+  },
+  {
+    "id": "bacopa-monnieri",
+    "name": "Bacopa Monnieri",
+    "aliases": [
+      "Brahmi",
+      "Bacognize",
+      "Synapsa"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "memory",
+      "cognitive-enhancement",
+      "anxiety-reduction",
+      "neuroprotection"
+    ],
+    "typicalDose": {
+      "min": 300,
+      "max": 600,
+      "unit": "mg"
+    },
+    "halfLife": "2-6 hours",
+    "route": "Oral",
+    "frequency": "Daily with fat",
+    "cycleProtocol": "Continuous; benefits emerge after 8-12 weeks",
+    "stackingNotes": "Slow-building memory enhancer; take with fat for absorption; pairs with Lion's Mane and Alpha-GPC",
+    "citations": [
+      {
+        "title": "Bacopa monnieri chronic effects on cognition",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/12093601/",
+        "year": 2002
+      }
+    ],
+    "iuConversion": null,
+    "description": "Ayurvedic adaptogenic herb that enhances memory consolidation and recall through bacosides; requires 8-12 weeks of daily use for full cognitive benefits."
+  },
+  {
+    "id": "p21",
+    "name": "P21",
+    "aliases": [
+      "P021",
+      "CNTF-derived peptide"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "cognitive-enhancement",
+      "neurogenesis",
+      "neuroprotection",
+      "memory"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 1000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ or Nasal",
+    "frequency": "Daily",
+    "cycleProtocol": "4-8 weeks on, 4 weeks off",
+    "stackingNotes": "CNTF-mimetic that promotes neurogenesis; pairs with Semax for dual neurotrophic support",
+    "citations": [
+      {
+        "title": "P21 peptide promotes neurogenesis",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23583467/",
+        "year": 2013
+      }
+    ],
+    "iuConversion": null,
+    "description": "Small peptide derived from CNTF that promotes hippocampal neurogenesis and improves memory; acts via BDNF pathway without CNTF's appetite-suppressing side effects."
+  },
+  {
+    "id": "cerebrolysin",
+    "name": "Cerebrolysin",
+    "aliases": [
+      "FPF 1070"
+    ],
+    "category": "cognitive",
+    "goals": [
+      "neuroprotection",
+      "cognitive-enhancement",
+      "stroke-recovery",
+      "neuroplasticity"
+    ],
+    "typicalDose": {
+      "min": 5000,
+      "max": 30000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "IM or IV",
+    "frequency": "Daily for 10-20 day courses",
+    "cycleProtocol": "10-20 days on, 2-3 months off; clinical use for stroke/TBI",
+    "stackingNotes": "Porcine brain-derived peptide complex; clinical use in stroke recovery; pairs with Semax for comprehensive neuroprotection",
+    "citations": [
+      {
+        "title": "Cerebrolysin in acute ischemic stroke",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23060259/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Porcine brain-derived peptide complex containing neurotrophic factors; used clinically for stroke recovery, traumatic brain injury, and neurodegenerative conditions."
+  },
+  {
+    "id": "kisspeptin-10",
+    "name": "Kisspeptin-10",
+    "aliases": [
+      "KP-10",
+      "Metastin"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "lh-stimulation",
+      "libido",
+      "fertility"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 100,
+      "unit": "mcg"
+    },
+    "halfLife": "28 minutes",
+    "route": "SubQ",
+    "frequency": "Pulsed 1-3x daily",
+    "cycleProtocol": "4-8 weeks for HPG axis restoration",
+    "stackingNotes": "Pairs with Gonadorelin or Enclomiphene for comprehensive HPG axis support",
+    "citations": [
+      {
+        "title": "Kisspeptin-10 stimulates testosterone in men",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20371661/",
+        "year": 2010
+      }
+    ],
+    "iuConversion": null,
+    "description": "Hypothalamic peptide stimulating GnRH release to drive LH/FSH and testosterone production; used to restore HPG axis function after TRT or during fertility protocols."
+  },
+  {
+    "id": "pt-141",
+    "name": "PT-141",
+    "aliases": [
+      "Bremelanotide",
+      "Vyleesi"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "libido",
+      "sexual-function",
+      "arousal"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 2000,
+      "unit": "mcg"
+    },
+    "halfLife": "2.7 hours",
+    "route": "SubQ",
+    "frequency": "As-needed, 45 min before activity",
+    "cycleProtocol": "As-needed; max 1x per 24 hours",
+    "stackingNotes": "Melanocortin receptor agonist for central arousal; FDA-approved as Vyleesi",
+    "citations": [
+      {
+        "title": "Bremelanotide for hypoactive sexual desire",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/31257743/",
+        "year": 2019
+      }
+    ],
+    "iuConversion": null,
+    "description": "Melanocortin receptor agonist acting centrally to increase sexual desire and arousal; FDA-approved as Vyleesi for hypoactive sexual desire disorder."
+  },
+  {
+    "id": "gonadorelin",
+    "name": "Gonadorelin",
+    "aliases": [
+      "GnRH",
+      "Lutrepulse",
+      "Factrel"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "lh-stimulation",
+      "fertility",
+      "hpg-axis"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 100,
+      "unit": "mcg"
+    },
+    "halfLife": "2-10 minutes",
+    "route": "SubQ",
+    "frequency": "2-3x weekly pulsed",
+    "cycleProtocol": "Continuous alongside TRT",
+    "stackingNotes": "Mimics GnRH directly; maintains testicular function during TRT",
+    "citations": [
+      {
+        "title": "Gonadorelin for fertility during TRT",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27650438/",
+        "year": 2016
+      }
+    ],
+    "iuConversion": null,
+    "description": "Synthetic GnRH stimulating pituitary LH and FSH secretion; used to maintain testicular size, sperm production, and fertility during TRT."
+  },
+  {
+    "id": "enclomiphene",
+    "name": "Enclomiphene",
+    "aliases": [
+      "Androxal",
+      "Trans-clomiphene"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "lh-stimulation",
+      "fertility"
+    ],
+    "typicalDose": {
+      "min": 12.5,
+      "max": 25,
+      "unit": "mg"
+    },
+    "halfLife": "10-12 hours",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous as TRT alternative",
+    "stackingNotes": "Pairs with Gonadorelin for comprehensive HPG axis stimulation",
+    "citations": [
+      {
+        "title": "Enclomiphene stimulates testosterone",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23442592/",
+        "year": 2013
+      }
+    ],
+    "iuConversion": null,
+    "description": "Selective estrogen receptor modulator (trans-isomer of clomiphene) that increases LH and FSH by blocking negative estrogen feedback, raising testosterone while preserving fertility."
+  },
+  {
+    "id": "dhea",
+    "name": "DHEA",
+    "aliases": [
+      "Dehydroepiandrosterone",
+      "Prasterone"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "anti-aging",
+      "energy",
+      "mood",
+      "adrenal-support"
+    ],
+    "typicalDose": {
+      "min": 25,
+      "max": 100,
+      "unit": "mg"
+    },
+    "halfLife": "15-38 hours",
+    "route": "Oral",
+    "frequency": "Daily morning",
+    "cycleProtocol": "Continuous; monitor levels every 3-6 months",
+    "stackingNotes": "Foundational hormone; pairs with Pregnenolone; declines ~2% per year after 30",
+    "citations": [
+      {
+        "title": "DHEA replacement in aging",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/9920786/",
+        "year": 1999
+      }
+    ],
+    "iuConversion": null,
+    "description": "Precursor to testosterone and estrogen declining ~2% per year after 30; supplementation improves mood, energy, libido, and lean body mass."
+  },
+  {
+    "id": "pregnenolone",
+    "name": "Pregnenolone",
+    "aliases": [
+      "Preg",
+      "Mother of all hormones"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "cognitive-enhancement",
+      "mood",
+      "adrenal-support",
+      "hormonal-balance"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 100,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "Daily morning",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Upstream precursor to all steroid hormones; pairs with DHEA",
+    "citations": [
+      {
+        "title": "Pregnenolone sulfate as neurosteroid",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/9067793/",
+        "year": 1997
+      }
+    ],
+    "iuConversion": null,
+    "description": "Master neurosteroid precursor to all steroid hormones; also acts directly on NMDA and GABA receptors to enhance memory, mood, and cognitive function."
+  },
+  {
+    "id": "hcg",
+    "name": "HCG",
+    "aliases": [
+      "Human Chorionic Gonadotropin",
+      "Pregnyl"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "testicular-function",
+      "fertility"
+    ],
+    "typicalDose": {
+      "min": 250,
+      "max": 500,
+      "unit": "IU"
+    },
+    "halfLife": "36 hours",
+    "route": "SubQ",
+    "frequency": "2x weekly with TRT",
+    "cycleProtocol": "250-500 IU 2x weekly with TRT; 1000-2000 IU 3x weekly for PCT",
+    "stackingNotes": "Direct LH mimetic; maintains testicular volume during TRT",
+    "citations": [
+      {
+        "title": "HCG monotherapy for hypogonadism",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21753070/",
+        "year": 2011
+      }
+    ],
+    "iuConversion": 1,
+    "description": "LH analog stimulating testicular Leydig cells to produce testosterone and maintain testicular size and spermatogenesis during TRT."
+  },
+  {
+    "id": "testosterone-cypionate",
+    "name": "Testosterone Cypionate",
+    "aliases": [
+      "Test Cyp",
+      "Depo-Testosterone"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "muscle-growth",
+      "energy",
+      "libido"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 200,
+      "unit": "mg"
+    },
+    "halfLife": "8 days",
+    "route": "SubQ or IM",
+    "frequency": "1-2x weekly",
+    "cycleProtocol": "TRT: 100-200 mg/week indefinitely",
+    "stackingNotes": "Foundation of TRT; pair with AI if estradiol elevated; combine with HCG/Gonadorelin for fertility",
+    "citations": [
+      {
+        "title": "Testosterone therapy in hypogonadal men",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20599979/",
+        "year": 2010
+      }
+    ],
+    "iuConversion": null,
+    "description": "Long-acting testosterone ester; most widely prescribed TRT formulation providing stable serum levels. Requires prescription."
+  },
+  {
+    "id": "progesterone",
+    "name": "Progesterone",
+    "aliases": [
+      "Prometrium",
+      "Bioidentical P4"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "hormonal-balance",
+      "sleep",
+      "neuroprotection",
+      "anxiety-reduction"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 200,
+      "unit": "mg"
+    },
+    "halfLife": "25-50 hours",
+    "route": "Oral or Topical",
+    "frequency": "Daily evening",
+    "cycleProtocol": "Women: days 14-28; Men: 10-25mg topical daily",
+    "stackingNotes": "GABA-A modulation improves sleep; essential balance to estrogen in HRT",
+    "citations": [
+      {
+        "title": "Progesterone as neurosteroid",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/10758834/",
+        "year": 2000
+      }
+    ],
+    "iuConversion": null,
+    "description": "Bioidentical hormone and neurosteroid modulating GABA-A receptors for sleep and anxiety; essential for hormonal balance in women and increasingly used by men."
+  },
+  {
+    "id": "l-glutamine",
+    "name": "L-Glutamine",
+    "aliases": [
+      "Glutamine"
+    ],
+    "category": "gut-health",
+    "goals": [
+      "gut-health",
+      "leaky-gut",
+      "immune-support",
+      "muscle-recovery"
+    ],
+    "typicalDose": {
+      "min": 5000,
+      "max": 15000,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "Daily split doses",
+    "cycleProtocol": "Continuous; 8-12 week gut repair protocols",
+    "stackingNotes": "Foundational gut repair; pairs with BPC-157 and Zinc Carnosine",
+    "citations": [
+      {
+        "title": "L-glutamine improves gut permeability",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/11198052/",
+        "year": 2001
+      }
+    ],
+    "iuConversion": null,
+    "description": "Conditionally essential amino acid and primary fuel for intestinal enterocytes; maintains tight junction integrity and reduces gut permeability."
+  },
+  {
+    "id": "zinc-carnosine",
+    "name": "Zinc Carnosine",
+    "aliases": [
+      "Polaprezinc",
+      "PepZin GI"
+    ],
+    "category": "gut-health",
+    "goals": [
+      "gut-health",
+      "leaky-gut",
+      "gastric-ulcer",
+      "inflammation"
+    ],
+    "typicalDose": {
+      "min": 75,
+      "max": 150,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "2x daily with meals",
+    "cycleProtocol": "8 weeks minimum; 3-4 months ideal",
+    "stackingNotes": "Pairs with L-Glutamine; take away from other minerals",
+    "citations": [
+      {
+        "title": "Zinc carnosine stabilises small bowel integrity",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1856764/",
+        "year": 2007
+      }
+    ],
+    "iuConversion": null,
+    "description": "Chelated zinc-carnosine complex stabilizing gastric mucosa and promoting ulcer healing; approved in Japan for gastric ulcer treatment."
+  },
+  {
+    "id": "berberine",
+    "name": "Berberine",
+    "aliases": [
+      "Berberine HCl"
+    ],
+    "category": "gut-health",
+    "goals": [
+      "gut-health",
+      "insulin-sensitivity",
+      "metabolic-health",
+      "microbiome",
+      "fat-loss"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 1500,
+      "unit": "mg"
+    },
+    "halfLife": "4 hours",
+    "route": "Oral",
+    "frequency": "2-3x daily with meals",
+    "cycleProtocol": "8 weeks on, 4 weeks off",
+    "stackingNotes": "Nature's Metformin; activates AMPK; take with food to reduce GI upset",
+    "citations": [
+      {
+        "title": "Berberine review",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22594793/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Plant alkaloid activating AMPK to improve insulin sensitivity and glucose metabolism while modulating gut microbiota; natural alternative to Metformin."
+  },
+  {
+    "id": "colostrum",
+    "name": "Bovine Colostrum",
+    "aliases": [
+      "Colostrum",
+      "First Milk"
+    ],
+    "category": "gut-health",
+    "goals": [
+      "gut-health",
+      "immune-support",
+      "leaky-gut",
+      "muscle-recovery"
+    ],
+    "typicalDose": {
+      "min": 2000,
+      "max": 10000,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous; effects build over 4-8 weeks",
+    "stackingNotes": "Pairs with L-Glutamine and BPC-157 for comprehensive gut healing",
+    "citations": [
+      {
+        "title": "Bovine colostrum and gut permeability",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21992958/",
+        "year": 2011
+      }
+    ],
+    "iuConversion": null,
+    "description": "First-milk extract containing IGF-1, lactoferrin, and immunoglobulins that strengthen gut lining, reduce permeability, and enhance immune function."
+  },
+  {
+    "id": "butyrate",
+    "name": "Butyrate",
+    "aliases": [
+      "Sodium Butyrate",
+      "Tributyrin",
+      "Cal-Mag Butyrate"
+    ],
+    "category": "gut-health",
+    "goals": [
+      "gut-health",
+      "microbiome",
+      "inflammation",
+      "colon-health"
+    ],
+    "typicalDose": {
+      "min": 300,
+      "max": 1200,
+      "unit": "mg"
+    },
+    "halfLife": "~30 minutes",
+    "route": "Oral",
+    "frequency": "2-3x daily with meals",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Short-chain fatty acid fuel for colonocytes; tributyrin form has better absorption; pairs with fiber for natural butyrate production",
+    "citations": [
+      {
+        "title": "Butyrate as gut health modulator",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21521210/",
+        "year": 2011
+      }
+    ],
+    "iuConversion": null,
+    "description": "Short-chain fatty acid that is the primary fuel for colonocytes; strengthens gut barrier, reduces inflammation, and modulates immune function in the colon."
+  },
+  {
+    "id": "slippery-elm",
+    "name": "Slippery Elm",
+    "aliases": [
+      "Ulmus rubra",
+      "Slippery Elm Bark"
+    ],
+    "category": "gut-health",
+    "goals": [
+      "gut-health",
+      "acid-reflux",
+      "mucosal-protection"
+    ],
+    "typicalDose": {
+      "min": 400,
+      "max": 1600,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "2-3x daily before meals",
+    "cycleProtocol": "As needed or continuous",
+    "stackingNotes": "Demulcent that coats and protects gut lining; pairs with Zinc Carnosine for comprehensive mucosal support",
+    "citations": [
+      {
+        "title": "Slippery elm demulcent properties",
+        "url": "",
+        "year": 2010
+      }
+    ],
+    "iuConversion": null,
+    "description": "Mucilaginous bark that forms a protective coating over the GI lining to soothe inflammation, reduce acid reflux, and support mucosal healing."
+  },
+  {
+    "id": "mk-677",
+    "name": "MK-677",
+    "aliases": [
+      "Ibutamoren",
+      "MK677",
+      "Nutrobal"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "growth-hormone",
+      "sleep",
+      "appetite",
+      "recovery"
+    ],
+    "typicalDose": {
+      "min": 10,
+      "max": 25,
+      "unit": "mg"
+    },
+    "halfLife": "24 hours",
+    "route": "Oral",
+    "frequency": "Daily before bed",
+    "cycleProtocol": "3-6 months on, 1 month off; monitor fasting glucose",
+    "stackingNotes": "Oral GH secretagogue; can raise blood sugar \u2014 monitor glucose; pairs with Berberine to offset glucose impact",
+    "citations": [
+      {
+        "title": "MK-677 increases GH and IGF-1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/9467534/",
+        "year": 1998
+      }
+    ],
+    "iuConversion": null,
+    "description": "Oral growth hormone secretagogue mimicking ghrelin to stimulate pulsatile GH release; increases IGF-1 and improves sleep quality; can increase appetite and blood glucose."
+  },
+  {
+    "id": "igf-1-lr3",
+    "name": "IGF-1 LR3",
+    "aliases": [
+      "Long R3 IGF-1",
+      "LR3"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "recovery",
+      "hyperplasia"
+    ],
+    "typicalDose": {
+      "min": 20,
+      "max": 100,
+      "unit": "mcg"
+    },
+    "halfLife": "20-30 hours",
+    "route": "SubQ or IM",
+    "frequency": "Daily",
+    "cycleProtocol": "4 weeks on, 4 weeks off",
+    "stackingNotes": "Potent anabolic; can cause hypoglycemia \u2014 monitor blood sugar; pairs with HGH for synergistic growth",
+    "citations": [
+      {
+        "title": "IGF-1 LR3 in muscle hypertrophy",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/10484640/",
+        "year": 1999
+      }
+    ],
+    "iuConversion": null,
+    "description": "Extended half-life variant of IGF-1 that promotes muscle hyperplasia (new fiber creation) and hypertrophy; 2-3x more potent than native IGF-1."
+  },
+  {
+    "id": "ghrp-2",
+    "name": "GHRP-2",
+    "aliases": [
+      "Growth Hormone Releasing Peptide-2",
+      "Pralmorelin"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "growth-hormone",
+      "fat-loss",
+      "appetite"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 300,
+      "unit": "mcg"
+    },
+    "halfLife": "~30 minutes",
+    "route": "SubQ",
+    "frequency": "2-3x daily",
+    "cycleProtocol": "3-6 months",
+    "stackingNotes": "Strong GH release but increases appetite and cortisol; GHRP-6 increases appetite more; Ipamorelin is cleaner",
+    "citations": [
+      {
+        "title": "GHRP-2 growth hormone release",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/9060012/",
+        "year": 1997
+      }
+    ],
+    "iuConversion": null,
+    "description": "Growth hormone releasing peptide that stimulates GH secretion via the ghrelin receptor; moderate appetite increase and mild cortisol elevation."
+  },
+  {
+    "id": "ghrp-6",
+    "name": "GHRP-6",
+    "aliases": [
+      "Growth Hormone Releasing Peptide-6"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "growth-hormone",
+      "appetite",
+      "recovery"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 300,
+      "unit": "mcg"
+    },
+    "halfLife": "~20 minutes",
+    "route": "SubQ",
+    "frequency": "2-3x daily",
+    "cycleProtocol": "3-6 months",
+    "stackingNotes": "Strongest appetite stimulation of all GHRPs \u2014 useful for hard gainers; GHRP-2 or Ipamorelin better if appetite unwanted",
+    "citations": [
+      {
+        "title": "GHRP-6 stimulates GH and appetite",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/8613651/",
+        "year": 1996
+      }
+    ],
+    "iuConversion": null,
+    "description": "First-generation GHRP that potently stimulates GH release and appetite through the ghrelin receptor; strongest hunger effect of all GH secretagogues."
+  },
+  {
+    "id": "hexarelin",
+    "name": "Hexarelin",
+    "aliases": [
+      "Examorelin",
+      "HEX"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "growth-hormone",
+      "cardiovascular-health"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 200,
+      "unit": "mcg"
+    },
+    "halfLife": "~70 minutes",
+    "route": "SubQ",
+    "frequency": "2-3x daily",
+    "cycleProtocol": "8-12 weeks (desensitization occurs)",
+    "stackingNotes": "Most potent GHRP but desensitizes GH receptors after ~12 weeks; cycle strictly; cardioprotective properties",
+    "citations": [
+      {
+        "title": "Hexarelin cardioprotective effects",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/11181096/",
+        "year": 2001
+      }
+    ],
+    "iuConversion": null,
+    "description": "Most potent growth hormone releasing peptide with unique cardioprotective properties; causes receptor desensitization after prolonged use requiring strict cycling."
+  },
+  {
+    "id": "follistatin-344",
+    "name": "Follistatin-344",
+    "aliases": [
+      "FST-344",
+      "Follistatin"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "myostatin-inhibition",
+      "strength"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 200,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily for 10-30 day courses",
+    "cycleProtocol": "10-30 days on, long break",
+    "stackingNotes": "Myostatin inhibitor; very expensive; results are dramatic but short-lived without ongoing use",
+    "citations": [
+      {
+        "title": "Follistatin gene therapy for muscle growth",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/19208403/",
+        "year": 2009
+      }
+    ],
+    "iuConversion": null,
+    "description": "Glycoprotein that binds and inhibits myostatin, the protein that limits muscle growth; enables muscle growth beyond normal genetic limits."
+  },
+  {
+    "id": "hgh",
+    "name": "HGH",
+    "aliases": [
+      "Human Growth Hormone",
+      "Somatropin",
+      "Genotropin",
+      "Norditropin"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "fat-loss",
+      "anti-aging",
+      "recovery",
+      "sleep"
+    ],
+    "typicalDose": {
+      "min": 1,
+      "max": 4,
+      "unit": "IU"
+    },
+    "halfLife": "3-4 hours",
+    "route": "SubQ",
+    "frequency": "Daily before bed or morning",
+    "cycleProtocol": "6+ months continuous; 2-4 IU anti-aging, 4-8 IU performance",
+    "stackingNotes": "Gold standard GH; pairs with Ipamorelin for pulsatile release; expensive; monitor IGF-1 and blood sugar",
+    "citations": [
+      {
+        "title": "Growth hormone in adults",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/10998617/",
+        "year": 2000
+      }
+    ],
+    "iuConversion": 3000,
+    "description": "Recombinant human growth hormone used for anti-aging, body composition, recovery, and performance; requires prescription and regular IGF-1 monitoring."
+  },
+  {
+    "id": "creatine",
+    "name": "Creatine Monohydrate",
+    "aliases": [
+      "Creatine",
+      "Micronized Creatine"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "strength",
+      "cognitive-enhancement",
+      "neuroprotection"
+    ],
+    "typicalDose": {
+      "min": 3000,
+      "max": 5000,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "Continuous; no cycling needed",
+    "stackingNotes": "Most evidence-backed supplement; pairs with MK-677 for lean mass; emerging cognitive and neuroprotective data",
+    "citations": [
+      {
+        "title": "Creatine supplementation review",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/11283748/",
+        "year": 2001
+      }
+    ],
+    "iuConversion": null,
+    "description": "Phosphocreatine precursor regenerating ATP during high-intensity exercise; most evidence-backed performance supplement with emerging cognitive and longevity benefits."
+  },
+  {
+    "id": "cjc-1295-ipamorelin",
+    "name": "CJC-1295/Ipamorelin Combo",
+    "aliases": [
+      "CJC/IPA",
+      "CJC-1295 no DAC + Ipamorelin"
+    ],
+    "category": "muscle-growth",
+    "goals": [
+      "muscle-growth",
+      "growth-hormone",
+      "fat-loss",
+      "recovery",
+      "sleep"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 300,
+      "unit": "mcg"
+    },
+    "halfLife": "30 min (CJC no DAC) + 2 hrs (IPA)",
+    "route": "SubQ",
+    "frequency": "Daily before bed",
+    "cycleProtocol": "3-6 months",
+    "stackingNotes": "The classic GH peptide combo \u2014 CJC amplifies GHRH signal while IPA triggers the GH pulse; synergistic effect",
+    "citations": [
+      {
+        "title": "CJC-1295 and growth hormone release",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/16352683/",
+        "year": 2006
+      }
+    ],
+    "iuConversion": null,
+    "description": "Synergistic combination of GHRH analog (CJC-1295) and GHRP (Ipamorelin) that amplifies natural pulsatile GH release for fat loss, muscle growth, and improved sleep."
+  },
+  {
+    "id": "dsip",
+    "name": "DSIP",
+    "aliases": [
+      "Delta Sleep-Inducing Peptide"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "stress-reduction",
+      "cortisol-regulation"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 600,
+      "unit": "mcg"
+    },
+    "halfLife": "30 minutes",
+    "route": "SubQ",
+    "frequency": "30-60 min before bed",
+    "cycleProtocol": "2-4 weeks on, 2 weeks off",
+    "stackingNotes": "Combines with Melatonin and Glycine for comprehensive sleep stack",
+    "citations": [
+      {
+        "title": "DSIP review",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/6145137/",
+        "year": 1984
+      }
+    ],
+    "iuConversion": null,
+    "description": "Nonapeptide promoting slow-wave delta sleep, reducing cortisol, and modulating circadian rhythms."
+  },
+  {
+    "id": "melatonin",
+    "name": "Melatonin",
+    "aliases": [
+      "N-acetyl-5-methoxytryptamine"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "circadian-rhythm",
+      "antioxidant",
+      "anti-aging"
+    ],
+    "typicalDose": {
+      "min": 0.5,
+      "max": 5,
+      "unit": "mg"
+    },
+    "halfLife": "20-50 minutes",
+    "route": "Oral",
+    "frequency": "30-60 min before bed",
+    "cycleProtocol": "Continuous; use lowest effective dose",
+    "stackingNotes": "Start at 0.5-1mg; higher causes grogginess; pairs with Magnesium and L-Theanine",
+    "citations": [
+      {
+        "title": "Melatonin as chronobiotic",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23802980/",
+        "year": 2013
+      }
+    ],
+    "iuConversion": null,
+    "description": "Pineal gland hormone signaling circadian timing; potent antioxidant with anti-aging properties; biohackers use lowest effective dose (0.5-1mg)."
+  },
+  {
+    "id": "glycine",
+    "name": "Glycine",
+    "aliases": [
+      "Aminoacetic acid"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "cognitive-enhancement",
+      "collagen-synthesis"
+    ],
+    "typicalDose": {
+      "min": 3000,
+      "max": 5000,
+      "unit": "mg"
+    },
+    "halfLife": "3-4 hours",
+    "route": "Oral",
+    "frequency": "Before bed",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Lowers core body temperature for sleep onset; pairs with Magnesium L-Threonate",
+    "citations": [
+      {
+        "title": "Glycine improves sleep quality",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22293292/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Inhibitory neurotransmitter improving sleep quality by lowering core body temperature and modulating NMDA receptors."
+  },
+  {
+    "id": "magnesium-l-threonate",
+    "name": "Magnesium L-Threonate",
+    "aliases": [
+      "Magtein",
+      "MgT"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "cognitive-enhancement",
+      "neuroprotection",
+      "anxiety-reduction"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 2000,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "1-3 hours before bed",
+    "cycleProtocol": "Continuous; cognitive benefits build over 4-6 weeks",
+    "stackingNotes": "Only magnesium crossing BBB; pairs with Glycine and DSIP",
+    "citations": [
+      {
+        "title": "Magnesium L-threonate improves sleep",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/39252819/",
+        "year": 2024
+      }
+    ],
+    "iuConversion": null,
+    "description": "Brain-bioavailable magnesium crossing the blood-brain barrier to restore synaptic magnesium; improves sleep quality and cognitive function."
+  },
+  {
+    "id": "l-theanine",
+    "name": "L-Theanine",
+    "aliases": [
+      "Theanine",
+      "Suntheanine"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "anxiety-reduction",
+      "focus",
+      "cognitive-enhancement"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 400,
+      "unit": "mg"
+    },
+    "halfLife": "1 hour",
+    "route": "Oral",
+    "frequency": "Before bed or morning with caffeine",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Synergizes with caffeine for focused calm; pairs with Magnesium Glycinate for sleep",
+    "citations": [
+      {
+        "title": "L-theanine reduces stress",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/16930802/",
+        "year": 2006
+      }
+    ],
+    "iuConversion": null,
+    "description": "Green tea amino acid promoting alpha-wave brain activity for relaxed alertness without sedation; reduces anxiety and improves sleep quality."
+  },
+  {
+    "id": "ashwagandha",
+    "name": "Ashwagandha",
+    "aliases": [
+      "KSM-66",
+      "Sensoril",
+      "Withania somnifera"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "stress-reduction",
+      "testosterone-support",
+      "anxiety-reduction",
+      "cortisol-reduction"
+    ],
+    "typicalDose": {
+      "min": 300,
+      "max": 600,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "Daily evening",
+    "cycleProtocol": "8-12 weeks on, 4 weeks off",
+    "stackingNotes": "KSM-66 extract is best-studied; pairs with Magnesium for sleep",
+    "citations": [
+      {
+        "title": "Ashwagandha reduces stress and anxiety",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23439798/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Adaptogenic root reducing cortisol and improving sleep quality; evidence for modest testosterone elevation with KSM-66 extract."
+  },
+  {
+    "id": "magnesium-glycinate",
+    "name": "Magnesium Glycinate",
+    "aliases": [
+      "Magnesium Bisglycinate",
+      "Chelated Magnesium"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "anxiety-reduction",
+      "muscle-relaxation"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 400,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "30-60 min before bed",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Best-tolerated magnesium for sleep; pairs with Melatonin and L-Theanine",
+    "citations": [
+      {
+        "title": "Magnesium and sleep quality",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/22760904/",
+        "year": 2012
+      }
+    ],
+    "iuConversion": null,
+    "description": "Highly bioavailable chelated magnesium calming the nervous system and improving sleep onset and quality without morning grogginess."
+  },
+  {
+    "id": "thymosin-alpha-1",
+    "name": "Thymosin Alpha-1",
+    "aliases": [
+      "Ta1",
+      "Zadaxin"
+    ],
+    "category": "immune",
+    "goals": [
+      "immune-support",
+      "cancer-support",
+      "antiviral",
+      "vaccine-enhancement"
+    ],
+    "typicalDose": {
+      "min": 1000,
+      "max": 3000,
+      "unit": "mcg"
+    },
+    "halfLife": "2 hours",
+    "route": "SubQ",
+    "frequency": "2-3x weekly",
+    "cycleProtocol": "Continuous for chronic conditions; 4-8 week courses for acute support",
+    "stackingNotes": "Gold standard immune peptide; FDA orphan drug; pairs with Thymalin and LL-37",
+    "citations": [
+      {
+        "title": "Thymosin Alpha-1 comprehensive review",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7747025/",
+        "year": 2020
+      }
+    ],
+    "iuConversion": null,
+    "description": "Thymic peptide enhancing T-cell maturation, dendritic cell function, and NK cell activity; FDA orphan drug status for hepatitis B; used in cancer immunotherapy protocols."
+  },
+  {
+    "id": "ll-37",
+    "name": "LL-37",
+    "aliases": [
+      "Cathelicidin",
+      "hCAP18"
+    ],
+    "category": "immune",
+    "goals": [
+      "immune-support",
+      "antimicrobial",
+      "wound-healing",
+      "biofilm-disruption"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 200,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ",
+    "frequency": "Daily or 3x weekly",
+    "cycleProtocol": "2-4 weeks for acute; 4-8 weeks for chronic",
+    "stackingNotes": "Human antimicrobial peptide; disrupts biofilms; pairs with Thymosin Alpha-1 for comprehensive immune support",
+    "citations": [
+      {
+        "title": "LL-37 antimicrobial peptide review",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23089649/",
+        "year": 2013
+      }
+    ],
+    "iuConversion": null,
+    "description": "Human cathelicidin antimicrobial peptide with broad-spectrum activity against bacteria, viruses, and fungi; unique ability to disrupt biofilms."
+  },
+  {
+    "id": "thymalin",
+    "name": "Thymalin",
+    "aliases": [
+      "Thymus Extract",
+      "Thymogen"
+    ],
+    "category": "immune",
+    "goals": [
+      "immune-support",
+      "anti-aging",
+      "longevity",
+      "t-cell-maturation"
+    ],
+    "typicalDose": {
+      "min": 5000,
+      "max": 10000,
+      "unit": "mcg"
+    },
+    "halfLife": "Unknown",
+    "route": "SubQ or IM",
+    "frequency": "Daily for 10-day courses",
+    "cycleProtocol": "10 days on, 6 months off",
+    "stackingNotes": "Pairs with Epitalon in Russian longevity protocols",
+    "citations": [
+      {
+        "title": "Peptide bioregulators and anti-aging",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21108702/",
+        "year": 2010
+      }
+    ],
+    "iuConversion": null,
+    "description": "Thymus-derived polypeptide complex restoring immune function and promoting T-cell maturation; central to Russian peptide bioregulator longevity protocols."
+  },
+  {
+    "id": "zinc",
+    "name": "Zinc",
+    "aliases": [
+      "Zinc Picolinate",
+      "Zinc Citrate",
+      "Zinc Bisglycinate"
+    ],
+    "category": "immune",
+    "goals": [
+      "immune-support",
+      "testosterone-support",
+      "wound-healing"
+    ],
+    "typicalDose": {
+      "min": 15,
+      "max": 40,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "Daily with food",
+    "cycleProtocol": "Continuous; avoid >40mg/day chronic",
+    "stackingNotes": "Essential cofactor; pair with copper at doses >25mg/day; take with Vitamin D3",
+    "citations": [
+      {
+        "title": "Zinc and immune function",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/9701160/",
+        "year": 1998
+      }
+    ],
+    "iuConversion": null,
+    "description": "Essential mineral cofactor for 300+ enzymes; deficiency impairs immune function, testosterone synthesis, and wound healing."
+  },
+  {
+    "id": "vitamin-d3",
+    "name": "Vitamin D3",
+    "aliases": [
+      "Cholecalciferol"
+    ],
+    "category": "immune",
+    "goals": [
+      "immune-support",
+      "bone-health",
+      "testosterone-support",
+      "mood"
+    ],
+    "typicalDose": {
+      "min": 2000,
+      "max": 10000,
+      "unit": "IU"
+    },
+    "halfLife": "19-25 days",
+    "route": "Oral",
+    "frequency": "Daily with fat",
+    "cycleProtocol": "Continuous; target 50-80 ng/mL",
+    "stackingNotes": "Always pair with K2 (100-200mcg MK-7); test levels before supplementing",
+    "citations": [
+      {
+        "title": "Vitamin D and immune system",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/21527855/",
+        "year": 2011
+      }
+    ],
+    "iuConversion": 1,
+    "description": "Fat-soluble hormone regulating immune function, calcium metabolism, and testosterone synthesis; deficiency affects 40%+ of the population."
+  },
+  {
+    "id": "quercetin",
+    "name": "Quercetin",
+    "aliases": [
+      "Quercetin Phytosome"
+    ],
+    "category": "immune",
+    "goals": [
+      "immune-support",
+      "anti-aging",
+      "senolytic",
+      "inflammation"
+    ],
+    "typicalDose": {
+      "min": 500,
+      "max": 1000,
+      "unit": "mg"
+    },
+    "halfLife": "3 hours",
+    "route": "Oral",
+    "frequency": "Daily with fat",
+    "cycleProtocol": "Continuous; or pulsed with Fisetin for senolytic",
+    "stackingNotes": "Synergistic with Fisetin for senolytics; zinc ionophore properties",
+    "citations": [
+      {
+        "title": "Quercetin versatile flavonoid",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/14763177/",
+        "year": 2004
+      }
+    ],
+    "iuConversion": null,
+    "description": "Flavonoid antioxidant with anti-inflammatory, senolytic, and zinc ionophore properties; widely studied for immune modulation and longevity."
+  },
+  {
+    "id": "omega-3",
+    "name": "Omega-3 Fish Oil",
+    "aliases": [
+      "EPA/DHA",
+      "Fish Oil",
+      "Krill Oil"
+    ],
+    "category": "immune",
+    "goals": [
+      "inflammation",
+      "cardiovascular-health",
+      "cognitive-enhancement",
+      "mood"
+    ],
+    "typicalDose": {
+      "min": 2000,
+      "max": 4000,
+      "unit": "mg"
+    },
+    "halfLife": "N/A",
+    "route": "Oral",
+    "frequency": "Daily with meals",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "Foundation supplement; target 2g+ combined EPA/DHA; pairs with Vitamin D3 and Quercetin",
+    "citations": [
+      {
+        "title": "Omega-3 and cardiovascular health",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/30019766/",
+        "year": 2018
+      }
+    ],
+    "iuConversion": null,
+    "description": "Essential fatty acids EPA and DHA with potent anti-inflammatory, cardiovascular, and neuroprotective effects; foundation supplement for biohackers."
+  },
+  {
+    "id": "vitamin-k2",
+    "name": "Vitamin K2",
+    "aliases": [
+      "MK-7",
+      "Menaquinone-7",
+      "MK-4"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "cardiovascular-health",
+      "bone-health",
+      "calcium-metabolism"
+    ],
+    "typicalDose": {
+      "min": 100,
+      "max": 200,
+      "unit": "mcg"
+    },
+    "halfLife": "72 hours (MK-7)",
+    "route": "Oral",
+    "frequency": "Daily with fat",
+    "cycleProtocol": "Continuous; always pair with Vitamin D3",
+    "stackingNotes": "Essential companion to Vitamin D3; prevents arterial calcification by directing calcium to bones",
+    "citations": [
+      {
+        "title": "Vitamin K2 and cardiovascular calcification",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/19179058/",
+        "year": 2009
+      }
+    ],
+    "iuConversion": null,
+    "description": "Fat-soluble vitamin activating matrix GLA protein to prevent arterial calcification; essential companion to Vitamin D3 supplementation."
+  },
+  {
+    "id": "nad-nasal",
+    "name": "NAD+ Nasal Spray",
+    "aliases": [
+      "Intranasal NAD+"
+    ],
+    "category": "anti-aging",
+    "goals": [
+      "nad-boost",
+      "cognitive-enhancement",
+      "energy",
+      "neuroprotection"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 200,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Nasal",
+    "frequency": "1-2x daily",
+    "cycleProtocol": "Continuous or cycled",
+    "stackingNotes": "Bypasses first-pass metabolism; cheaper than IV; pairs with NMN oral for sustained levels",
+    "citations": [
+      {
+        "title": "Intranasal NAD+ delivery",
+        "url": "",
+        "year": 2023
+      }
+    ],
+    "iuConversion": null,
+    "description": "Intranasal NAD+ delivery bypassing digestive degradation for direct brain uptake; more accessible alternative to IV NAD+ infusions."
+  },
+  {
+    "id": "apigenin",
+    "name": "Apigenin",
+    "aliases": [
+      "4',5,7-trihydroxyflavone"
+    ],
+    "category": "sleep",
+    "goals": [
+      "sleep",
+      "anxiety-reduction",
+      "anti-aging",
+      "cd38-inhibition"
+    ],
+    "typicalDose": {
+      "min": 50,
+      "max": 100,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "Before bed",
+    "cycleProtocol": "Continuous",
+    "stackingNotes": "CD38 inhibitor preserving NAD+ levels; Huberman recommends 50mg before bed; pairs with NMN",
+    "citations": [
+      {
+        "title": "Apigenin CD38 inhibition",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/23818875/",
+        "year": 2013
+      }
+    ],
+    "iuConversion": null,
+    "description": "Flavonoid from chamomile that inhibits CD38 enzyme to preserve NAD+ levels while promoting sleep through mild anxiolytic effects; Huberman Lab recommendation."
+  },
+  {
+    "id": "tongkat-ali",
+    "name": "Tongkat Ali",
+    "aliases": [
+      "Eurycoma longifolia",
+      "Longjack",
+      "Malaysian Ginseng"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "libido",
+      "energy",
+      "stress-reduction",
+      "muscle-growth"
+    ],
+    "typicalDose": {
+      "min": 200,
+      "max": 600,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "Daily morning",
+    "cycleProtocol": "Continuous or 5 days on, 2 off",
+    "stackingNotes": "Huberman-popularized; standardized to 2%+ eurycomanone; pairs with Fadogia Agrestis (use with caution)",
+    "citations": [
+      {
+        "title": "Eurycoma longifolia for male sexual health",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/26365449/",
+        "year": 2015
+      }
+    ],
+    "iuConversion": null,
+    "description": "Southeast Asian herb that reduces SHBG to increase free testosterone, improves cortisol:testosterone ratio, and enhances libido; popularized by Andrew Huberman."
+  },
+  {
+    "id": "fadogia-agrestis",
+    "name": "Fadogia Agrestis",
+    "aliases": [
+      "Fadogia"
+    ],
+    "category": "hormonal",
+    "goals": [
+      "testosterone-support",
+      "libido",
+      "muscle-growth"
+    ],
+    "typicalDose": {
+      "min": 400,
+      "max": 600,
+      "unit": "mg"
+    },
+    "halfLife": "Unknown",
+    "route": "Oral",
+    "frequency": "Daily",
+    "cycleProtocol": "8 weeks on, 2-4 weeks off; monitor liver enzymes",
+    "stackingNotes": "Pairs with Tongkat Ali per Huberman protocol; cycle strictly due to potential testicular toxicity at high doses in animal studies",
+    "citations": [
+      {
+        "title": "Fadogia agrestis aphrodisiac activity",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/16281088/",
+        "year": 2005
+      }
+    ],
+    "iuConversion": null,
+    "description": "Nigerian shrub extract stimulating testicular steroidogenesis; pairs with Tongkat Ali in Huberman protocol; requires cycling due to limited long-term safety data."
+  }
+]

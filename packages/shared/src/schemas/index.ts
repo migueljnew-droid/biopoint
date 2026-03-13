@@ -22,6 +22,12 @@ export * from './community.js';
 // Reminders
 export * from './reminders.js';
 
+// Nutrition & Fasting
+export * from './nutrition.js';
+
+// Peptides
+export * from './peptides.js';
+
 // Common types
 export interface PaginatedResponse<T> {
     data: T[];

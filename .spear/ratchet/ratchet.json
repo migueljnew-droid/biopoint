@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-03-13T06:15:00Z",
+  "thresholds": {
+    "test_coverage": { "value": 70, "direction": "floor", "unit": "percent" },
+    "doc_coverage": { "value": 60, "direction": "floor", "unit": "percent" },
+    "max_complexity": { "value": 20, "direction": "ceiling", "unit": "cyclomatic" },
+    "max_bundle_size": { "value": 500, "direction": "ceiling", "unit": "kb" },
+    "max_build_time": { "value": 120, "direction": "ceiling", "unit": "seconds" }
+  },
+  "active_rules": [],
+  "policy": {
+    "auto_tighten": true,
+    "tighten_buffer_percent": 2,
+    "improvement_threshold_percent": 5,
+    "require_justification_to_loosen": true
+  }
+}

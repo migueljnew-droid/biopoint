@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "functions": [
+    {
+      "id": "test-coverage",
+      "name": "Test Coverage",
+      "script": "fitness/examples/test-coverage.sh",
+      "category": "quality",
+      "enabled": true
+    },
+    {
+      "id": "no-circular-deps",
+      "name": "No Circular Dependencies",
+      "script": "fitness/examples/no-circular-deps.sh",
+      "category": "architecture",
+      "enabled": true
+    }
+  ]
+}

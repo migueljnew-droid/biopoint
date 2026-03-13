@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/migueljnew-droid/spear-framework/main/schemas/config.schema.json",
+  "version": "1.0.0",
+  "project": {
+    "name": "biopoint",
+    "language": "typescript",
+    "description": "HIPAA-compliant health tracking app with AI blood work analysis, peptide protocol management, and biomarker correlation"
+  },
+  "phases": {
+    "spec": { "enabled": true, "require_approval": true },
+    "plan": { "enabled": true, "require_approval": true },
+    "execute": { "enabled": true, "require_approval": false },
+    "audit": { "enabled": true, "require_approval": false },
+    "ratchet": { "enabled": true, "require_approval": false }
+  },
+  "audit": {
+    "categories": {
+      "security": { "enabled": true, "block_on": "CRITICAL" },
+      "dependencies": { "enabled": true, "block_on": "CRITICAL" },
+      "performance": { "enabled": true, "block_on": "HIGH" },
+      "code_quality": { "enabled": true, "block_on": "HIGH" },
+      "documentation": { "enabled": true, "block_on": "CRITICAL" },
+      "architecture": { "enabled": true, "block_on": "HIGH" }
+    },
+    "parallel": true,
+    "auto_fix": false
+  },
+  "ratchet": {
+    "auto_tighten": true,
+    "tighten_buffer_percent": 2,
+    "improvement_threshold_percent": 5,
+    "require_justification_to_loosen": true
+  },
+  "hooks": {
+    "pre-commit": true,
+    "commit-msg": true,
+    "secrets-scan": true,
+    "lint-check": true,
+    "fitness-check": true,
+    "dependency-audit": true,
+    "doc-coverage": true,
+    "test-gate": true
+  },
+  "memory": {
+    "backend": "json",
+    "auto_index": true,
+    "max_entries_per_category": 500
+  },
+  "adapter": "claude-code"
+}

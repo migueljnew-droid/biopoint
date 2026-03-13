@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "last_updated": null,
+  "entries": [],
+  "schema": {
+    "id": "string (uuid)",
+    "type": "decision|finding|pattern|antipattern",
+    "title": "string",
+    "summary": "string (one-line searchable)",
+    "category": "string",
+    "tags": ["string"],
+    "created": "ISO timestamp",
+    "updated": "ISO timestamp",
+    "file": "relative path to full entry",
+    "references": ["related entry ids"]
+  }
+}

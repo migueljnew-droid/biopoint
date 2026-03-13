@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Modal, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, typography, borderRadius, gradients, shadows } from '../../src/theme';
 import { useStacksStore } from '../../src/store/stacksStore';
@@ -16,6 +16,14 @@ import { useSubscriptionStore } from '../../src/store/subscriptionStore';
 export default function StacksScreen() {
     const { stacks, isLoading, fetchStacks, createStack, addItem, updateItem, logCompliance, addReminder, getReminders } = useStacksStore();
     const { isPremium } = useSubscriptionStore();
+    const params = useLocalSearchParams<{
+        prefill_name?: string;
+        prefill_dose?: string;
+        prefill_unit?: string;
+        prefill_frequency?: string;
+        prefill_route?: string;
+        prefill_open?: string;
+    }>();
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showAddItemModal, setShowAddItemModal] = useState(false);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -67,6 +75,34 @@ export default function StacksScreen() {
     };
 
     useEffect(() => { fetchStacks(); }, []);
+
+    // Handle pre-fill from peptide-detail "Add to Stack" navigation
+    useEffect(() => {
+        if (params.prefill_open === '1' && params.prefill_name) {
+            setItemData({
+                name: params.prefill_name ?? '',
+                dose: params.prefill_dose ?? '',
+                unit: params.prefill_unit ?? 'mcg',
+                frequency: params.prefill_frequency ?? 'Daily',
+                route: params.prefill_route ?? 'SubQ',
+                timing: '',
+            });
+            setEditingItemId(null);
+            // Open modal only if at least one stack exists; otherwise prompt to create one first
+            if (stacks.length > 0) {
+                setSelectedStackId(stacks[0]?.id ?? null);
+                setShowAddItemModal(true);
+            } else {
+                Alert.alert(
+                    'No Stacks Yet',
+                    `Create a stack first, then add ${params.prefill_name} to it.`,
+                    [{ text: 'OK', onPress: () => setShowCreateModal(true) }]
+                );
+            }
+        }
+    // Only trigger when the prefill_open param changes, not on every stacks update
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [params.prefill_open, params.prefill_name]);
 
     const handleCreateStack = async () => {
         if (!stackName) { Alert.alert('Error', 'Name is required'); return; }

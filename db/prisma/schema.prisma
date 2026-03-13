@@ -627,6 +627,32 @@ model BreachIncident {
   @@index([reportedById])
 }
 
+// ============ Peptide Database ============
+
+model PeptideCompound {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  aliases          String[] @default([])
+  category         String   // recovery, fat-loss, anti-aging, cognitive, hormonal, gut-health, muscle-growth, sleep, immune
+  goals            String[] @default([])
+  typicalDoseMin   Float
+  typicalDoseMax   Float
+  typicalDoseUnit  String
+  halfLife         String
+  route            String
+  frequency        String
+  cycleProtocol    String
+  stackingNotes    String
+  citations        Json     @default("[]")
+  iuConversion     Float?
+  description      String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([category])
+  @@index([name])
+}
+
 // ============ Compliance Audit Trail ============
 
 enum AuditFramework {

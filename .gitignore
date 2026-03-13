@@ -15,6 +15,18 @@ out/
 !.env.example
 !.env.template
 
+# Doppler configuration files (contain sensitive tokens)
+.doppler/
+.doppler-token
+.doppler-config
+doppler-service-token*
+doppler-pat*
+
+# Backup files from migration
+.doppler/backups/
+*.backup
+*.backup.*
+
 # IDE - VS Code, IntelliJ, Vim
 .vscode/
 .idea/
@@ -161,3 +173,5 @@ prisma/*.db-journal
 # Local development files
 .devcontainer/
 .docker/
+# SPEAR Framework - Ignore output artifacts (keep config and templates)
+.spear/output/
