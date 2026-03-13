@@ -37,7 +37,6 @@ export interface Peptide {
 interface PeptideState {
     compounds: Peptide[];
     isLoading: boolean;
-    // Actions
     search: (query: string) => Peptide[];
     filterByCategory: (category: string | null) => Peptide[];
     filterByGoal: (goal: string | null) => Peptide[];
@@ -46,55 +45,66 @@ interface PeptideState {
 }
 
 // ---------------------------------------------------------------------------
+// Pre-computed indexes (built once at module load — PERF-003, PERF-007)
+// ---------------------------------------------------------------------------
+
+const allCompounds = peptideDatabase as Peptide[];
+
+const searchIndex = allCompounds.map((p) => ({
+    compound: p,
+    searchText: [p.name, ...p.aliases, p.category, p.description]
+        .join(' ')
+        .toLowerCase(),
+}));
+
+const compoundById = new Map(allCompounds.map((p) => [p.id, p]));
+
+// ---------------------------------------------------------------------------
 // Store
 // ---------------------------------------------------------------------------
 
 export const usePeptideStore = create<PeptideState>(() => ({
-    compounds: peptideDatabase as Peptide[],
+    compounds: allCompounds,
     isLoading: false,
 
     search: (query: string): Peptide[] => {
         const q = query.trim().toLowerCase();
-        if (!q) return peptideDatabase as Peptide[];
-        return (peptideDatabase as Peptide[]).filter((p) => {
-            if (p.name.toLowerCase().includes(q)) return true;
-            if (p.aliases.some((a) => a.toLowerCase().includes(q))) return true;
-            if (p.description.toLowerCase().includes(q)) return true;
-            if (p.category.toLowerCase().includes(q)) return true;
-            return false;
-        });
+        if (!q) return allCompounds;
+        return searchIndex
+            .filter((entry) => entry.searchText.includes(q))
+            .map((entry) => entry.compound);
     },
 
     filterByCategory: (category: string | null): Peptide[] => {
-        if (!category) return peptideDatabase as Peptide[];
-        return (peptideDatabase as Peptide[]).filter(
-            (p) => p.category.toLowerCase() === category.toLowerCase()
-        );
+        if (!category) return allCompounds;
+        const cat = category.toLowerCase();
+        return allCompounds.filter((p) => p.category.toLowerCase() === cat);
     },
 
     filterByGoal: (goal: string | null): Peptide[] => {
-        if (!goal) return peptideDatabase as Peptide[];
-        return (peptideDatabase as Peptide[]).filter((p) =>
-            p.goals.some((g) => g.toLowerCase().includes(goal.toLowerCase()))
+        if (!goal) return allCompounds;
+        const g = goal.toLowerCase();
+        return allCompounds.filter((p) =>
+            p.goals.some((pg) => pg.toLowerCase().includes(g))
         );
     },
 
     filterByCategoryAndGoal: (category: string | null, goal: string | null): Peptide[] => {
-        let results = peptideDatabase as Peptide[];
+        let results = allCompounds;
         if (category) {
-            results = results.filter(
-                (p) => p.category.toLowerCase() === category.toLowerCase()
-            );
+            const cat = category.toLowerCase();
+            results = results.filter((p) => p.category.toLowerCase() === cat);
         }
         if (goal) {
+            const g = goal.toLowerCase();
             results = results.filter((p) =>
-                p.goals.some((g) => g.toLowerCase().includes(goal.toLowerCase()))
+                p.goals.some((pg) => pg.toLowerCase().includes(g))
             );
         }
         return results;
     },
 
     getById: (id: string): Peptide | undefined => {
-        return (peptideDatabase as Peptide[]).find((p) => p.id === id);
+        return compoundById.get(id);
     },
 }));

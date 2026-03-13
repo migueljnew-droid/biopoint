@@ -1,13 +1,63 @@
 import type { FastifyInstance } from 'fastify';
 import { prisma } from '@biopoint/db';
 import { PeptideSearchSchema } from '@biopoint/shared';
+import { z } from 'zod';
+
+const IdParamSchema = z.object({ id: z.string().min(1).max(128) });
+
+function toCompoundResponse(c: {
+    id: string;
+    name: string;
+    aliases: string[];
+    category: string;
+    goals: string[];
+    typicalDoseMin: number;
+    typicalDoseMax: number;
+    typicalDoseUnit: string;
+    halfLife: string;
+    route: string;
+    frequency: string;
+    cycleProtocol: string;
+    stackingNotes: string;
+    citations: unknown;
+    iuConversion: number | null;
+    description: string;
+}) {
+    return {
+        id: c.id,
+        name: c.name,
+        aliases: c.aliases,
+        category: c.category,
+        goals: c.goals,
+        typicalDose: {
+            min: c.typicalDoseMin,
+            max: c.typicalDoseMax,
+            unit: c.typicalDoseUnit,
+        },
+        halfLife: c.halfLife,
+        route: c.route,
+        frequency: c.frequency,
+        cycleProtocol: c.cycleProtocol,
+        stackingNotes: c.stackingNotes,
+        citations: c.citations,
+        iuConversion: c.iuConversion,
+        description: c.description,
+    };
+}
 
 export async function peptidesRoutes(app: FastifyInstance) {
     // GET /peptides — public, no auth required
     app.get('/', async (request, reply) => {
-        const params = PeptideSearchSchema.parse(request.query);
-        const { query, category, goal, page, limit } = params;
+        const result = PeptideSearchSchema.safeParse(request.query);
+        if (!result.success) {
+            return reply.status(400).send({
+                statusCode: 400,
+                error: 'Bad Request',
+                message: 'Invalid query parameters',
+            });
+        }
 
+        const { query, category, goal, page, limit } = result.data;
         const skip = (page - 1) * limit;
 
         const where: Parameters<typeof prisma.peptideCompound.findMany>[0]['where'] = {};
@@ -37,29 +87,8 @@ export async function peptidesRoutes(app: FastifyInstance) {
             prisma.peptideCompound.count({ where }),
         ]);
 
-        const data = compounds.map((c) => ({
-            id: c.id,
-            name: c.name,
-            aliases: c.aliases,
-            category: c.category,
-            goals: c.goals,
-            typicalDose: {
-                min: c.typicalDoseMin,
-                max: c.typicalDoseMax,
-                unit: c.typicalDoseUnit,
-            },
-            halfLife: c.halfLife,
-            route: c.route,
-            frequency: c.frequency,
-            cycleProtocol: c.cycleProtocol,
-            stackingNotes: c.stackingNotes,
-            citations: c.citations,
-            iuConversion: c.iuConversion,
-            description: c.description,
-        }));
-
         return {
-            data,
+            data: compounds.map(toCompoundResponse),
             total,
             page,
             limit,
@@ -69,7 +98,16 @@ export async function peptidesRoutes(app: FastifyInstance) {
 
     // GET /peptides/:id — public, no auth required
     app.get('/:id', async (request, reply) => {
-        const { id } = request.params as { id: string };
+        const paramResult = IdParamSchema.safeParse(request.params);
+        if (!paramResult.success) {
+            return reply.status(400).send({
+                statusCode: 400,
+                error: 'Bad Request',
+                message: 'Invalid compound ID',
+            });
+        }
+
+        const { id } = paramResult.data;
 
         const compound = await prisma.peptideCompound.findUnique({
             where: { id },
@@ -83,25 +121,6 @@ export async function peptidesRoutes(app: FastifyInstance) {
             });
         }
 
-        return {
-            id: compound.id,
-            name: compound.name,
-            aliases: compound.aliases,
-            category: compound.category,
-            goals: compound.goals,
-            typicalDose: {
-                min: compound.typicalDoseMin,
-                max: compound.typicalDoseMax,
-                unit: compound.typicalDoseUnit,
-            },
-            halfLife: compound.halfLife,
-            route: compound.route,
-            frequency: compound.frequency,
-            cycleProtocol: compound.cycleProtocol,
-            stackingNotes: compound.stackingNotes,
-            citations: compound.citations,
-            iuConversion: compound.iuConversion,
-            description: compound.description,
-        };
+        return toCompoundResponse(compound);
     });
 }

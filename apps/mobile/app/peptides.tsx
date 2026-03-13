@@ -18,6 +18,7 @@ import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated'
 import { colors, spacing, typography, borderRadius, gradients, shadows } from '../src/theme';
 import { ScreenWrapper, GlassView } from '../src/components';
 import { usePeptideStore, type Peptide } from '../src/store/peptideStore';
+import { getCategoryColor, formatCategoryLabel } from '../src/utils/categoryColors';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -40,23 +41,6 @@ const CATEGORY_FILTERS: CategoryFilter[] = [
     { label: 'Sleep', value: 'sleep' },
     { label: 'Immune', value: 'immune' },
 ];
-
-// Map category slug to a color for the badge
-const CATEGORY_COLORS: Record<string, string> = {
-    recovery: '#34D399',
-    'fat-loss': '#f97316',
-    'anti-aging': '#8b5cf6',
-    cognitive: '#5E5CE6',
-    hormonal: '#FF9F0A',
-    'gut-health': '#22d3ee',
-    'muscle-growth': '#f43f5e',
-    sleep: '#64D2FF',
-    immune: '#30D158',
-};
-
-function getCategoryColor(category: string): string {
-    return CATEGORY_COLORS[category.toLowerCase()] ?? colors.primary;
-}
 
 function formatCategoryLabel(category: string): string {
     return category
