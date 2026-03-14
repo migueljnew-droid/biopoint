@@ -60,7 +60,7 @@ export async function peptidesRoutes(app: FastifyInstance) {
         const { query, category, goal, page, limit } = result.data;
         const skip = (page - 1) * limit;
 
-        const where: Parameters<typeof prisma.peptideCompound.findMany>[0]['where'] = {};
+        const where: NonNullable<Parameters<typeof prisma.peptideCompound.findMany>[0]>['where'] = {};
 
         if (query) {
             where.OR = [

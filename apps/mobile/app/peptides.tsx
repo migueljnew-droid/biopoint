@@ -42,13 +42,6 @@ const CATEGORY_FILTERS: CategoryFilter[] = [
     { label: 'Immune', value: 'immune' },
 ];
 
-function formatCategoryLabel(category: string): string {
-    return category
-        .split('-')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-}
-
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------

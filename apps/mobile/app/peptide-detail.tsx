@@ -17,7 +17,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { colors, spacing, typography, borderRadius, gradients, shadows } from '../src/theme';
 import { ScreenWrapper, GlassView } from '../src/components';
 import { usePeptideStore, type Peptide } from '../src/store/peptideStore';
-import { getCategoryColor, formatCategoryLabel } from '../src/utils/categoryColors';
+import { getCategoryColor } from '../src/utils/categoryColors';
 
 // ---------------------------------------------------------------------------
 // Helpers
