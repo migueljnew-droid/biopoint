@@ -14,4 +14,13 @@ export const featureFlags = {
    * is available with an executed BAA.
    */
   geminiLabAnalysis: process.env.FEATURE_GEMINI_LAB_ANALYSIS === 'true',
+
+  /**
+   * Gemini protocol suggestions (AI-PROTO-01)
+   * Gates AI-generated protocol recommendations surfaced to practitioners.
+   * Disabled by default: generates protocol advice using Vertex AI which requires
+   * an executed Business Associate Agreement (BAA) before processing PHI.
+   * Re-enable via FEATURE_AI_SUGGESTIONS=true only after Vertex AI BAA is in place.
+   */
+  geminiProtocolSuggestions: process.env.FEATURE_AI_SUGGESTIONS === 'true',
 } as const;

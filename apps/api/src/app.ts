@@ -29,6 +29,7 @@ import { fastingRoutes } from './routes/fasting.js';
 import { nutritionRoutes } from './routes/nutrition.js';
 import { complianceRoutes } from './routes/compliance.js';
 import { peptidesRoutes } from './routes/peptides.js';
+import { correlationsRoutes } from './routes/correlations.js';
 import { authMiddleware } from './middleware/auth.js';
 
 const envToLogger = {
@@ -86,6 +87,7 @@ async function registerRoutesForPrefix(app: any, prefix: string) {
     await app.register(dataExportRoutes, { prefix: withPrefix('/user') });
     await app.register(accountDeletionRoutes, { prefix: withPrefix('/user') });
     await app.register(peptidesRoutes, { prefix: withPrefix('/peptides') });
+    await app.register(correlationsRoutes, { prefix: withPrefix('/stacks') });
 
     // BioPoint history endpoint
     app.get(withPrefix('/biopoint/history'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {

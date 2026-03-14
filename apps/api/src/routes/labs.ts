@@ -6,6 +6,7 @@ import { createAuditLog } from '../middleware/auditLog.js';
 import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateS3Key, getFileBuffer } from '../utils/s3.js';
 import { logDownloadAttempt, detectSuspiciousActivity } from '../middleware/s3Security.js';
 import { analyzeLabReport } from '../services/analysis.js';
+import { analyzeLabForSuggestions } from '../services/protocolSuggestions.js';
 import { featureFlags } from '../config/featureFlags.js';
 
 export async function labsRoutes(app: FastifyInstance) {
@@ -341,6 +342,69 @@ export async function labsRoutes(app: FastifyInstance) {
                 statusCode: 500,
                 error: 'Internal Server Error',
                 message: 'Failed to analyze lab report',
+            });
+        }
+    });
+
+    // AI protocol suggestions (AI-PROTO-01: gated behind feature flag -- requires Vertex AI BAA)
+    app.post('/:id/suggest', async (request, reply) => {
+        if (!featureFlags.geminiProtocolSuggestions) {
+            return reply.status(404).send({
+                statusCode: 404,
+                error: 'Not Found',
+                message: 'Feature not available',
+            });
+        }
+
+        // TODO: Add server-side premium verification via RevenueCat REST API once
+        // backend entitlement validation is scoped. Currently gated client-side via
+        // isPremium (subscriptionStore) before this endpoint is called.
+
+        const userId = request.userId;
+        const { id } = request.params as { id: string };
+
+        const report = await prisma.labReport.findFirst({
+            where: { id, userId },
+        });
+
+        if (!report) {
+            return reply.status(404).send({
+                statusCode: 404,
+                error: 'Not Found',
+                message: 'Lab report not found',
+            });
+        }
+
+        const markers = await prisma.labMarker.findMany({
+            where: { labReportId: report.id },
+            orderBy: { name: 'asc' },
+        });
+
+        const markerInputs = markers.map((m) => ({
+            name: m.name,
+            value: m.value,
+            unit: m.unit,
+            refRangeLow: m.refRangeLow,
+            refRangeHigh: m.refRangeHigh,
+        }));
+
+        try {
+            const result = await analyzeLabForSuggestions(markerInputs);
+
+            await createAuditLog(request, {
+                action: 'READ',
+                entityType: 'LabReport',
+                entityId: report.id,
+                metadata: { action: 'suggest', analyzedMarkers: result.analyzedMarkers, flaggedMarkers: result.flaggedMarkers },
+            });
+
+            return result;
+        } catch (error) {
+            request.log.error(error);
+            return reply.status(503).send({
+                statusCode: 503,
+                error: 'Service Unavailable',
+                message: 'Failed to generate protocol suggestions',
             });
         }
     });
