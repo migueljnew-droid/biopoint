@@ -43,27 +43,9 @@ export async function logsRoutes(app: FastifyInstance) {
             },
         });
 
-        // Auto-calculate BioPoint score
-        const breakdown = {
-            sleep: calculateSleepScore(log.sleepHours, log.sleepQuality),
-            energy: (log.energyLevel ?? 5) * 2,
-            focus: (log.focusLevel ?? 5) * 2,
-            mood: (log.moodLevel ?? 5) * 2,
-            weight: 20,
-        };
-
-        const score = Math.min(100, Object.values(breakdown).reduce((a, b) => a + b, 0));
-
-        await prisma.bioPointScore.upsert({
-            where: {
-                userId_date: {
-                    userId,
-                    date,
-                },
-            },
-            update: { score, breakdown },
-            create: { userId, date, score, breakdown },
-        });
+        // NOTE: BioPoint score is calculated via POST /dashboard/calculate
+        // which includes compliance, fasting, and nutrition factors.
+        // Do NOT auto-calculate here — the old formula was divergent.
 
         return {
             id: log.id,
@@ -165,19 +147,4 @@ export async function logsRoutes(app: FastifyInstance) {
             notes: log.notes,
         };
     });
-}
-
-function calculateSleepScore(hours: number | null, quality: number | null): number {
-    if (!hours && !quality) return 10;
-    let score = 0;
-    if (hours) {
-        if (hours >= 7 && hours <= 9) score += 10;
-        else if (hours >= 6 && hours <= 10) score += 7;
-        else score += 4;
-    } else {
-        score += 5;
-    }
-    if (quality) score += quality;
-    else score += 5;
-    return Math.min(20, score);
 }

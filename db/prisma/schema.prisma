@@ -100,8 +100,6 @@ model Profile {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  @@index([dateOfBirth_encrypted])
-  @@index([encryption_version])
 }
 
 // ============ Stacks (Peptides/Supplements) ============
@@ -118,6 +116,9 @@ model Stack {
   updatedAt DateTime @updatedAt
 
   items StackItem[]
+
+  @@index([userId])
+  @@index([userId, isActive])
 }
 
 model StackItem {
@@ -143,9 +144,6 @@ model StackItem {
 
   complianceEvents ComplianceEvent[]
   reminders        ReminderSchedule[]
-
-  @@index([notes_encrypted])
-  @@index([encryption_version])
 }
 
 model ComplianceEvent {
@@ -156,6 +154,8 @@ model ComplianceEvent {
   stackItem   StackItem @relation(fields: [stackItemId], references: [id], onDelete: Cascade)
   takenAt     DateTime  @default(now())
   notes       String?
+
+  @@index([userId, takenAt])
 }
 
 model ReminderSchedule {
@@ -188,9 +188,6 @@ model LabReport {
   encryption_metadata  Json?     @default("{}")
 
   markers LabMarker[]
-
-  @@index([notes_encrypted])
-  @@index([encryption_version])
 }
 
 model LabMarker {
@@ -212,8 +209,6 @@ model LabMarker {
   encryption_version   Int?      @default(1)
   encryption_metadata  Json?     @default("{}")
 
-  @@index([value_encrypted])
-  @@index([encryption_version])
   @@index([userId])                   // range scan by user (eliminates full table scan)
   @@index([userId, recordedAt])       // compound for sorted trends query: WHERE userId ORDER BY recordedAt
 }
@@ -238,8 +233,7 @@ model ProgressPhoto {
   encryption_version   Int?      @default(1)
   encryption_metadata  Json?     @default("{}")
 
-  @@index([notes_encrypted])
-  @@index([encryption_version])
+  @@index([userId, capturedAt])
 }
 
 // ============ Daily Tracking ============
@@ -265,8 +259,6 @@ model DailyLog {
   encryption_metadata  Json?     @default("{}")
 
   @@unique([userId, date])
-  @@index([notes_encrypted])
-  @@index([encryption_version])
 }
 
 // ============ BioPoint Score ============
@@ -281,6 +273,7 @@ model BioPointScore {
   createdAt DateTime @default(now())
 
   @@unique([userId, date])
+  @@index([score])
 }
 
 // ============ Fasting & Nutrition ============
@@ -421,6 +414,8 @@ model Post {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([groupId, createdAt])
 }
 
 model StackTemplate {

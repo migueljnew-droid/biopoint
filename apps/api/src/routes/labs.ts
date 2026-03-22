@@ -300,11 +300,8 @@ export async function labsRoutes(app: FastifyInstance) {
             // Save markers to database
             const reportDate = report.reportDate || report.uploadedAt || new Date();
 
-            // Clear existing markers for this report to avoid duplicates on re-analysis
-            await prisma.labMarker.deleteMany({ where: { labReportId: report.id } });
-
-            for (const m of analysis.markers) {
-                // Parse range string (e.g., "13.5-17.5" or "13.5 - 17.5")
+            // Parse markers and batch insert atomically
+            const markerData = analysis.markers.map((m: { name: string; value: number; unit: string; range: string; flag: string; insight: string }) => {
                 let low: number | null = null;
                 let high: number | null = null;
                 const rangeMatch = m.range.match(/([\d.]+)\s*-\s*([\d.]+)/);
@@ -312,21 +309,23 @@ export async function labsRoutes(app: FastifyInstance) {
                     low = parseFloat(rangeMatch[1] ?? '0');
                     high = parseFloat(rangeMatch[2] ?? '0');
                 }
+                return {
+                    labReportId: report.id,
+                    userId,
+                    name: m.name,
+                    value: m.value,
+                    unit: m.unit,
+                    refRangeLow: low,
+                    refRangeHigh: high,
+                    recordedAt: reportDate,
+                    notes: `${m.flag}: ${m.insight}`,
+                };
+            });
 
-                await prisma.labMarker.create({
-                    data: {
-                        labReportId: report.id,
-                        userId,
-                        name: m.name,
-                        value: m.value,
-                        unit: m.unit,
-                        refRangeLow: low,
-                        refRangeHigh: high,
-                        recordedAt: reportDate,
-                        notes: `${m.flag}: ${m.insight}`,
-                    },
-                });
-            }
+            await prisma.$transaction([
+                prisma.labMarker.deleteMany({ where: { labReportId: report.id } }),
+                prisma.labMarker.createMany({ data: markerData }),
+            ]);
 
             await createAuditLog(request, {
                 action: 'UPDATE',
