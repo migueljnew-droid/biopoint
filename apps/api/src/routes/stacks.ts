@@ -6,6 +6,7 @@ import {
     CreateStackItemSchema,
     UpdateStackItemSchema,
     ComplianceEventSchema,
+    CreateReminderSchema,
 } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
 
@@ -388,7 +389,7 @@ export async function stacksRoutes(app: FastifyInstance) {
     app.post('/items/:itemId/reminders', async (request, reply) => {
         const userId = request.userId;
         const { itemId } = request.params as { itemId: string };
-        const body = request.body as { time: string; daysOfWeek: number[] }; // Simple validation for now
+        const body = CreateReminderSchema.omit({ stackItemId: true }).parse(request.body);
 
         const stackItem = await prisma.stackItem.findFirst({
             where: { id: itemId, stack: { userId } },

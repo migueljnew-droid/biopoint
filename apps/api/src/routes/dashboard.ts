@@ -12,84 +12,48 @@ export async function dashboardRoutes(app: FastifyInstance) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Get today's BioPoint score
-        const bioPointScore = await prisma.bioPointScore.findUnique({
-            where: {
-                userId_date: {
-                    userId,
-                    date: today,
-                },
-            },
-        });
-
-        // Get today's log
-        const todayLog = await prisma.dailyLog.findUnique({
-            where: {
-                userId_date: {
-                    userId,
-                    date: today,
-                },
-            },
-        });
-
-        // Get recent logs (last 7 days)
         const weekAgo = new Date(today);
         weekAgo.setDate(weekAgo.getDate() - 7);
 
-        const recentLogs = await prisma.dailyLog.findMany({
-            where: {
-                userId,
-                date: {
-                    gte: weekAgo,
-                },
-            },
-            orderBy: { date: 'desc' },
-            take: 7,
-        });
+        // Parallel fetch — all 8 queries are independent
+        const [bioPointScore, todayLog, recentLogs, scoreHistoryData, activeStacks, complianceEvents, activeFasting, todayFoodLog] = await Promise.all([
+            prisma.bioPointScore.findUnique({
+                where: { userId_date: { userId, date: today } },
+            }),
+            prisma.dailyLog.findUnique({
+                where: { userId_date: { userId, date: today } },
+            }),
+            prisma.dailyLog.findMany({
+                where: { userId, date: { gte: weekAgo } },
+                orderBy: { date: 'desc' },
+                take: 7,
+            }),
+            prisma.bioPointScore.findMany({
+                where: { userId, date: { gte: weekAgo } },
+                orderBy: { date: 'asc' },
+            }),
+            prisma.stack.count({
+                where: { userId, isActive: true },
+            }),
+            prisma.complianceEvent.count({
+                where: { userId, takenAt: { gte: weekAgo } },
+            }),
+            prisma.fastingSession.findFirst({
+                where: { userId, status: 'ACTIVE' },
+                include: { protocol: { select: { name: true } } },
+            }),
+            prisma.foodLog.findUnique({
+                where: { userId_date: { userId, date: today } },
+            }),
+        ]);
 
         // Calculate weekly trend
         let weeklyTrend: number | null = null;
-        const scoreHistoryData = await prisma.bioPointScore.findMany({
-            where: {
-                userId,
-                date: {
-                    gte: weekAgo,
-                },
-            },
-            orderBy: { date: 'asc' },
-        });
-
         if (scoreHistoryData.length >= 2) {
             const first = scoreHistoryData[0]!.score;
             const last = scoreHistoryData[scoreHistoryData.length - 1]!.score;
             weeklyTrend = last - first;
         }
-
-        // Get active stacks count
-        const activeStacks = await prisma.stack.count({
-            where: { userId, isActive: true },
-        });
-
-        // Get recent compliance rate
-        const complianceEvents = await prisma.complianceEvent.count({
-            where: {
-                userId,
-                takenAt: {
-                    gte: weekAgo,
-                },
-            },
-        });
-
-        // Get active fasting session
-        const activeFasting = await prisma.fastingSession.findFirst({
-            where: { userId, status: 'ACTIVE' },
-            include: { protocol: { select: { name: true } } },
-        });
-
-        // Get today's nutrition summary
-        const todayFoodLog = await prisma.foodLog.findUnique({
-            where: { userId_date: { userId, date: today } },
-        });
 
         // Audit log for dashboard access (contains PHI data)
         await createAuditLog(request, {
@@ -167,39 +131,29 @@ export async function dashboardRoutes(app: FastifyInstance) {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        // Get today's log
-        const log = await prisma.dailyLog.findUnique({
-            where: {
-                userId_date: {
-                    userId,
-                    date: today,
-                },
-            },
-        });
+        // Parallel fetch — all 6 queries are independent
+        const [log, activeItemCount, complianceCount, completedFastToday, activeFastSession, todayFoodLog] = await Promise.all([
+            prisma.dailyLog.findUnique({
+                where: { userId_date: { userId, date: today } },
+            }),
+            prisma.stackItem.count({
+                where: { stack: { userId, isActive: true }, isActive: true },
+            }),
+            prisma.complianceEvent.count({
+                where: { userId, takenAt: { gte: today, lt: tomorrow } },
+            }),
+            prisma.fastingSession.findFirst({
+                where: { userId, status: 'COMPLETED', endedAt: { gte: today, lt: tomorrow } },
+            }),
+            prisma.fastingSession.findFirst({
+                where: { userId, status: 'ACTIVE' },
+            }),
+            prisma.foodLog.findUnique({
+                where: { userId_date: { userId, date: today } },
+            }),
+        ]);
 
-        // Get active stack items count
-        const activeItemCount = await prisma.stackItem.count({
-            where: {
-                stack: {
-                    userId,
-                    isActive: true,
-                },
-                isActive: true,
-            },
-        });
-
-        // Get today's compliance events count
-        const complianceCount = await prisma.complianceEvent.count({
-            where: {
-                userId,
-                takenAt: {
-                    gte: today,
-                    lt: tomorrow,
-                },
-            },
-        });
-
-        // Calculate Compliance Score (0-16)
+        // Compliance Score (0-16)
         let complianceScore = 0;
         if (activeItemCount === 0) {
             complianceScore = 16;
@@ -208,29 +162,16 @@ export async function dashboardRoutes(app: FastifyInstance) {
             complianceScore = Math.round(ratio * 16);
         }
 
-        // Fasting Score (0-9): 0 if no fast, 5 if active, 9 if completed today
+        // Fasting Score (0-9)
         let fastingScore = 0;
-        const completedFastToday = await prisma.fastingSession.findFirst({
-            where: {
-                userId,
-                status: 'COMPLETED',
-                endedAt: { gte: today, lt: tomorrow },
-            },
-        });
-        const activeFastSession = await prisma.fastingSession.findFirst({
-            where: { userId, status: 'ACTIVE' },
-        });
         if (completedFastToday) {
             fastingScore = 9;
         } else if (activeFastSession) {
             fastingScore = 5;
         }
 
-        // Nutrition Score (0-9): scaled by meals logged today
+        // Nutrition Score (0-9)
         let nutritionScore = 0;
-        const todayFoodLog = await prisma.foodLog.findUnique({
-            where: { userId_date: { userId, date: today } },
-        });
         if (todayFoodLog) {
             if (todayFoodLog.mealCount >= 3) nutritionScore = 9;
             else if (todayFoodLog.mealCount === 2) nutritionScore = 6;
@@ -286,7 +227,7 @@ function calculateSleepScore(hours: number | null, quality: number | null): numb
     if (hours) {
         if (hours >= 7 && hours <= 9) {
             score += 9;
-        } else if (hours >= 6 || hours <= 10) {
+        } else if (hours >= 6 && hours <= 10) {
             score += 6;
         } else {
             score += 3;

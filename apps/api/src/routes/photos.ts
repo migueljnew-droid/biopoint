@@ -204,11 +204,11 @@ export async function photosRoutes(app: FastifyInstance) {
         await prisma.progressPhoto.update({ where: { id }, data: { alignmentStatus: 'processing' } });
 
         // MVP: Simple deterministic alignment (simulate async)
-        setTimeout(async () => {
-            await prisma.progressPhoto.update({
+        setTimeout(() => {
+            prisma.progressPhoto.update({
                 where: { id },
                 data: { alignedS3Key: photo.originalS3Key, alignmentStatus: 'done' },
-            });
+            }).catch(err => request.log.error(err, 'Alignment update failed for photo %s', id));
         }, 1000);
 
         return { status: 'processing', message: 'Alignment job started' };

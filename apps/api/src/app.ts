@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
@@ -63,8 +63,7 @@ interface MarkerTrend {
     }[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function registerRoutesForPrefix(app: any, prefix: string) {
+async function registerRoutesForPrefix(app: FastifyInstance, prefix: string) {
     const base = prefix === '/' ? '' : prefix;
     const withPrefix = (path: string) => `${base}${path}`;
 

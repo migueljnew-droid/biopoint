@@ -27,10 +27,10 @@ primary_region = 'iad'  # us-east-1 — closest to Neon default region
 
 [[http_service.ports]]
   port = 80
-  handlers = ['http']
+  handlers = ['redirect']    # HIPAA: redirect plaintext to HTTPS, never serve HTTP
 
 [[vm]]
-  memory = '512mb'
+  memory = '1gb'             # Upgraded from 512mb — needed for Prisma + encryption + AI calls
   cpu_kind = 'shared'
   cpus = 1
 
