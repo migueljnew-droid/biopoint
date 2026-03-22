@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
+import { RegisterSchema } from '@biopoint/shared';
 import { colors, spacing, typography, borderRadius, gradients, shadows } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { ScreenWrapper, GlassView, AnimatedButton, GradientText } from '../src/components/ui';
@@ -22,16 +23,13 @@ export default function RegisterScreen() {
     }, []);
 
     const handleRegister = async () => {
-        if (!email || !password || !confirmPassword) {
-            Alert.alert('Error', 'Please fill in all fields');
-            return;
-        }
         if (password !== confirmPassword) {
             Alert.alert('Error', 'Passwords do not match');
             return;
         }
-        if (password.length < 6) {
-            Alert.alert('Error', 'Password must be at least 6 characters');
+        const result = RegisterSchema.safeParse({ email, password });
+        if (!result.success) {
+            Alert.alert('Error', result.error.errors[0]?.message ?? 'Invalid input');
             return;
         }
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -64,6 +62,17 @@ export default function RegisterScreen() {
                         keyboardType={keyboardType}
                         secureTextEntry={secureTextEntry && !showPassword}
                         autoCapitalize="none"
+                        autoCorrect={false}
+                        autoComplete={
+                            field === 'email' ? 'email' :
+                                field === 'password' || field === 'confirm' ? 'password' :
+                                    'off'
+                        }
+                        textContentType={
+                            field === 'email' ? 'emailAddress' :
+                                field === 'password' || field === 'confirm' ? 'password' :
+                                    'none'
+                        }
                         onFocus={() => setFocusedField(field)}
                         onBlur={() => setFocusedField(null)}
                     />

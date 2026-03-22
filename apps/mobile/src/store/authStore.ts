@@ -2,11 +2,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import * as SecureStore from 'expo-secure-store';
 import { api, setTokens, clearTokens, getAccessToken } from '../services/api';
+import type { UserResponse } from '@biopoint/shared';
 
-interface User {
-    id: string;
-    email: string;
-    role: 'USER' | 'ADMIN';
+interface User extends UserResponse {
     onboardingComplete: boolean;
 }
 

@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
+import { LoginSchema } from '@biopoint/shared';
 import { colors, spacing, typography, borderRadius, gradients } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { ScreenWrapper, GlassView, AnimatedButton, GradientText } from '../src/components/ui';
@@ -26,8 +27,9 @@ export default function LoginScreen() {
     }, []);
 
     const handleLogin = async () => {
-        if (!email || !password) {
-            Alert.alert('Error', 'Please fill in all fields');
+        const result = LoginSchema.safeParse({ email, password });
+        if (!result.success) {
+            Alert.alert('Error', result.error.errors[0]?.message ?? 'Invalid input');
             return;
         }
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -151,6 +153,8 @@ export default function LoginScreen() {
                                     secureTextEntry={!showPassword}
                                     autoCapitalize="none"
                                     autoCorrect={false}
+                                    autoComplete="password"
+                                    textContentType="password"
                                 />
                                 <Pressable style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
                                     <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color={colors.textMuted} />

@@ -1,14 +1,25 @@
 import { PrismaClient } from '@prisma/client';
-import { getDatabaseConfig } from '../../apps/api/src/config/database.js';
 import {
     shouldProcessModel,
     encryptDataObject,
     decryptRecord,
-} from '../../apps/api/src/middleware/encryption.js';
+} from './encryption/fields.js';
 
 declare global {
     // eslint-disable-next-line no-var
     var prisma: PrismaClient | undefined;
+}
+
+/**
+ * Pool size per environment (inlined to eliminate circular dependency on @biopoint/api).
+ */
+function getPoolMax(): number {
+    switch (process.env.NODE_ENV) {
+        case 'production': return 20;
+        case 'staging': return 10;
+        case 'test': return 3;
+        default: return 5;
+    }
 }
 
 /**
@@ -19,17 +30,13 @@ function getConnectionUrl(): string {
     const url = process.env.DATABASE_URL;
     if (!url) throw new Error('DATABASE_URL environment variable is required');
 
-    const config = getDatabaseConfig();
     const parsed = new URL(url);
 
     if (!parsed.searchParams.has('connection_limit')) {
-        parsed.searchParams.set('connection_limit', String(config.pool.max));
+        parsed.searchParams.set('connection_limit', String(getPoolMax()));
     }
     if (!parsed.searchParams.has('pool_timeout')) {
-        parsed.searchParams.set(
-            'pool_timeout',
-            String(Math.floor(config.pool.acquireTimeoutMillis / 1000)),
-        );
+        parsed.searchParams.set('pool_timeout', '15');
     }
 
     return parsed.toString();
@@ -169,5 +176,8 @@ export const prisma = basePrisma.$extends({
         },
     },
 });
+
+// Re-export encryption utilities so API can import from @biopoint/db
+export * from './encryption/index.js';
 
 export * from '@prisma/client';
