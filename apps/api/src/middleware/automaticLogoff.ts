@@ -1,4 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
+import { appLogger } from '../utils/appLogger.js';
 // prisma import removed — not used in this middleware
 
 // Configuration constants
@@ -169,7 +170,7 @@ class SessionManager {
 
         // Log cleanup statistics if any sessions were removed
         if (expiredSessions.length > 0) {
-            console.log(`[SessionManager] Cleaned up ${expiredSessions.length} expired sessions`);
+            appLogger.info({ count: expiredSessions.length }, '[SessionManager] Cleaned up expired sessions');
         }
     }
 
@@ -381,7 +382,7 @@ export function manualLogoff(sessionId: string): void {
     const session = sessionManager.getSession(sessionId);
     if (session) {
         sessionManager.removeSession(sessionId);
-        console.log(`[SessionManager] Manual logoff for user ${session.userId}`);
+        appLogger.info({ userId: session.userId }, '[SessionManager] Manual logoff');
     }
 }
 

@@ -9,6 +9,7 @@ import {
   getConsentPreferences
 } from '../../services/gdpr-compliance.js';
 import { z } from 'zod';
+import { appLogger } from '../../utils/appLogger.js';
 
 // Validation schemas
 const AccountDeletionRequestSchema = z.object({
@@ -123,7 +124,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
           : 'Your account will be deleted in 30 days. You can cancel this request until then.',
       };
     } catch (error) {
-      console.error('Account deletion request error:', error);
+      appLogger.error({ err: error }, 'Account deletion request error');
       
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -151,7 +152,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
       
       return deletionStatus;
     } catch (error) {
-      console.error('Deletion status error:', error);
+      appLogger.error({ err: error }, 'Deletion status error');
       return reply.status(500).send({
         error: 'Failed to get deletion status',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -220,7 +221,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
         deletionId: cancelledRequest.id,
       };
     } catch (error) {
-      console.error('Cancel deletion error:', error);
+      appLogger.error({ err: error }, 'Cancel deletion error');
       return reply.status(500).send({
         error: 'Failed to cancel deletion request',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -243,7 +244,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
         gdprNotice: 'You have the right to withdraw consent at any time',
       };
     } catch (error) {
-      console.error('Get consent error:', error);
+      appLogger.error({ err: error }, 'Get consent error');
       return reply.status(500).send({
         error: 'Failed to get consent preferences',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -277,7 +278,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
         },
       };
     } catch (error) {
-      console.error('Update consent error:', error);
+      appLogger.error({ err: error }, 'Update consent error');
       
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -344,7 +345,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
         gdprNotice: 'Your consent has been withdrawn. This will not affect the lawfulness of processing based on consent before its withdrawal.',
       };
     } catch (error) {
-      console.error('Consent withdrawal error:', error);
+      appLogger.error({ err: error }, 'Consent withdrawal error');
       
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -399,7 +400,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
         gdprNotice: 'Consent history is maintained for compliance with GDPR Article 7',
       };
     } catch (error) {
-      console.error('Consent history error:', error);
+      appLogger.error({ err: error }, 'Consent history error');
       return reply.status(500).send({
         error: 'Failed to get consent history',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -453,7 +454,7 @@ export async function accountDeletionRoutes(app: FastifyInstance) {
         gdprNotice: 'This data retention policy complies with GDPR Article 5(1)(e) - Storage limitation principle',
       };
     } catch (error) {
-      console.error('Data retention policy error:', error);
+      appLogger.error({ err: error }, 'Data retention policy error');
       return reply.status(500).send({
         error: 'Failed to get data retention policy',
         message: error instanceof Error ? error.message : 'Unknown error',

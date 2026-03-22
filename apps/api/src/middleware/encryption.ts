@@ -1,4 +1,5 @@
 import { encryptToString, decryptFromString, isEncryptedString } from '../utils/encryption.js';
+import { appLogger } from '../utils/appLogger.js';
 
 /**
  * Prisma transparent field-level encryption (SEC-05: migrated from $use to $extends)
@@ -108,9 +109,9 @@ export async function decryptRecord(model: string, record: any): Promise<any> {
         delete decryptedItem[encryptedFieldName];
       } catch (error) {
         // SEC-03: Log error server-side, return null instead of sentinel
-        console.error(
-          `[ENCRYPTION] Decryption failed for ${model}.${field}:`,
-          error instanceof Error ? error.message : 'Unknown error',
+        appLogger.error(
+          { model, field, err: error instanceof Error ? error.message : 'Unknown error' },
+          '[ENCRYPTION] Decryption failed',
         );
         decryptedItem[field] = null;
         if (`${field}_encrypted` in decryptedItem) {
@@ -185,11 +186,11 @@ export async function validateEncryptionSetup(): Promise<{ valid: boolean; error
       return { valid: false, error: 'Encryption did not transform data' };
     }
 
-    console.log('[ENCRYPTION] Encryption setup validation passed');
+    appLogger.info('[ENCRYPTION] Encryption setup validation passed');
     return { valid: true };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[ENCRYPTION] Encryption setup validation failed:', errorMessage);
+    appLogger.error({ err: errorMessage }, '[ENCRYPTION] Encryption setup validation failed');
     return { valid: false, error: errorMessage };
   }
 }

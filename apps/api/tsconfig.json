@@ -16,9 +16,6 @@
     "exclude": [
         "node_modules",
         "dist",
-        "src/__tests__",
-        "src/config/monitoring.ts",
-        "src/routes/health.routes.ts",
-        "src/utils/sentry.ts"
+        "src/__tests__"
     ]
 }

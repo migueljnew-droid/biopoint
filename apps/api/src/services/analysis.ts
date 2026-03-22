@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { appLogger } from '../utils/appLogger.js';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -56,7 +57,7 @@ Return ONLY the raw JSON object, no markdown formatting.
 
         return JSON.parse(jsonStr) as AnalysisResult;
     } catch (error) {
-        console.error('Gemini Analysis Error:', error);
+        appLogger.error({ err: error }, 'Gemini Analysis Error');
         throw new Error('Failed to analyze lab report');
     }
 }

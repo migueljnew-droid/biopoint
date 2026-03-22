@@ -1,6 +1,7 @@
 import { prisma } from '@biopoint/db';
 import { createAuditLog } from '../middleware/auditLog.js';
 import crypto from 'crypto';
+import { appLogger } from '../utils/appLogger.js';
 
 /**
  * GDPR Compliance Service
@@ -192,7 +193,7 @@ export async function exportUserData(
     return exportData;
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error exporting user data:', error);
+      appLogger.error({ err: error }, 'Error exporting user data');
     }
     throw new Error('Failed to export user data');
   }
@@ -236,7 +237,7 @@ export async function generatePDFReport(
     return Buffer.from(JSON.stringify(pdfContent, null, 2));
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error generating PDF report:', error);
+      appLogger.error({ err: error }, 'Error generating PDF report');
     }
     throw new Error('Failed to generate PDF report');
   }
@@ -331,7 +332,7 @@ export async function requestAccountDeletion(
     };
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error requesting account deletion:', error);
+      appLogger.error({ err: error }, 'Error requesting account deletion');
     }
     throw error instanceof Error ? error : new Error('Failed to request account deletion');
   }
@@ -507,7 +508,7 @@ export async function executeAccountDeletion(
     };
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error executing account deletion:', error);
+      appLogger.error({ err: error }, 'Error executing account deletion');
     }
     throw error instanceof Error ? error : new Error('Failed to execute account deletion');
   }
@@ -589,7 +590,7 @@ export async function updateConsentPreferences(
     };
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error updating consent preferences:', error);
+      appLogger.error({ err: error }, 'Error updating consent preferences');
     }
     throw error instanceof Error ? error : new Error('Failed to update consent preferences');
   }
@@ -626,7 +627,7 @@ export async function getConsentPreferences(userId: string): Promise<any> {
     };
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error getting consent preferences:', error);
+      appLogger.error({ err: error }, 'Error getting consent preferences');
     }
     throw error instanceof Error ? error : new Error('Failed to get consent preferences');
   }
@@ -666,7 +667,7 @@ export async function cleanupOrphanedData(): Promise<{ cleanedRecords: Record<st
     return { cleanedRecords };
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error cleaning up orphaned data:', error);
+      appLogger.error({ err: error }, 'Error cleaning up orphaned data');
     }
     throw error instanceof Error ? error : new Error('Failed to cleanup orphaned data');
   }
@@ -719,7 +720,7 @@ export async function autoDeleteInactiveAccounts(): Promise<{ deletedAccounts: n
         const errorMessage = `Failed to delete account ${user.id}: ${error instanceof Error ? error.message : String(error)}`;
         errors.push(errorMessage);
         if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-          console.error(errorMessage);
+          appLogger.error(errorMessage);
         }
       }
     }
@@ -727,7 +728,7 @@ export async function autoDeleteInactiveAccounts(): Promise<{ deletedAccounts: n
     return { deletedAccounts, errors };
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error auto-deleting inactive accounts:', error);
+      appLogger.error({ err: error }, 'Error auto-deleting inactive accounts');
     }
     throw error instanceof Error ? error : new Error('Failed to auto-delete inactive accounts');
   }
@@ -761,7 +762,7 @@ export async function getDeletionStatus(userId: string): Promise<any> {
     };
   } catch (error) {
     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-      console.error('Error getting deletion status:', error);
+      appLogger.error({ err: error }, 'Error getting deletion status');
     }
     throw error instanceof Error ? error : new Error('Failed to get deletion status');
   }

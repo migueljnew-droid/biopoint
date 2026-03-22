@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { prisma } from '@biopoint/db';
 import { getDatabaseConfig } from '../config/database.js';
+import { appLogger } from '../utils/appLogger.js';
 
 const HEALTH_CHECK_TOKEN = process.env.HEALTH_CHECK_TOKEN;
 
@@ -146,7 +147,7 @@ export async function healthRoutes(app: FastifyInstance) {
         }
 
       } catch (metricsError) {
-        console.error('Failed to get pool metrics:', metricsError);
+        appLogger.error({ err: metricsError }, 'Failed to get pool metrics');
         metrics.alerts.push('WARNING: Unable to retrieve connection pool metrics');
       }
 
@@ -187,7 +188,7 @@ export async function healthRoutes(app: FastifyInstance) {
           }
         }
       } catch (queryError) {
-        console.error('Failed to get query stats:', queryError);
+        appLogger.error({ err: queryError }, 'Failed to get query stats');
         // Continue without query stats
       }
 

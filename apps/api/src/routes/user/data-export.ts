@@ -4,6 +4,7 @@ import { authMiddleware } from '../../middleware/auth.js';
 import { createAuditLog } from '../../middleware/auditLog.js';
 import { exportUserData, generatePDFReport } from '../../services/gdpr-compliance.js';
 import { z } from 'zod';
+import { appLogger } from '../../utils/appLogger.js';
 
 // Validation schemas
 const DataExportSchema = z.object({
@@ -85,7 +86,7 @@ export async function dataExportRoutes(app: FastifyInstance) {
           .send(exportData);
       }
     } catch (error) {
-      console.error('Data export error:', error);
+      appLogger.error({ err: error }, 'Data export error');
       
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -188,7 +189,7 @@ export async function dataExportRoutes(app: FastifyInstance) {
 
       return options;
     } catch (error) {
-      console.error('Export options error:', error);
+      appLogger.error({ err: error }, 'Export options error');
       return reply.status(500).send({
         error: 'Failed to get export options',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -237,7 +238,7 @@ export async function dataExportRoutes(app: FastifyInstance) {
         total: exportHistory.length,
       };
     } catch (error) {
-      console.error('Export history error:', error);
+      appLogger.error({ err: error }, 'Export history error');
       return reply.status(500).send({
         error: 'Failed to get export history',
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -272,7 +273,7 @@ export async function dataExportRoutes(app: FastifyInstance) {
         message: 'Export notification preferences updated',
       };
     } catch (error) {
-      console.error('Export notifications error:', error);
+      appLogger.error({ err: error }, 'Export notifications error');
       return reply.status(500).send({
         error: 'Failed to update export notifications',
         message: error instanceof Error ? error.message : 'Unknown error',

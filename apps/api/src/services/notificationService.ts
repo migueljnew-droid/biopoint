@@ -1,5 +1,6 @@
 import { prisma } from '@biopoint/db';
 import { accountLockoutConfig } from '../middleware/rateLimit.js';
+import { appLogger } from '../utils/appLogger.js';
 
 export interface NotificationConfig {
   email: {
@@ -38,7 +39,7 @@ export class NotificationService {
    */
   async sendAccountLockoutNotification(data: NotificationData): Promise<void> {
     if (!data.email) {
-      console.warn('No email provided for account lockout notification');
+      appLogger.warn('No email provided for account lockout notification');
       return;
     }
 
@@ -61,9 +62,9 @@ export class NotificationService {
       }
 
       // Log the notification
-      console.log(`Account lockout notification sent to ${data.email} for IP ${data.ipAddress}`);
+      appLogger.info({ email: data.email, ipAddress: data.ipAddress }, 'Account lockout notification sent');
     } catch (error) {
-      console.error('Failed to send account lockout notification:', error);
+      appLogger.error({ err: error }, 'Failed to send account lockout notification');
       // Don't throw - notification failures shouldn't block the main flow
     }
   }
@@ -88,7 +89,7 @@ export class NotificationService {
         });
       }
     } catch (error) {
-      console.error('Failed to send security alert notification:', error);
+      appLogger.error({ err: error }, 'Failed to send security alert notification');
     }
   }
 
@@ -186,14 +187,7 @@ This is an automated security notification. Please do not reply to this email.
     // In a production environment, this would integrate with an email service
     // For now, we'll log the email that would be sent
     
-    console.log(`
-=== EMAIL NOTIFICATION ===
-To: ${to}
-Subject: ${subject}
-Message:
-${message}
-==========================
-    `);
+    appLogger.info({ to, subject, message }, 'EMAIL NOTIFICATION');
 
     // TODO: Integrate with actual email service (SendGrid, AWS SES, etc.)
     // Example implementation:
@@ -276,9 +270,9 @@ ${message}
         throw new Error(`Slack API error: ${response.status}`);
       }
 
-      console.log('Slack notification sent successfully');
+      appLogger.info('Slack notification sent successfully');
     } catch (error) {
-      console.error('Failed to send Slack notification:', error);
+      appLogger.error({ err: error }, 'Failed to send Slack notification');
       throw error;
     }
   }
@@ -304,7 +298,7 @@ ${message}
         },
       });
     } catch (error) {
-      console.error('Failed to log security event:', error);
+      appLogger.error({ err: error }, 'Failed to log security event');
       // Don't throw - logging failure shouldn't break the main flow
     }
   }

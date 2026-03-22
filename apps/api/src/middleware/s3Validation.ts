@@ -1,4 +1,5 @@
 import { S3Client, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { appLogger } from '../utils/appLogger.js';
 
 /**
  * Server-side S3 content-type validation using magic bytes (SEC-07)
@@ -55,8 +56,9 @@ export async function validateUploadedFileType(
 
     if (!detectedMime || !ALLOWED_MIME_TYPES.has(detectedMime)) {
       // Invalid or unrecognised type -- delete the object from S3
-      console.error(
-        `[S3_VALIDATION] Rejected upload: key=${key}, declared=${declaredType}, detected=${detectedMime ?? 'unknown'}`,
+      appLogger.error(
+        { key, declaredType, detectedMime: detectedMime ?? 'unknown' },
+        '[S3_VALIDATION] Rejected upload',
       );
 
       await s3Client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
@@ -66,14 +68,15 @@ export async function validateUploadedFileType(
 
     // Warn if declared type doesn't match detected type (possible mislabel)
     if (declaredType && detectedMime !== declaredType) {
-      console.warn(
-        `[S3_VALIDATION] Type mismatch: key=${key}, declared=${declaredType}, detected=${detectedMime}`,
+      appLogger.warn(
+        { key, declaredType, detectedMime },
+        '[S3_VALIDATION] Type mismatch',
       );
     }
 
     return { valid: true, detectedType: detectedMime, declaredType };
   } catch (error) {
-    console.error(`[S3_VALIDATION] Validation error for key=${key}:`, error);
+    appLogger.error({ key, err: error }, '[S3_VALIDATION] Validation error');
     return { valid: false, detectedType: undefined, declaredType };
   }
 }

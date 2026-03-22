@@ -10,6 +10,7 @@
 import type { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
 import { sanitizeInput, sanitizeFilePath } from '../utils/sanitization.js';
 import { createAuditLog } from './auditLog.js';
+import { appLogger } from '../utils/appLogger.js';
 
 /**
  * Configuration for sanitization middleware
@@ -243,7 +244,7 @@ export function sanitizationMiddleware(
                     // Don't fail the request if audit logging fails
                     // Avoid noisy stderr in the test suite; enable via VITEST_DEBUG_LOGS if needed.
                     if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-                        console.error('Failed to log sanitization:', error);
+                        appLogger.error({ err: error }, 'Failed to log sanitization');
                     }
                 });
             }
@@ -269,7 +270,7 @@ export function sanitizationMiddleware(
         // Log the full validation error for debugging
         // Avoid noisy stderr in the test suite; enable via VITEST_DEBUG_LOGS if needed.
         if (process.env.NODE_ENV !== 'test' || process.env.VITEST_DEBUG_LOGS) {
-            console.error('SANITIZATION ERROR:', error);
+            appLogger.error({ err: error }, 'SANITIZATION ERROR');
         }
 
         if (DEFAULT_CONFIG.rejectOnValidationFailure) {

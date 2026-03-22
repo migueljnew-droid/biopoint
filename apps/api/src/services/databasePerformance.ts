@@ -7,6 +7,7 @@
 
 import { prisma } from '@biopoint/db';
 import { getDatabaseConfig } from '../config/database.js';
+import { appLogger } from '../utils/appLogger.js';
 
 export interface QueryMetrics {
   query: string;
@@ -64,7 +65,7 @@ class DatabasePerformanceMonitor {
       this.checkForAlerts();
     }, this.config.monitoring.metricsInterval);
 
-    console.log('[DB MONITOR] Performance monitoring started');
+    appLogger.info('[DB MONITOR] Performance monitoring started');
   }
 
   /**
@@ -76,7 +77,7 @@ class DatabasePerformanceMonitor {
       this.monitoringInterval = undefined;
     }
     this.isMonitoring = false;
-    console.log('[DB MONITOR] Performance monitoring stopped');
+    appLogger.info('[DB MONITOR] Performance monitoring stopped');
   }
 
   /**
@@ -100,7 +101,7 @@ class DatabasePerformanceMonitor {
 
     // Log slow queries
     if (metrics.slow) {
-      console.warn(`[SLOW QUERY] ${model || 'Unknown'}.${action || 'Unknown'} took ${duration}ms`);
+      appLogger.warn({ model: model || 'Unknown', action: action || 'Unknown', duration }, '[SLOW QUERY] Slow query detected');
     }
   }
 
@@ -132,7 +133,7 @@ class DatabasePerformanceMonitor {
       this.connectionMetrics = this.connectionMetrics.filter(m => m.timestamp > oneHourAgo);
 
     } catch (error) {
-      console.error('[DB MONITOR] Failed to collect connection metrics:', error);
+      appLogger.error({ err: error }, '[DB MONITOR] Failed to collect connection metrics');
     }
   }
 
@@ -199,13 +200,13 @@ class DatabasePerformanceMonitor {
     const logMessage = `[DB ALERT] ${level.toUpperCase()}: ${message}`;
     switch (level) {
       case 'critical':
-        console.error(logMessage, details);
+        appLogger.error({ details }, logMessage);
         break;
       case 'warning':
-        console.warn(logMessage, details);
+        appLogger.warn({ details }, logMessage);
         break;
       default:
-        console.log(logMessage, details);
+        appLogger.info({ details }, logMessage);
     }
 
     // Keep only recent alerts (last 24 hours)

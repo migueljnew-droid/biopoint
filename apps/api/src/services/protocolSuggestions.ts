@@ -1,6 +1,7 @@
 import { VertexAI } from '@google-cloud/vertexai';
 import { assertNoPhi } from '../utils/deidentify.js';
 import { featureFlags } from '../config/featureFlags.js';
+import { appLogger } from '../utils/appLogger.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -269,7 +270,7 @@ export async function analyzeLabForSuggestions(
 
         // Wrap Gemini/network/parsing errors with context
         const message = error instanceof Error ? error.message : String(error);
-        console.error('Protocol suggestions Gemini error:', message);
+        appLogger.error({ err: message }, 'Protocol suggestions Gemini error');
         throw new Error(`Failed to generate protocol suggestions: ${message}`);
     }
 }
