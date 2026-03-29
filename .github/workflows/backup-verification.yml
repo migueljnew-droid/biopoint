@@ -1,0 +1,499 @@
+name: Backup Verification
+
+on:
+  schedule:
+    # Run daily at 8 AM UTC (after backup jobs complete)
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    inputs:
+      verification_type:
+        description: 'Type of verification to run'
+        required: true
+        default: 'daily'
+        type: choice
+        options:
+          - 'daily'
+          - 'weekly'
+          - 'monthly'
+          - 'full'
+  push:
+    branches:
+      - main
+    paths:
+      - 'infrastructure/backup/**'
+      - '.github/workflows/backup-verification.yml'
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET_NAME: biopoint-uploads
+  VERIFICATION_TYPE: ${{ github.event.inputs.verification_type || 'daily' }}
+
+jobs:
+  backup-verification:
+    name: Verify Backup Integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          role-session-name: biopoint-backup-verification
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Setup PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client openssl jq bc
+      
+      - name: Setup backup environment
+        run: |
+          # Create backup scripts directory
+          mkdir -p /tmp/biopoint-backup-scripts
+          
+          # Copy backup scripts
+          cp infrastructure/backup/scripts/*.sh /tmp/biopoint-backup-scripts/
+          chmod +x /tmp/biopoint-backup-scripts/*.sh
+          
+          # Verify scripts are executable
+          ls -la /tmp/biopoint-backup-scripts/
+      
+      - name: Run backup verification
+        id: verification
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+        run: |
+          cd /tmp/biopoint-backup-scripts
+          
+          echo "=== Starting BioPoint Backup Verification ==="
+          echo "Verification Type: ${{ env.VERIFICATION_TYPE }}"
+          echo "Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo ""
+          
+          # Run verification script
+          if ./verify-backups.sh ${{ env.VERIFICATION_TYPE }}; then
+            echo "✅ Verification completed successfully"
+            echo "verification_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Verification failed"
+            echo "verification_status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Generate verification report
+        if: always()
+        id: report
+        run: |
+          # Find the latest verification report
+          LATEST_REPORT=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }}-backups/verification-reports/ --recursive | grep "verification-report-" | sort | tail -1 | awk '{print $4}')
+          
+          if [[ -n "$LATEST_REPORT" ]]; then
+            echo "Found latest report: $LATEST_REPORT"
+            
+            # Download report
+            aws s3 cp "s3://${{ env.S3_BUCKET_NAME }}-backups/$LATEST_REPORT" /tmp/verification-report.md
+            
+            # Extract summary
+            if grep -q "Overall Status:" /tmp/verification-report.md; then
+              STATUS=$(grep "Overall Status:" /tmp/verification-report.md | cut -d':' -f2 | xargs)
+              ERRORS=$(grep "Errors:" /tmp/verification-report.md | cut -d':' -f2 | xargs)
+              WARNINGS=$(grep "Warnings:" /tmp/verification-report.md | cut -d':' -f2 | xargs)
+              
+              echo "Report Summary:"
+              echo "- Status: $STATUS"
+              echo "- Errors: $ERRORS"
+              echo "- Warnings: $WARNINGS"
+              
+              # Set outputs for later steps
+              echo "report_status=$STATUS" >> $GITHUB_OUTPUT
+              echo "report_errors=$ERRORS" >> $GITHUB_OUTPUT
+              echo "report_warnings=$WARNINGS" >> $GITHUB_OUTPUT
+              echo "report_url=https://${{ env.S3_BUCKET_NAME }}-backups.s3.amazonaws.com/$LATEST_REPORT" >> $GITHUB_OUTPUT
+              
+              # Display report content
+              echo ""
+              echo "=== Verification Report ==="
+              cat /tmp/verification-report.md
+            fi
+          else
+            echo "No verification report found"
+            echo "report_status=unknown" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Check backup health metrics
+        id: metrics
+        run: |
+          echo "=== Backup Health Metrics ==="
+          
+          # Check daily backups
+          DAILY_BACKUPS=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }}-backups/database/daily/ --recursive | grep "\.sql\.enc$" | wc -l)
+          echo "Daily backups available: $DAILY_BACKUPS"
+          
+          # Check weekly backups
+          WEEKLY_BACKUPS=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }}-backups/database/weekly/ --recursive | grep "\.sql\.enc$" | wc -l)
+          echo "Weekly backups available: $WEEKLY_BACKUPS"
+          
+          # Check S3 backups
+          S3_BACKUPS=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }}-backups/s3-backups/ --recursive | grep "metadata-" | wc -l)
+          echo "S3 backup sets: $S3_BACKUPS"
+          
+          # Check latest backup dates
+          LATEST_DAILY=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }}-backups/database/daily/ --recursive | grep "\.sql\.enc$" | sort | tail -1 | awk '{print $1}')
+          LATEST_WEEKLY=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }}-backups/database/weekly/ --recursive | grep "\.sql\.enc$" | sort | tail -1 | awk '{print $1}')
+          
+          echo "Latest daily backup: ${LATEST_DAILY:-None}"
+          echo "Latest weekly backup: ${LATEST_WEEKLY:-None}"
+          
+          # Set metric outputs
+          echo "daily_backups=$DAILY_BACKUPS" >> $GITHUB_OUTPUT
+          echo "weekly_backups=$WEEKLY_BACKUPS" >> $GITHUB_OUTPUT
+          echo "s3_backups=$S3_BACKUPS" >> $GITHUB_OUTPUT
+          echo "latest_daily=$LATEST_DAILY" >> $GITHUB_OUTPUT
+          echo "latest_weekly=$LATEST_WEEKLY" >> $GITHUB_OUTPUT
+          
+          # Health assessment
+          if [[ $DAILY_BACKUPS -ge 5 ]] && [[ $WEEKLY_BACKUPS -ge 3 ]]; then
+            echo "backup_health=healthy" >> $GITHUB_OUTPUT
+          elif [[ $DAILY_BACKUPS -ge 3 ]] && [[ $WEEKLY_BACKUPS -ge 1 ]]; then
+            echo "backup_health=degraded" >> $GITHUB_OUTPUT
+          else
+            echo "backup_health=critical" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create issue on verification failure
+        if: failure() || steps.report.outputs.report_status == 'FAIL'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🚨 Backup Verification Failed - ${new Date().toISOString()}`;
+            const body = `
+            ## Backup Verification Failed
+            
+            **Time:** ${new Date().toISOString()}
+            **Verification Type:** ${{ env.VERIFICATION_TYPE }}
+            **Status:** ${steps.report.outputs.report_status}
+            
+            ### Summary
+            - Errors: ${steps.report.outputs.report_errors || 'Unknown'}
+            - Warnings: ${steps.report.outputs.report_warnings || 'Unknown'}
+            - Backup Health: ${steps.metrics.outputs.backup_health}
+            
+            ### Metrics
+            - Daily Backups: ${steps.metrics.outputs.daily_backups}
+            - Weekly Backups: ${steps.metrics.outputs.weekly_backups}
+            - S3 Backup Sets: ${steps.metrics.outputs.s3_backups}
+            - Latest Daily: ${steps.metrics.outputs.latest_daily}
+            - Latest Weekly: ${steps.metrics.outputs.latest_weekly}
+            
+            ### Report
+            ${steps.report.outputs.report_url ? `[View Full Report](${steps.report.outputs.report_url})` : 'No report available'}
+            
+            ### Required Actions
+            1. Investigate backup failures immediately
+            2. Check backup infrastructure health
+            3. Verify data integrity
+            4. Implement corrective measures
+            5. Schedule follow-up verification
+            
+            ### Contact
+            - Infrastructure Team: infrastructure@biopoint.com
+            - On-Call Engineer: Check PagerDuty
+            
+            ---
+            *This issue was created automatically by the backup verification system.*
+            `;
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['backup', 'critical', 'infrastructure']
+            });
+      
+      - name: Send Slack notification
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ -n "$SLACK_WEBHOOK_URL" ]]; then
+            STATUS_EMOJI=""
+            if [[ "${{ steps.verification.outputs.verification_status }}" == "success" ]]; then
+              STATUS_EMOJI="✅"
+            else
+              STATUS_EMOJI="🚨"
+            fi
+            
+            HEALTH_EMOJI=""
+            case "${{ steps.metrics.outputs.backup_health }}" in
+              "healthy") HEALTH_EMOJI="💚" ;;
+              "degraded") HEALTH_EMOJI="💛" ;;
+              "critical") HEALTH_EMOJI="❤️" ;;
+            esac
+            
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{
+                \"text\": \"$STATUS_EMOJI BioPoint Backup Verification Completed\",
+                \"attachments\": [
+                  {
+                    \"color\": \"${{ steps.verification.outputs.verification_status == 'success' && 'good' || 'danger' }}\",
+                    \"fields\": [
+                      {
+                        \"title\": \"Status\",
+                        \"value\": \"${{ steps.verification.outputs.verification_status }}\",
+                        \"short\": true
+                      },
+                      {
+                        \"title\": \"Type\",
+                        \"value\": \"${{ env.VERIFICATION_TYPE }}\",
+                        \"short\": true
+                      },
+                      {
+                        \"title\": \"Backup Health\",
+                        \"value\": \"$HEALTH_EMOJI ${{ steps.metrics.outputs.backup_health }}\",
+                        \"short\": true
+                      },
+                      {
+                        \"title\": \"Daily Backups\",
+                        \"value\": \"${{ steps.metrics.outputs.daily_backups }}\",
+                        \"short\": true
+                      }
+                    ]
+                  }
+                ]
+              }" \
+              "$SLACK_WEBHOOK_URL" || true
+          fi
+      
+      - name: Upload verification artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-verification-${{ env.VERIFICATION_TYPE }}-${{ github.run_number }}
+          path: |
+            /tmp/verification-report.md
+            /tmp/biopoint-backup-scripts/*.log
+          retention-days: 30
+  
+  disaster-recovery-test:
+    name: Disaster Recovery Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    needs: backup-verification
+    if: github.event.inputs.verification_type == 'full' || (github.event.schedule == '0 8 * * 1' && github.event.inputs.verification_type != 'daily')
+    
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          role-session-name: biopoint-dr-test
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Setup PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client openssl jq bc
+      
+      - name: Setup backup environment
+        run: |
+          mkdir -p /tmp/biopoint-backup-scripts
+          cp infrastructure/backup/scripts/*.sh /tmp/biopoint-backup-scripts/
+          chmod +x /tmp/biopoint-backup-scripts/*.sh
+      
+      - name: Create test database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          # Create a test database for DR testing
+          TEST_DB_NAME="biopoint_dr_test_$(date +%s)"
+          TEST_DB_URL=$(echo "$DATABASE_URL" | sed "s|/[^/]*$|/$TEST_DB_NAME|")
+          
+          echo "Creating test database: $TEST_DB_NAME"
+          createdb -h $(echo "$DATABASE_URL" | sed -n 's/.*@\(.*\):[0-9]*\/.*$/\1/p') \
+                   -p $(echo "$DATABASE_URL" | sed -n 's/.*:\([0-9]*\)\/.*$/\1/p') \
+                   -U $(echo "$DATABASE_URL" | sed -n 's/.*\/\/\(.*\):.*@.*/\1/p') \
+                   "$TEST_DB_NAME" || echo "Test database creation failed, continuing..."
+          
+          echo "test_db_name=$TEST_DB_NAME" >> $GITHUB_ENV
+          echo "test_db_url=$TEST_DB_URL" >> $GITHUB_ENV
+      
+      - name: Test database restore
+        id: dr-test
+        env:
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        run: |
+          cd /tmp/biopoint-backup-scripts
+          
+          echo "=== Starting Disaster Recovery Test ==="
+          echo "Testing database restoration to: ${{ env.test_db_url }}"
+          
+          # Test restore with --test-only flag first
+          if ./restore-database.sh latest-daily "${{ env.test_db_url }}" --test-only; then
+            echo "✅ DR test completed successfully"
+            echo "dr_test_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ DR test failed"
+            echo "dr_test_status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Cleanup test database
+        if: always()
+        run: |
+          if [[ -n "${{ env.test_db_name }}" ]]; then
+            echo "Cleaning up test database: ${{ env.test_db_name }}"
+            dropdb -h $(echo "${{ secrets.DATABASE_URL }}" | sed -n 's/.*@\(.*\):[0-9]*\/.*$/\1/p') \
+                   -p $(echo "${{ secrets.DATABASE_URL }}" | sed -n 's/.*:\([0-9]*\)\/.*$/\1/p') \
+                   -U $(echo "${{ secrets.DATABASE_URL }}" | sed -n 's/.*\/\/\(.*\):.*@.*/\1/p') \
+                   "${{ env.test_db_name }}" || echo "Test database cleanup failed"
+          fi
+      
+      - name: Create DR test report
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🧪 Disaster Recovery Test - ${new Date().toISOString()}`;
+            const body = `
+            ## Disaster Recovery Test Results
+            
+            **Time:** ${new Date().toISOString()}
+            **Status:** ${steps.dr-test.outputs.dr_test_status}
+            
+            ### Test Details
+            - **Test Type:** Database Restore Test
+            - **Target:** Temporary test database
+            - **Method:** Point-in-time recovery simulation
+            
+            ### Results
+            ${steps.dr-test.outputs.dr_test_status == 'success' ? '✅ All DR tests passed successfully' : '❌ DR test failed - investigation required'}
+            
+            ### Next Steps
+            ${steps.dr-test.outputs.dr_test_status == 'success' ? 
+              '- Document successful test results\n- Update DR procedures if needed\n- Schedule next quarterly test' :
+              '- Investigate test failures immediately\n- Review backup integrity\n- Update DR procedures\n- Schedule retest'}
+            
+            ### Contact
+            - Infrastructure Team: infrastructure@biopoint.com
+            - Database Team: dba@biopoint.com
+            
+            ---
+            *This DR test was performed automatically by the backup verification system.*
+            `;
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['disaster-recovery', 'testing', 'infrastructure']
+            });
+
+  cost-analysis:
+    name: Backup Cost Analysis
+    runs-on: ubuntu-latest
+    needs: backup-verification
+    if: github.event.schedule == '0 8 * * 1'  # Weekly on Monday
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          role-session-name: biopoint-cost-analysis
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Analyze backup costs
+        id: cost-analysis
+        run: |
+          echo "=== Backup Storage Cost Analysis ==="
+          
+          # Get S3 bucket sizes
+          BACKUP_BUCKET_SIZE=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }}-backups --recursive --summarize | grep "Total Size:" | awk '{print $3}')
+          BACKUP_BUCKET_SIZE_GB=$((BACKUP_BUCKET_SIZE / 1024 / 1024 / 1024))
+          
+          SOURCE_BUCKET_SIZE=$(aws s3 ls s3://${{ env.S3_BUCKET_NAME }} --recursive --summarize | grep "Total Size:" | awk '{print $3}')
+          SOURCE_BUCKET_SIZE_GB=$((SOURCE_BUCKET_SIZE / 1024 / 1024 / 1024))
+          
+          echo "Source bucket size: ${SOURCE_BUCKET_SIZE_GB}GB"
+          echo "Backup bucket size: ${BACKUP_BUCKET_SIZE_GB}GB"
+          echo "Backup ratio: $((BACKUP_BUCKET_SIZE_GB * 100 / SOURCE_BUCKET_SIZE_GB))%"
+          
+          # Estimate costs (rough calculation)
+          # S3 Standard: $0.023 per GB/month
+          # S3 Glacier: $0.004 per GB/month
+          STANDARD_COST_MONTHLY=$(echo "scale=2; $BACKUP_BUCKET_SIZE_GB * 0.023" | bc -l)
+          GLACIER_COST_MONTHLY=$(echo "scale=2; $BACKUP_BUCKET_SIZE_GB * 0.004" | bc -l)
+          
+          echo "Estimated monthly cost (Standard): \$$STANDARD_COST_MONTHLY"
+          echo "Estimated monthly cost (Glacier): \$$GLACIER_COST_MONTHLY"
+          
+          # Set outputs
+          echo "source_size_gb=$SOURCE_BUCKET_SIZE_GB" >> $GITHUB_OUTPUT
+          echo "backup_size_gb=$BACKUP_BUCKET_SIZE_GB" >> $GITHUB_OUTPUT
+          echo "estimated_cost_standard=$STANDARD_COST_MONTHLY" >> $GITHUB_OUTPUT
+          echo "estimated_cost_glacier=$GLACIER_COST_MONTHLY" >> $GITHUB_OUTPUT
+      
+      - name: Send cost report notification
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ -n "$SLACK_WEBHOOK_URL" ]]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{
+                \"text\": \"📊 Weekly Backup Cost Analysis\",
+                \"attachments\": [
+                  {
+                    \"color\": \"good\",
+                    \"fields\": [
+                      {
+                        \"title\": \"Source Data Size\",
+                        \"value\": \"${{ steps.cost-analysis.outputs.source_size_gb }}GB\",
+                        \"short\": true
+                      },
+                      {
+                        \"title\": \"Backup Size\",
+                        \"value\": \"${{ steps.cost-analysis.outputs.backup_size_gb }}GB\",
+                        \"short\": true
+                      },
+                      {
+                        \"title\": \"Monthly Cost (Standard)\",
+                        \"value\": \"\\$${{ steps.cost-analysis.outputs.estimated_cost_standard }}\",
+                        \"short\": true
+                      },
+                      {
+                        \"title\": \"Monthly Cost (Glacier)\",
+                        \"value\": \"\\$${{ steps.cost-analysis.outputs.estimated_cost_glacier }}\",
+                        \"short\": true
+                      }
+                    ]
+                  }
+                ]
+              }" \
+              "$SLACK_WEBHOOK_URL" || true
+          fi

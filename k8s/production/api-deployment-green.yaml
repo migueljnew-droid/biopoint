@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: biopoint-api-green
+  namespace: biopoint-production
+  labels:
+    app: biopoint-api
+    color: green
+    environment: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: biopoint-api
+      color: green
+  template:
+    metadata:
+      labels:
+        app: biopoint-api
+        color: green
+        environment: production
+    spec:
+      containers:
+      - name: biopoint-api
+        image: ${ECR_REGISTRY}/biopoint-api:${IMAGE_TAG}
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: biopoint-secrets
+              key: database-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: biopoint-secrets
+              key: jwt-secret
+        - name: DOPPLER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: biopoint-secrets
+              key: doppler-token
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: biopoint-secrets
+              key: encryption-key
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - biopoint-api
+              topologyKey: kubernetes.io/hostname

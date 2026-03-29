@@ -39,12 +39,17 @@ export function GlassView({
                 intensity={intensity}
                 tint={tint}
                 style={[StyleSheet.absoluteFill, { borderRadius: radius }]}
+                // @ts-ignore - expo-blur types might not include pointerEvents but View props do
+                pointerEvents="none"
             />
             {/* Background tint layer from theme if needed, but BlurView handles most. 
           The glass styles usually add a subtle rgba background. 
           We apply that on top or validly on the container.
       */}
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: glassStyle.backgroundColor, borderRadius: radius }]} />
+            <View
+                style={[StyleSheet.absoluteFill, { backgroundColor: glassStyle.backgroundColor, borderRadius: radius }]}
+                pointerEvents="none"
+            />
 
             {children}
         </View>

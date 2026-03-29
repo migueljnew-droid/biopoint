@@ -7,9 +7,30 @@
     "description": "HIPAA-compliant health tracking app with AI blood work analysis, peptide protocol management, and biomarker correlation"
   },
   "phases": {
-    "spec": { "enabled": true, "require_approval": true },
+    "spec": {
+      "enabled": true,
+      "require_approval": true,
+      "fuzz": {
+        "enabled": true,
+        "use_cross_validators": true,
+        "block_on": "BLOCKER",
+        "min_fuzz_score": 70
+      }
+    },
     "plan": { "enabled": true, "require_approval": true },
-    "execute": { "enabled": true, "require_approval": false },
+    "execute": {
+      "enabled": true,
+      "require_approval": false,
+      "guardian": {
+        "enabled": true,
+        "provider": "gemini",
+        "model": "gemini-2.5-flash-preview-05-20",
+        "categories": ["security", "architecture"],
+        "stop_on": "CRITICAL",
+        "warn_on": "HIGH",
+        "max_tokens": 2000
+      }
+    },
     "audit": { "enabled": true, "require_approval": false },
     "ratchet": { "enabled": true, "require_approval": false }
   },
@@ -23,7 +44,40 @@
       "architecture": { "enabled": true, "block_on": "HIGH" }
     },
     "parallel": true,
-    "auto_fix": false
+    "auto_fix": false,
+    "cross_validators": [
+      {
+        "name": "gemini",
+        "enabled": true,
+        "provider": "gemini",
+        "model": "gemini-2.5-flash-preview-05-20",
+        "categories": ["security", "performance", "architecture"],
+        "mode": "delta",
+        "orchestration": "swarm",
+        "temperature": 0.2,
+        "max_review_files": 40,
+        "block_on_disagreement": "CRITICAL"
+      }
+    ],
+    "consensus": {
+      "enabled": true,
+      "min_agreement_for_dismiss": 2,
+      "escalate_on_unanimous_new": true
+    },
+    "self_healing": {
+      "enabled": true,
+      "severities": ["LOW", "MEDIUM"],
+      "categories": ["code_quality", "documentation"],
+      "never_heal": ["security"],
+      "max_files_per_fix": 3,
+      "require_re_audit": true
+    },
+    "hermetic": {
+      "enabled": true,
+      "golden_ratio_threshold": 1.618,
+      "min_hermetic_score": 50,
+      "block_on": "HIGH"
+    }
   },
   "ratchet": {
     "auto_tighten": true,

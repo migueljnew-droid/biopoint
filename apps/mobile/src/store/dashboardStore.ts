@@ -6,7 +6,9 @@ interface BioPointBreakdown {
     energy: number;
     focus: number;
     mood: number;
-    weight: number;
+    compliance: number;
+    fasting: number;
+    nutrition: number;
 }
 
 interface DailyLog {
@@ -27,6 +29,16 @@ interface DashboardState {
     recentLogs: DailyLog[];
     scoreHistory: { date: string; score: number }[];
     weeklyTrend: number | null;
+    activeFasting: {
+        id: string;
+        protocolName: string;
+        startedAt: string;
+        targetEndAt: string;
+    } | null;
+    todayNutrition: {
+        totalCalories: number;
+        mealCount: number;
+    } | null;
     isLoading: boolean;
     error: string | null;
 
@@ -40,6 +52,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     recentLogs: [],
     scoreHistory: [],
     weeklyTrend: null,
+    activeFasting: null,
+    todayNutrition: null,
     isLoading: false,
     error: null,
 
@@ -53,6 +67,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
                 recentLogs: response.data.recentLogs,
                 scoreHistory: response.data.scoreHistory,
                 weeklyTrend: response.data.weeklyTrend,
+                activeFasting: response.data.activeFasting,
+                todayNutrition: response.data.todayNutrition,
                 isLoading: false,
             });
         } catch (error: any) {

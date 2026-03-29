@@ -1,0 +1,23 @@
+name: BioPoint
+created: '2026-02-01T09:13:23.089995Z'
+description: ''
+tech_stack:
+- expo
+- react-native
+- typescript
+council_version: 1.0.0
+memory_scope: projects/biopoint
+skills:
+- debugging
+- code-review
+- tdd
+- git-workflow
+sync:
+  auto_sync: true
+  sync_interval_minutes: 15
+  last_sync: '2026-03-22T06:59:13.308972Z'
+ide_configs:
+  claude: true
+  cursor: true
+  kiro: true
+  antigravity: true

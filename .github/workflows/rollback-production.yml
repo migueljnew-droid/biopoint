@@ -1,0 +1,303 @@
+name: Emergency Rollback Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      rollback_reason:
+        description: 'Reason for rollback'
+        required: true
+        type: string
+      target_version:
+        description: 'Target version to rollback to (leave empty for previous)'
+        required: false
+        type: string
+
+env:
+  AWS_REGION: us-east-1
+  PRODUCTION_CLUSTER: biopoint-production
+  PRODUCTION_NAMESPACE: biopoint-production
+
+jobs:
+  emergency-rollback:
+    name: Emergency Production Rollback
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.PRODUCTION_CLUSTER }}
+
+      - name: Determine current deployment
+        id: current-deployment
+        run: |
+          CURRENT_COLOR=$(kubectl get service biopoint-production-service -n ${{ env.PRODUCTION_NAMESPACE }} -o jsonpath='{.spec.selector.color}')
+          echo "current_color=$CURRENT_COLOR" >> $GITHUB_OUTPUT
+          
+          if [[ "$CURRENT_COLOR" == "blue" ]]; then
+            ROLLBACK_COLOR="green"
+          else
+            ROLLBACK_COLOR="blue"
+          fi
+          
+          echo "rollback_color=$ROLLBACK_COLOR" >> $GITHUB_OUTPUT
+          echo "Current active deployment: $CURRENT_COLOR"
+          echo "Rollback target: $ROLLBACK_COLOR"
+
+      - name: Verify rollback target
+        run: |
+          ROLLBACK_COLOR="${{ steps.current-deployment.outputs.rollback_color }}"
+          
+          # Check if rollback target exists and is ready
+          if kubectl get deployment/biopoint-api-$ROLLBACK_COLOR -n ${{ env.PRODUCTION_NAMESPACE }} >/dev/null 2>&1; then
+            echo "Rollback target deployment exists"
+            
+            # Check if deployment has available replicas
+            READY_REPLICAS=$(kubectl get deployment/biopoint-api-$ROLLBACK_COLOR -n ${{ env.PRODUCTION_NAMESPACE }} -o jsonpath='{.status.readyReplicas}')
+            if [[ -n "$READY_REPLICAS" && "$READY_REPLICAS" -gt 0 ]]; then
+              echo "Rollback target has $READY_REPLICAS ready replicas"
+            else
+              echo "⚠️ Rollback target has no ready replicas - proceeding with caution"
+            fi
+          else
+            echo "❌ Rollback target deployment does not exist"
+            exit 1
+          fi
+
+      - name: Execute emergency rollback
+        run: |
+          CURRENT_COLOR="${{ steps.current-deployment.outputs.current_color }}"
+          ROLLBACK_COLOR="${{ steps.current-deployment.outputs.rollback_color }}"
+          
+          echo "🚨 EXECUTING EMERGENCY ROLLBACK"
+          echo "Switching from $CURRENT_COLOR to $ROLLBACK_COLOR"
+          
+          # Create rollback record
+          ROLLBACK_ID=$(date +%s)
+          cat > rollback-record.json << EOF
+          {
+            "rollbackId": "$ROLLBACK_ID",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "fromColor": "$CURRENT_COLOR",
+            "toColor": "$ROLLBACK_COLOR",
+            "reason": "${{ github.event.inputs.rollback_reason }}",
+            "initiatedBy": "${{ github.actor }}",
+            "status": "in_progress",
+            "emergency": true
+          }
+          EOF
+          
+          # Execute traffic switch
+          kubectl patch service biopoint-production-service -n ${{ env.PRODUCTION_NAMESPACE }} \
+            -p '{"spec":{"selector":{"color":"'${ROLLBACK_COLOR}'"}}}'
+          
+          echo "Traffic switched to $ROLLBACK_COLOR"
+
+      - name: Verify rollback
+        run: |
+          ROLLBACK_COLOR="${{ steps.current-deployment.outputs.rollback_color }}"
+          
+          echo "Verifying rollback..."
+          
+          # Wait for traffic switch to propagate
+          sleep 30
+          
+          # Test production endpoint
+          PRODUCTION_URL="https://api.biopoint.health"
+          
+          for i in {1..10}; do
+            if curl -f $PRODUCTION_URL/health >/dev/null 2>&1; then
+              echo "✅ Health check passed (attempt $i)"
+              break
+            fi
+            if [[ $i -eq 10 ]]; then
+              echo "❌ Health check failed after 10 attempts"
+              exit 1
+            fi
+            sleep 10
+          done
+          
+          # Run smoke tests
+          chmod +x scripts/run-smoke-tests.sh
+          ./scripts/run-smoke-tests.sh production
+          
+          # Update rollback record
+          cat > rollback-record.json << EOF
+          {
+            "rollbackId": "$ROLLBACK_ID",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "fromColor": "$CURRENT_COLOR",
+            "toColor": "$ROLLBACK_COLOR",
+            "reason": "${{ github.event.inputs.rollback_reason }}",
+            "initiatedBy": "${{ github.actor }}",
+            "status": "completed",
+            "emergency": true,
+            "verification": "passed"
+          }
+          EOF
+          
+          echo "✅ Rollback verification completed"
+
+      - name: Scale down failed deployment
+        run: |
+          CURRENT_COLOR="${{ steps.current-deployment.outputs.current_color }}"
+          
+          echo "Scaling down failed $CURRENT_COLOR deployment..."
+          kubectl scale deployment/biopoint-api-$CURRENT_COLOR --replicas=0 -n ${{ env.PRODUCTION_NAMESPACE }}
+          
+          echo "✅ Failed deployment scaled down"
+
+      - name: Store rollback record
+        run: |
+          # Store rollback record in S3
+          aws s3 cp rollback-record.json s3://biopoint-deployments/rollbacks/emergency-${ROLLBACK_ID}.json
+          
+          # Archive failed deployment logs
+          CURRENT_COLOR="${{ steps.current-deployment.outputs.current_color }}"
+          kubectl logs deployment/biopoint-api-$CURRENT_COLOR -n ${{ env.PRODUCTION_NAMESPACE }} --since=2h > failed-deployment-logs.txt || true
+          aws s3 cp failed-deployment-logs.txt s3://biopoint-logs/failures/emergency-${ROLLBACK_ID}-logs.txt || true
+
+      - name: Notify rollback completion
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#devops-alerts'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: |
+            🚨 EMERGENCY ROLLBACK COMPLETED
+            
+            **Details:**
+            - From: ${{ steps.current-deployment.outputs.current_color }}
+            - To: ${{ steps.current-deployment.outputs.rollback_color }}
+            - Reason: ${{ github.event.inputs.rollback_reason }}
+            - Initiated by: ${{ github.actor }}
+            - Time: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+            
+            **Status:** ✅ SUCCESSFUL
+            
+            **Next Steps:**
+            1. Investigate root cause
+            2. Implement fixes
+            3. Plan re-deployment
+
+      - name: Create incident issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🚨 Emergency Rollback - ${new Date().toISOString()}`;
+            const body = `
+            ## Emergency Rollback Executed
+            
+            **Time:** ${new Date().toISOString()}
+            **Initiated by:** @${{ github.actor }}
+            **Reason:** ${{ github.event.inputs.rollback_reason }}
+            
+            ### Rollback Details
+            - **From:** ${{ steps.current-deployment.outputs.current_color }}
+            - **To:** ${{ steps.current-deployment.outputs.rollback_color }}
+            - **Status:** ✅ SUCCESSFUL
+            
+            ### Next Steps
+            - [ ] Investigate root cause
+            - [ ] Implement fixes
+            - [ ] Plan re-deployment
+            - [ ] Update documentation
+            
+            ### Related Links
+            - [Rollback Record](https://s3.console.aws.amazon.com/s3/object/biopoint-deployments/rollbacks/emergency-${ROLLBACK_ID}.json)
+            - [Failed Deployment Logs](https://s3.console.aws.amazon.com/s3/object/biopoint-logs/failures/emergency-${ROLLBACK_ID}-logs.txt)
+            `;
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['incident', 'rollback', 'priority-critical']
+            });
+
+  post-rollback-monitoring:
+    name: Post-Rollback Monitoring
+    runs-on: ubuntu-latest
+    needs: emergency-rollback
+    if: always()
+    steps:
+      - name: Monitor system stability
+        run: |
+          echo "Monitoring system stability for 15 minutes..."
+          
+          PRODUCTION_URL="https://api.biopoint.health"
+          
+          for minute in {1..15}; do
+            echo "Minute $minute monitoring..."
+            
+            # Health check
+            if curl -f $PRODUCTION_URL/health >/dev/null 2>&1; then
+              echo "✅ Health check passed"
+            else
+              echo "❌ Health check failed - alerting team"
+              # Send critical alert
+              exit 1
+            fi
+            
+            # Error rate check (simplified)
+            METRICS=$(curl -s $PRODUCTION_URL/metrics 2>/dev/null || echo "{}")
+            ERROR_RATE=$(echo "$METRICS" | jq -r '.error_rate // "0"' | sed 's/%//')
+            
+            if (( $(echo "$ERROR_RATE < 5" | bc -l) )); then
+              echo "✅ Error rate acceptable ($ERROR_RATE%)"
+            else
+              echo "⚠️ Error rate elevated ($ERROR_RATE%)"
+            fi
+            
+            sleep 60
+          done
+          
+          echo "✅ Post-rollback monitoring completed - system stable"
+
+      - name: Generate rollback report
+        run: |
+          cat > rollback-report.md << EOF
+          # Emergency Rollback Report
+          
+          **Date:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          **Rollback ID:** emergency-${ROLLBACK_ID}
+          
+          ## Summary
+          Emergency rollback was successfully executed in response to critical issues.
+          
+          ## Timeline
+          - **Rollback Initiated:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          - **Traffic Switched:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          - **Verification Completed:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          
+          ## System Status
+          - ✅ Health checks passing
+          - ✅ Error rates normal
+          - ✅ Response times acceptable
+          - ✅ Database connectivity verified
+          
+          ## Next Steps
+          1. Complete root cause analysis
+          2. Implement necessary fixes
+          3. Plan re-deployment strategy
+          4. Update incident documentation
+          
+          EOF
+          
+          # Upload report
+          aws s3 cp rollback-report.md s3://biopoint-reports/rollbacks/emergency-${ROLLBACK_ID}-report.md

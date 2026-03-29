@@ -1,17 +1,19 @@
 /**
- * BioPoint Liquid UI Theme v3.0.0
+ * BioPoint Institutional UI Theme v4.0.0
  *
- * A premium iOS-inspired dark theme with advanced glassmorphism, fluid animations,
- * Apple-style blur effects, and clinical-grade biomarker visualization.
+ * A clinical-grade light theme designed for trust, authority, and readability.
+ * Inspired by leading health institutions (Mayo Clinic, Cleveland Clinic, Epic).
  *
  * Features:
- * - Multi-layer glassmorphism with varying opacity and blur intensities
+ * - Clean light surfaces with subtle elevation and borders
+ * - Deep navy primary palette conveying institutional trust
+ * - Clinical teal accents for health authority
  * - iOS-native spring animations with precise timing curves
  * - Apple Human Interface Guidelines compliant color system
  * - Biomarker-specific status colors and data visualization palette
  * - expo-blur and react-native-reanimated ready configurations
  *
- * @version 3.0.0
+ * @version 4.0.0
  * @author The Council - FORMA, TECHNE, SOPHIA Agents
  */
 
@@ -63,196 +65,196 @@ export const getBiomarkerStatus = (
 };
 
 // =============================================================================
-// COLORS - Premium Dark Liquid UI Palette
+// COLORS - Institutional Clinical Light Palette
 // =============================================================================
 
 export const colors = {
     // -------------------------------------------------------------------------
-    // Primary Brand Colors - BioPoint Blue (Trust & Science)
+    // Primary Brand Colors - Deep Navy (Institutional Trust)
     // -------------------------------------------------------------------------
-    primary: '#3b82f6',
-    primaryLight: '#60a5fa',
-    primaryDark: '#2563eb',
-    primaryMuted: '#1d4ed8',
-    primaryDeep: '#1e3a8a',
-    primarySubtle: 'rgba(59, 130, 246, 0.15)',
+    primary: '#1B4B7A',
+    primaryLight: '#2D6BA4',
+    primaryDark: '#0F2B46',
+    primaryMuted: '#143D66',
+    primaryDeep: '#0A1F3A',
+    primarySubtle: 'rgba(27, 75, 122, 0.1)',
 
     // Full primary scale
     primaryScale: {
-        50: '#eff6ff',
-        100: '#dbeafe',
-        200: '#bfdbfe',
-        300: '#93c5fd',
-        400: '#60a5fa',
-        500: '#3b82f6',
-        600: '#2563eb',
-        700: '#1d4ed8',
-        800: '#1e40af',
-        900: '#1e3a8a',
-        950: '#172554',
+        50: '#F0F5FA',
+        100: '#D9E6F2',
+        200: '#B3CCE5',
+        300: '#8DB3D9',
+        400: '#5E8FBF',
+        500: '#1B4B7A',
+        600: '#163F67',
+        700: '#113354',
+        800: '#0C2741',
+        900: '#071B2E',
+        950: '#030F1A',
     },
 
     // -------------------------------------------------------------------------
-    // Accent Colors - BioPoint Green (Growth & Life)
+    // Accent Colors - Clinical Teal (Health Authority)
     // -------------------------------------------------------------------------
-    accent: '#4ade80',
-    accentLight: '#86efac',
-    accentDark: '#22c55e',
-    accentMuted: '#16a34a',
-    accentSubtle: 'rgba(74, 222, 128, 0.15)',
+    accent: '#0D9488',
+    accentLight: '#2DD4BF',
+    accentDark: '#0F766E',
+    accentMuted: '#0D7A70',
+    accentSubtle: 'rgba(13, 148, 136, 0.1)',
 
     // -------------------------------------------------------------------------
-    // Vibrant Palette - Extended Colors
+    // Extended Palette - Muted Institutional
     // -------------------------------------------------------------------------
-    violet: '#8b5cf6',
-    violetLight: '#a78bfa',
-    fuchsia: '#d946ef',
-    rose: '#f43f5e',
-    orange: '#f97316',
-    amber: '#fbbf24',
-    emerald: '#10b981',
-    teal: '#14b8a6',
-    sky: '#0ea5e9',
-    indigo: '#5e5ce6',
+    violet: '#7C3AED',
+    violetLight: '#A78BFA',
+    fuchsia: '#C026D3',
+    rose: '#E11D48',
+    orange: '#EA580C',
+    amber: '#D97706',
+    emerald: '#059669',
+    teal: '#0D9488',
+    sky: '#0284C7',
+    indigo: '#1B4B7A',
 
     // -------------------------------------------------------------------------
     // Semantic Colors - Clinical Grade
     // -------------------------------------------------------------------------
-    success: '#22c55e',
-    successLight: '#4ade80',
-    successDark: '#16a34a',
-    successMuted: 'rgba(34, 197, 94, 0.15)',
-    successGlow: 'rgba(34, 197, 94, 0.4)',
+    success: '#16A34A',
+    successLight: '#22C55E',
+    successDark: '#15803D',
+    successMuted: 'rgba(22, 163, 74, 0.1)',
+    successGlow: 'rgba(22, 163, 74, 0.2)',
 
-    warning: '#f59e0b',
-    warningLight: '#fbbf24',
-    warningDark: '#d97706',
-    warningMuted: 'rgba(245, 158, 11, 0.15)',
-    warningGlow: 'rgba(245, 158, 11, 0.4)',
+    warning: '#D97706',
+    warningLight: '#F59E0B',
+    warningDark: '#B45309',
+    warningMuted: 'rgba(217, 119, 6, 0.1)',
+    warningGlow: 'rgba(217, 119, 6, 0.2)',
 
-    error: '#ef4444',
-    errorLight: '#f87171',
-    errorDark: '#dc2626',
-    errorMuted: 'rgba(239, 68, 68, 0.15)',
-    errorGlow: 'rgba(239, 68, 68, 0.4)',
+    error: '#DC2626',
+    errorLight: '#EF4444',
+    errorDark: '#B91C1C',
+    errorMuted: 'rgba(220, 38, 38, 0.1)',
+    errorGlow: 'rgba(220, 38, 38, 0.2)',
 
-    info: '#0ea5e9',
-    infoLight: '#38bdf8',
-    infoDark: '#0284c7',
-    infoMuted: 'rgba(14, 165, 233, 0.15)',
-    infoGlow: 'rgba(14, 165, 233, 0.4)',
-
-    // -------------------------------------------------------------------------
-    // Background Colors - Rich Blacks with Blue/Purple Undertones
-    // -------------------------------------------------------------------------
-    background: '#0a0a0f',
-    backgroundSecondary: '#111118',
-    backgroundCard: '#16161f',
-    backgroundElevated: '#1c1c28',
-    backgroundHover: '#22222f',
-    backgroundActive: '#28283a',
-    backgroundSubtle: '#252536',
-    backgroundMuted: '#2a2a3d',
-
-    // OLED-safe pure blacks
-    backgroundVoid: '#050507',
-    backgroundAbyss: '#08080c',
+    info: '#0284C7',
+    infoLight: '#0EA5E9',
+    infoDark: '#0369A1',
+    infoMuted: 'rgba(2, 132, 199, 0.1)',
+    infoGlow: 'rgba(2, 132, 199, 0.2)',
 
     // -------------------------------------------------------------------------
-    // Glassmorphism Surface Colors
+    // Background Colors - Clean Institutional Whites
+    // -------------------------------------------------------------------------
+    background: '#F8FAFC',
+    backgroundSecondary: '#F1F5F9',
+    backgroundCard: '#FFFFFF',
+    backgroundElevated: '#FFFFFF',
+    backgroundHover: '#F1F5F9',
+    backgroundActive: '#E2E8F0',
+    backgroundSubtle: '#EFF2F7',
+    backgroundMuted: '#E8ECF1',
+
+    // Clean whites
+    backgroundVoid: '#FFFFFF',
+    backgroundAbyss: '#FAFBFC',
+
+    // -------------------------------------------------------------------------
+    // Surface Colors (Light Mode Glass)
     // -------------------------------------------------------------------------
     glass: {
-        ultraLight: 'rgba(255, 255, 255, 0.02)',
-        light: 'rgba(255, 255, 255, 0.04)',
-        medium: 'rgba(255, 255, 255, 0.06)',
-        heavy: 'rgba(255, 255, 255, 0.08)',
-        solid: 'rgba(255, 255, 255, 0.12)',
-        border: 'rgba(255, 255, 255, 0.08)',
-        borderLight: 'rgba(255, 255, 255, 0.12)',
-        borderStrong: 'rgba(255, 255, 255, 0.15)',
-        highlight: 'rgba(255, 255, 255, 0.05)',
-        innerGlow: 'rgba(255, 255, 255, 0.03)',
+        ultraLight: 'rgba(255, 255, 255, 0.4)',
+        light: 'rgba(255, 255, 255, 0.6)',
+        medium: 'rgba(255, 255, 255, 0.75)',
+        heavy: 'rgba(255, 255, 255, 0.85)',
+        solid: 'rgba(255, 255, 255, 0.95)',
+        border: 'rgba(0, 0, 0, 0.06)',
+        borderLight: 'rgba(0, 0, 0, 0.08)',
+        borderStrong: 'rgba(0, 0, 0, 0.12)',
+        highlight: 'rgba(0, 0, 0, 0.02)',
+        innerGlow: 'rgba(0, 0, 0, 0.01)',
     },
 
-    // Colored glass variants
+    // Colored surface variants
     glassColored: {
-        primary: 'rgba(59, 130, 246, 0.08)',
-        primaryBorder: 'rgba(59, 130, 246, 0.2)',
-        accent: 'rgba(74, 222, 128, 0.08)',
-        accentBorder: 'rgba(74, 222, 128, 0.2)',
-        success: 'rgba(34, 197, 94, 0.08)',
-        successBorder: 'rgba(34, 197, 94, 0.2)',
-        warning: 'rgba(245, 158, 11, 0.08)',
-        warningBorder: 'rgba(245, 158, 11, 0.2)',
-        error: 'rgba(239, 68, 68, 0.08)',
-        errorBorder: 'rgba(239, 68, 68, 0.2)',
+        primary: 'rgba(27, 75, 122, 0.06)',
+        primaryBorder: 'rgba(27, 75, 122, 0.15)',
+        accent: 'rgba(13, 148, 136, 0.06)',
+        accentBorder: 'rgba(13, 148, 136, 0.15)',
+        success: 'rgba(22, 163, 74, 0.06)',
+        successBorder: 'rgba(22, 163, 74, 0.15)',
+        warning: 'rgba(217, 119, 6, 0.06)',
+        warningBorder: 'rgba(217, 119, 6, 0.15)',
+        error: 'rgba(220, 38, 38, 0.06)',
+        errorBorder: 'rgba(220, 38, 38, 0.15)',
     },
 
     // -------------------------------------------------------------------------
-    // Text Colors - WCAG 2.1 Compliant
+    // Text Colors - WCAG 2.1 Compliant on Light Backgrounds
     // -------------------------------------------------------------------------
-    textPrimary: '#ffffff',
-    textSecondary: '#e4e4ed',
-    textTertiary: '#a1a1b5',
-    textMuted: '#71718a',
-    textDisabled: '#4a4a5e',
-    textInverse: '#0a0a0f',
+    textPrimary: '#0F172A',
+    textSecondary: '#334155',
+    textTertiary: '#64748B',
+    textMuted: '#94A3B8',
+    textDisabled: '#CBD5E1',
+    textInverse: '#FFFFFF',
 
     // -------------------------------------------------------------------------
     // Border Colors
     // -------------------------------------------------------------------------
-    border: 'rgba(255, 255, 255, 0.08)',
-    borderLight: 'rgba(255, 255, 255, 0.12)',
-    borderFocus: '#6366f1',
-    borderSubtle: 'rgba(255, 255, 255, 0.04)',
-    borderAccent: 'rgba(99, 102, 241, 0.3)',
+    border: 'rgba(0, 0, 0, 0.08)',
+    borderLight: 'rgba(0, 0, 0, 0.05)',
+    borderFocus: '#1B4B7A',
+    borderSubtle: 'rgba(0, 0, 0, 0.03)',
+    borderAccent: 'rgba(27, 75, 122, 0.2)',
 
     // -------------------------------------------------------------------------
     // Overlay Colors
     // -------------------------------------------------------------------------
-    overlay: 'rgba(5, 5, 7, 0.8)',
-    overlayLight: 'rgba(0, 0, 0, 0.5)',
-    overlayHeavy: 'rgba(0, 0, 0, 0.85)',
-    scrim: 'rgba(10, 10, 15, 0.9)',
+    overlay: 'rgba(15, 23, 42, 0.6)',
+    overlayLight: 'rgba(0, 0, 0, 0.3)',
+    overlayHeavy: 'rgba(0, 0, 0, 0.7)',
+    scrim: 'rgba(15, 23, 42, 0.8)',
 
     // -------------------------------------------------------------------------
     // Biomarker Status Colors - Clinical Grade
     // -------------------------------------------------------------------------
     biomarker: {
         optimal: {
-            primary: '#22c55e',
-            secondary: '#4ade80',
-            background: 'rgba(34, 197, 94, 0.12)',
-            border: 'rgba(34, 197, 94, 0.3)',
-            glow: 'rgba(34, 197, 94, 0.5)',
+            primary: '#16A34A',
+            secondary: '#22C55E',
+            background: 'rgba(22, 163, 74, 0.08)',
+            border: 'rgba(22, 163, 74, 0.2)',
+            glow: 'rgba(22, 163, 74, 0.15)',
         },
         suboptimal: {
-            primary: '#eab308',
-            secondary: '#facc15',
-            background: 'rgba(234, 179, 8, 0.12)',
-            border: 'rgba(234, 179, 8, 0.3)',
-            glow: 'rgba(234, 179, 8, 0.5)',
+            primary: '#CA8A04',
+            secondary: '#EAB308',
+            background: 'rgba(202, 138, 4, 0.08)',
+            border: 'rgba(202, 138, 4, 0.2)',
+            glow: 'rgba(202, 138, 4, 0.15)',
         },
         warning: {
-            primary: '#f97316',
-            secondary: '#fb923c',
-            background: 'rgba(249, 115, 22, 0.12)',
-            border: 'rgba(249, 115, 22, 0.3)',
-            glow: 'rgba(249, 115, 22, 0.5)',
+            primary: '#EA580C',
+            secondary: '#F97316',
+            background: 'rgba(234, 88, 12, 0.08)',
+            border: 'rgba(234, 88, 12, 0.2)',
+            glow: 'rgba(234, 88, 12, 0.15)',
         },
         critical: {
-            primary: '#ef4444',
-            secondary: '#f87171',
-            background: 'rgba(239, 68, 68, 0.12)',
-            border: 'rgba(239, 68, 68, 0.3)',
-            glow: 'rgba(239, 68, 68, 0.5)',
+            primary: '#DC2626',
+            secondary: '#EF4444',
+            background: 'rgba(220, 38, 38, 0.08)',
+            border: 'rgba(220, 38, 38, 0.2)',
+            glow: 'rgba(220, 38, 38, 0.15)',
         },
         unknown: {
-            primary: '#6b7280',
-            secondary: '#9ca3af',
-            background: 'rgba(107, 114, 128, 0.12)',
-            border: 'rgba(107, 114, 128, 0.3)',
-            glow: 'rgba(107, 114, 128, 0.3)',
+            primary: '#6B7280',
+            secondary: '#9CA3AF',
+            background: 'rgba(107, 114, 128, 0.08)',
+            border: 'rgba(107, 114, 128, 0.2)',
+            glow: 'rgba(107, 114, 128, 0.15)',
         },
     },
 
@@ -261,47 +263,47 @@ export const colors = {
     // -------------------------------------------------------------------------
     chart: {
         series: [
-            '#6366f1', // Indigo - primary
-            '#22d3ee', // Cyan - secondary
-            '#a78bfa', // Violet
-            '#34d399', // Emerald
-            '#fbbf24', // Amber
-            '#f472b6', // Pink
-            '#60a5fa', // Blue
-            '#fb7185', // Rose
+            '#1B4B7A', // Navy - primary
+            '#0D9488', // Teal - secondary
+            '#7C3AED', // Violet
+            '#059669', // Emerald
+            '#D97706', // Amber
+            '#DB2777', // Pink
+            '#2D6BA4', // Blue
+            '#E11D48', // Rose
         ],
         areaFills: [
-            'rgba(99, 102, 241, 0.3)',
-            'rgba(34, 211, 238, 0.3)',
-            'rgba(167, 139, 250, 0.3)',
-            'rgba(52, 211, 153, 0.3)',
+            'rgba(27, 75, 122, 0.15)',
+            'rgba(13, 148, 136, 0.15)',
+            'rgba(124, 58, 237, 0.15)',
+            'rgba(5, 150, 105, 0.15)',
         ],
         grid: {
-            line: 'rgba(255, 255, 255, 0.06)',
-            lineMajor: 'rgba(255, 255, 255, 0.12)',
-            label: '#71718a',
-            axis: 'rgba(255, 255, 255, 0.15)',
+            line: 'rgba(0, 0, 0, 0.06)',
+            lineMajor: 'rgba(0, 0, 0, 0.12)',
+            label: '#94A3B8',
+            axis: 'rgba(0, 0, 0, 0.15)',
         },
         reference: {
-            target: '#22d3ee',
-            threshold: '#f59e0b',
-            average: '#a78bfa',
-            baseline: 'rgba(255, 255, 255, 0.2)',
+            target: '#0D9488',
+            threshold: '#D97706',
+            average: '#7C3AED',
+            baseline: 'rgba(0, 0, 0, 0.1)',
         },
     },
 
     // -------------------------------------------------------------------------
-    // Biomarker Category Colors
+    // Biomarker Category Colors (Darkened for light backgrounds)
     // -------------------------------------------------------------------------
     biomarkerCategory: {
-        cardiovascular: '#FF6482',
-        metabolic: '#BF5AF2',
-        hormonal: '#FF9F0A',
-        immune: '#30D158',
-        cognitive: '#5E5CE6',
-        energy: '#FFD60A',
-        sleep: '#64D2FF',
-        recovery: '#34D399',
+        cardiovascular: '#E11D48',
+        metabolic: '#9333EA',
+        hormonal: '#EA580C',
+        immune: '#16A34A',
+        cognitive: '#1B4B7A',
+        energy: '#CA8A04',
+        sleep: '#0284C7',
+        recovery: '#059669',
     },
 
     // -------------------------------------------------------------------------
@@ -309,18 +311,18 @@ export const colors = {
     // -------------------------------------------------------------------------
     interactive: {
         hover: {
-            light: 'rgba(255, 255, 255, 0.08)',
-            medium: 'rgba(255, 255, 255, 0.12)',
-            colored: 'rgba(99, 102, 241, 0.15)',
+            light: 'rgba(0, 0, 0, 0.04)',
+            medium: 'rgba(0, 0, 0, 0.08)',
+            colored: 'rgba(27, 75, 122, 0.08)',
         },
         pressed: {
-            light: 'rgba(255, 255, 255, 0.04)',
-            medium: 'rgba(255, 255, 255, 0.08)',
-            colored: 'rgba(99, 102, 241, 0.25)',
+            light: 'rgba(0, 0, 0, 0.08)',
+            medium: 'rgba(0, 0, 0, 0.12)',
+            colored: 'rgba(27, 75, 122, 0.15)',
         },
         focus: {
-            ring: 'rgba(99, 102, 241, 0.5)',
-            outline: '#6366f1',
+            ring: 'rgba(27, 75, 122, 0.3)',
+            outline: '#1B4B7A',
         },
     },
 };
@@ -333,83 +335,83 @@ export const gradients = {
     // -------------------------------------------------------------------------
     // Brand Gradients
     // -------------------------------------------------------------------------
-    primary: ['#4ade80', '#3b82f6'] as const, // The BioPoint Helix: Green (Life) -> Blue (Tech)
-    primaryExtended: ['#86efac', '#4ade80', '#3b82f6'] as const,
-    primaryGlow: ['#4ade80', '#3b82f6', '#1d4ed8'] as const,
-    accent: ['#4ade80', '#22c55e'] as const,
-    brand: ['#4ade80', '#3b82f6'] as const,
+    primary: ['#0D9488', '#1B4B7A'] as const, // The BioPoint Helix: Teal (Health) -> Navy (Trust)
+    primaryExtended: ['#2DD4BF', '#0D9488', '#1B4B7A'] as const,
+    primaryGlow: ['#0D9488', '#1B4B7A', '#0F2B46'] as const,
+    accent: ['#0D9488', '#0F766E'] as const,
+    brand: ['#0D9488', '#1B4B7A'] as const,
 
     // -------------------------------------------------------------------------
-    // Vibrant Gradients
+    // Subtle Gradients (Institutional)
     // -------------------------------------------------------------------------
-    aurora: ['#6366f1', '#8b5cf6', '#d946ef'] as const,
-    cosmic: ['#4f46e5', '#7c3aed', '#c026d3'] as const,
-    neon: ['#22d3ee', '#a855f7', '#f43f5e'] as const,
-    sunset: ['#f43f5e', '#f97316', '#fbbf24'] as const,
-    ocean: ['#0ea5e9', '#22d3ee', '#14b8a6'] as const,
-    forest: ['#10b981', '#14b8a6', '#22d3ee'] as const,
-    fire: ['#ef4444', '#f97316', '#fbbf24'] as const,
+    aurora: ['#1B4B7A', '#7C3AED', '#C026D3'] as const,
+    cosmic: ['#0F2B46', '#6D28D9', '#A21CAF'] as const,
+    neon: ['#0D9488', '#7C3AED', '#E11D48'] as const,
+    sunset: ['#E11D48', '#EA580C', '#D97706'] as const,
+    ocean: ['#0284C7', '#0D9488', '#0F766E'] as const,
+    forest: ['#059669', '#0D9488', '#0284C7'] as const,
+    fire: ['#DC2626', '#EA580C', '#D97706'] as const,
 
     // -------------------------------------------------------------------------
     // CTA Button Gradients
     // -------------------------------------------------------------------------
     cta: {
-        primary: ['#6366f1', '#4f46e5'] as const,
-        primaryGlow: ['#818cf8', '#6366f1', '#4f46e5'] as const,
-        accent: ['#22d3ee', '#06b6d4'] as const,
-        success: ['#22c55e', '#16a34a'] as const,
-        premium: ['#fbbf24', '#f59e0b', '#d97706'] as const,
-        danger: ['#f43f5e', '#e11d48'] as const,
+        primary: ['#1B4B7A', '#0F2B46'] as const,
+        primaryGlow: ['#2D6BA4', '#1B4B7A', '#0F2B46'] as const,
+        accent: ['#0D9488', '#0F766E'] as const,
+        success: ['#16A34A', '#15803D'] as const,
+        premium: ['#D97706', '#B45309', '#92400E'] as const,
+        danger: ['#E11D48', '#BE123C'] as const,
     },
 
     // -------------------------------------------------------------------------
-    // Glassmorphism Gradients
+    // Surface Gradients (Light Mode)
     // -------------------------------------------------------------------------
-    glass: ['rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.02)'] as const,
-    glassReverse: ['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0.08)'] as const,
-    glassDark: ['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.1)'] as const,
-    glassColored: ['rgba(99, 102, 241, 0.12)', 'rgba(139, 92, 246, 0.04)'] as const,
+    glass: ['rgba(255, 255, 255, 0.9)', 'rgba(255, 255, 255, 0.6)'] as const,
+    glassReverse: ['rgba(255, 255, 255, 0.6)', 'rgba(255, 255, 255, 0.9)'] as const,
+    glassDark: ['rgba(0, 0, 0, 0.04)', 'rgba(0, 0, 0, 0.02)'] as const,
+    glassColored: ['rgba(27, 75, 122, 0.06)', 'rgba(13, 148, 136, 0.03)'] as const,
 
     // -------------------------------------------------------------------------
     // Background Gradients
     // -------------------------------------------------------------------------
     background: {
-        primary: ['#0a0a0f', '#0d0b14', '#0f0a12', '#0a0a0f'] as const,
-        ambient: ['#0a0a0f', '#0f0d18', '#0a0a0f'] as const,
-        radial: ['#16161f', '#0a0a0f'] as const,
-        diagonal: ['#111118', '#0a0a0f'] as const,
-        cardSurface: ['#1c1c28', '#16161f'] as const,
+        primary: ['#F8FAFC', '#F1F5F9', '#EFF2F7', '#F8FAFC'] as const,
+        ambient: ['#F8FAFC', '#F1F5F9', '#F8FAFC'] as const,
+        radial: ['#FFFFFF', '#F8FAFC'] as const,
+        diagonal: ['#F1F5F9', '#F8FAFC'] as const,
+        cardSurface: ['#FFFFFF', '#FAFBFC'] as const,
     },
 
     // -------------------------------------------------------------------------
-    // Glow Gradients (Radial)
+    // Subtle Glow Gradients (Radial)
     // -------------------------------------------------------------------------
     glow: {
-        primary: ['rgba(99, 102, 241, 0.4)', 'rgba(99, 102, 241, 0.1)', 'transparent'] as const,
-        accent: ['rgba(34, 211, 238, 0.4)', 'rgba(34, 211, 238, 0.1)', 'transparent'] as const,
-        success: ['rgba(34, 197, 94, 0.4)', 'rgba(34, 197, 94, 0.1)', 'transparent'] as const,
-        warning: ['rgba(245, 158, 11, 0.4)', 'rgba(245, 158, 11, 0.1)', 'transparent'] as const,
-        error: ['rgba(244, 63, 94, 0.4)', 'rgba(244, 63, 94, 0.1)', 'transparent'] as const,
+        primary: ['rgba(27, 75, 122, 0.15)', 'rgba(27, 75, 122, 0.05)', 'transparent'] as const,
+        accent: ['rgba(13, 148, 136, 0.15)', 'rgba(13, 148, 136, 0.05)', 'transparent'] as const,
+        success: ['rgba(22, 163, 74, 0.15)', 'rgba(22, 163, 74, 0.05)', 'transparent'] as const,
+        warning: ['rgba(217, 119, 6, 0.15)', 'rgba(217, 119, 6, 0.05)', 'transparent'] as const,
+        error: ['rgba(220, 38, 38, 0.15)', 'rgba(220, 38, 38, 0.05)', 'transparent'] as const,
     },
 
     // -------------------------------------------------------------------------
     // Data Visualization Gradients
     // -------------------------------------------------------------------------
     data: {
-        healthScore: ['#ef4444', '#f97316', '#eab308', '#4ade80'] as const,
-        progress: ['#3b82f6', '#4ade80', '#22d3ee'] as const,
-        heartRateZone: ['#3b82f6', '#4ade80', '#eab308', '#f97316', '#ef4444'] as const,
-        sleepQuality: ['#1e3a8a', '#1e40af', '#3b82f6', '#60a5fa'] as const,
-        hydration: ['#fbbf24', '#22d3ee', '#3b82f6'] as const,
+        healthScore: ['#DC2626', '#EA580C', '#CA8A04', '#16A34A'] as const,
+        progress: ['#1B4B7A', '#0D9488', '#0284C7'] as const,
+        heartRateZone: ['#1B4B7A', '#16A34A', '#CA8A04', '#EA580C', '#DC2626'] as const,
+        sleepQuality: ['#0A1F3A', '#0F2B46', '#1B4B7A', '#2D6BA4'] as const,
+        hydration: ['#D97706', '#0D9488', '#1B4B7A'] as const,
     },
 
     // -------------------------------------------------------------------------
-    // Border Gradients (for premium effects)
+    // Border Gradients
     // -------------------------------------------------------------------------
     border: {
-        shimmer: ['transparent', 'rgba(255, 255, 255, 0.1)', 'transparent'] as const,
-        premium: ['rgba(99, 102, 241, 0.3)', 'rgba(139, 92, 246, 0.2)', 'rgba(34, 211, 238, 0.3)'] as const,
-        success: ['rgba(34, 197, 94, 0.4)', 'rgba(34, 197, 94, 0.1)', 'rgba(34, 197, 94, 0.4)'] as const,
+        shimmer: ['transparent', 'rgba(0, 0, 0, 0.06)', 'transparent'] as const,
+        premium: ['rgba(27, 75, 122, 0.2)', 'rgba(13, 148, 136, 0.15)', 'rgba(27, 75, 122, 0.2)'] as const,
+        success: ['rgba(22, 163, 74, 0.2)', 'rgba(22, 163, 74, 0.08)', 'rgba(22, 163, 74, 0.2)'] as const,
     },
 
     // -------------------------------------------------------------------------
@@ -417,16 +419,16 @@ export const gradients = {
     // -------------------------------------------------------------------------
     mesh: {
         hero: [
-            { color: 'rgba(99, 102, 241, 0.15)', position: [0, 0] },
-            { color: 'rgba(34, 211, 238, 0.08)', position: [1, 0] },
-            { color: 'rgba(139, 92, 246, 0.1)', position: [0, 1] },
-            { color: 'rgba(6, 182, 212, 0.05)', position: [1, 1] },
+            { color: 'rgba(27, 75, 122, 0.08)', position: [0, 0] },
+            { color: 'rgba(13, 148, 136, 0.05)', position: [1, 0] },
+            { color: 'rgba(124, 58, 237, 0.04)', position: [0, 1] },
+            { color: 'rgba(2, 132, 199, 0.03)', position: [1, 1] },
         ],
         celebration: [
-            { color: 'rgba(34, 197, 94, 0.2)', position: [0.5, 0] },
-            { color: 'rgba(99, 102, 241, 0.15)', position: [0, 0.5] },
-            { color: 'rgba(34, 211, 238, 0.15)', position: [1, 0.5] },
-            { color: 'rgba(139, 92, 246, 0.1)', position: [0.5, 1] },
+            { color: 'rgba(22, 163, 74, 0.1)', position: [0.5, 0] },
+            { color: 'rgba(27, 75, 122, 0.08)', position: [0, 0.5] },
+            { color: 'rgba(13, 148, 136, 0.08)', position: [1, 0.5] },
+            { color: 'rgba(124, 58, 237, 0.05)', position: [0.5, 1] },
         ],
     },
 };
@@ -437,99 +439,99 @@ export const gradients = {
 
 export const glass = {
     // -------------------------------------------------------------------------
-    // Base Glass Layers
+    // Base Surface Layers (Light Mode)
     // -------------------------------------------------------------------------
     ultraLight: {
-        backgroundColor: 'rgba(255, 255, 255, 0.02)',
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.04)',
+        borderColor: 'rgba(0, 0, 0, 0.04)',
     } as ViewStyle,
 
     light: {
-        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+        backgroundColor: 'rgba(255, 255, 255, 0.6)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.06)',
+        borderColor: 'rgba(0, 0, 0, 0.06)',
     } as ViewStyle,
 
     medium: {
-        backgroundColor: 'rgba(255, 255, 255, 0.06)',
+        backgroundColor: 'rgba(255, 255, 255, 0.75)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.08)',
+        borderColor: 'rgba(0, 0, 0, 0.08)',
     } as ViewStyle,
 
     heavy: {
-        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.12)',
+        borderColor: 'rgba(0, 0, 0, 0.1)',
     } as ViewStyle,
 
     solid: {
-        backgroundColor: 'rgba(255, 255, 255, 0.12)',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.15)',
+        borderColor: 'rgba(0, 0, 0, 0.12)',
     } as ViewStyle,
 
     // -------------------------------------------------------------------------
-    // Frosted Glass (expo-blur ready)
+    // Frosted Surface (expo-blur ready)
     // -------------------------------------------------------------------------
     frosted: {
-        backgroundColor: 'rgba(22, 22, 31, 0.7)',
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.08)',
+        borderColor: 'rgba(0, 0, 0, 0.06)',
     } as ViewStyle,
 
     frostedDark: {
-        backgroundColor: 'rgba(10, 10, 15, 0.85)',
+        backgroundColor: 'rgba(248, 250, 252, 0.95)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.06)',
+        borderColor: 'rgba(0, 0, 0, 0.08)',
     } as ViewStyle,
 
     // -------------------------------------------------------------------------
-    // Colored Glass Tints
+    // Colored Surface Tints
     // -------------------------------------------------------------------------
     primary: {
-        backgroundColor: 'rgba(99, 102, 241, 0.08)',
+        backgroundColor: 'rgba(27, 75, 122, 0.06)',
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.2)',
+        borderColor: 'rgba(27, 75, 122, 0.15)',
     } as ViewStyle,
 
     accent: {
-        backgroundColor: 'rgba(34, 211, 238, 0.08)',
+        backgroundColor: 'rgba(13, 148, 136, 0.06)',
         borderWidth: 1,
-        borderColor: 'rgba(34, 211, 238, 0.2)',
+        borderColor: 'rgba(13, 148, 136, 0.15)',
     } as ViewStyle,
 
     success: {
-        backgroundColor: 'rgba(34, 197, 94, 0.08)',
+        backgroundColor: 'rgba(22, 163, 74, 0.06)',
         borderWidth: 1,
-        borderColor: 'rgba(34, 197, 94, 0.2)',
+        borderColor: 'rgba(22, 163, 74, 0.15)',
     } as ViewStyle,
 
     warning: {
-        backgroundColor: 'rgba(245, 158, 11, 0.08)',
+        backgroundColor: 'rgba(217, 119, 6, 0.06)',
         borderWidth: 1,
-        borderColor: 'rgba(245, 158, 11, 0.2)',
+        borderColor: 'rgba(217, 119, 6, 0.15)',
     } as ViewStyle,
 
     error: {
-        backgroundColor: 'rgba(244, 63, 94, 0.08)',
+        backgroundColor: 'rgba(220, 38, 38, 0.06)',
         borderWidth: 1,
-        borderColor: 'rgba(244, 63, 94, 0.2)',
+        borderColor: 'rgba(220, 38, 38, 0.15)',
     } as ViewStyle,
 
     // -------------------------------------------------------------------------
-    // Interactive Glass States
+    // Interactive Surface States
     // -------------------------------------------------------------------------
     pressed: {
-        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.08)',
+        borderColor: 'rgba(0, 0, 0, 0.08)',
     } as ViewStyle,
 
     selected: {
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        backgroundColor: 'rgba(27, 75, 122, 0.08)',
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
+        borderColor: 'rgba(27, 75, 122, 0.2)',
     } as ViewStyle,
 };
 
@@ -539,27 +541,27 @@ export const glass = {
 
 export const blurEffects = {
     // -------------------------------------------------------------------------
-    // Surface Blur Intensities (Dark Mode)
+    // Surface Blur Intensities (Light Mode)
     // -------------------------------------------------------------------------
     surfaces: {
-        ultraThin: { intensity: 25, tint: 'dark' as const },
-        thin: { intensity: 45, tint: 'dark' as const },
-        regular: { intensity: 65, tint: 'dark' as const },
-        thick: { intensity: 85, tint: 'dark' as const },
-        chrome: { intensity: 98, tint: 'dark' as const },
+        ultraThin: { intensity: 25, tint: 'light' as const },
+        thin: { intensity: 45, tint: 'light' as const },
+        regular: { intensity: 65, tint: 'light' as const },
+        thick: { intensity: 85, tint: 'light' as const },
+        chrome: { intensity: 98, tint: 'light' as const },
     },
 
     // -------------------------------------------------------------------------
     // Component-Specific Blur
     // -------------------------------------------------------------------------
     components: {
-        navigationBar: { intensity: 85, tint: 'dark' as const },
-        tabBar: { intensity: 90, tint: 'dark' as const },
+        navigationBar: { intensity: 85, tint: 'light' as const },
+        tabBar: { intensity: 90, tint: 'light' as const },
         modalBackdrop: { intensity: 30, tint: 'dark' as const },
-        actionSheet: { intensity: 80, tint: 'dark' as const },
-        toast: { intensity: 70, tint: 'dark' as const },
-        floatingCard: { intensity: 60, tint: 'dark' as const },
-        searchBar: { intensity: 50, tint: 'dark' as const },
+        actionSheet: { intensity: 80, tint: 'light' as const },
+        toast: { intensity: 70, tint: 'light' as const },
+        floatingCard: { intensity: 60, tint: 'light' as const },
+        searchBar: { intensity: 50, tint: 'light' as const },
     },
 
     // -------------------------------------------------------------------------
@@ -1045,60 +1047,60 @@ export const shadows = {
     } as ViewStyle,
 
     // -------------------------------------------------------------------------
-    // Colored Glow Effects
+    // Colored Glow Effects (Subtle for light mode)
     // -------------------------------------------------------------------------
     glow: {
-        shadowColor: '#6366f1',
+        shadowColor: '#1B4B7A',
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.25,
         shadowRadius: 20,
         elevation: 10,
     } as ViewStyle,
 
     primaryGlow: {
-        shadowColor: '#6366f1',
+        shadowColor: '#1B4B7A',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowRadius: 16,
         elevation: 8,
     } as ViewStyle,
 
     primaryGlowIntense: {
-        shadowColor: '#6366f1',
+        shadowColor: '#1B4B7A',
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.6,
+        shadowOpacity: 0.3,
         shadowRadius: 24,
         elevation: 12,
     } as ViewStyle,
 
     accentGlow: {
-        shadowColor: '#22d3ee',
+        shadowColor: '#0D9488',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowRadius: 16,
         elevation: 8,
     } as ViewStyle,
 
     successGlow: {
-        shadowColor: '#22c55e',
+        shadowColor: '#16A34A',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowRadius: 16,
         elevation: 8,
     } as ViewStyle,
 
     warningGlow: {
-        shadowColor: '#f59e0b',
+        shadowColor: '#D97706',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowRadius: 16,
         elevation: 8,
     } as ViewStyle,
 
     errorGlow: {
-        shadowColor: '#ef4444',
+        shadowColor: '#DC2626',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.2,
         shadowRadius: 16,
         elevation: 8,
     } as ViewStyle,
@@ -1108,34 +1110,34 @@ export const shadows = {
     // -------------------------------------------------------------------------
     card: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 4,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
     } as ViewStyle,
 
     cardHover: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.25,
-        shadowRadius: 20,
-        elevation: 10,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.12,
+        shadowRadius: 16,
+        elevation: 6,
     } as ViewStyle,
 
     button: {
-        shadowColor: '#6366f1',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+        shadowColor: '#1B4B7A',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 3,
     } as ViewStyle,
 
     buttonPressed: {
-        shadowColor: '#6366f1',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 2,
+        shadowColor: '#1B4B7A',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 1,
     } as ViewStyle,
 
     // -------------------------------------------------------------------------
@@ -1143,14 +1145,14 @@ export const shadows = {
     // -------------------------------------------------------------------------
     innerGlow: {
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        backgroundColor: 'rgba(255, 255, 255, 0.02)',
+        borderColor: 'rgba(0, 0, 0, 0.06)',
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
     } as ViewStyle,
 
     innerGlowPrimary: {
         borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
-        backgroundColor: 'rgba(99, 102, 241, 0.05)',
+        borderColor: 'rgba(27, 75, 122, 0.15)',
+        backgroundColor: 'rgba(27, 75, 122, 0.04)',
     } as ViewStyle,
 };
 
@@ -1164,30 +1166,30 @@ export const componentStyles = {
     // -------------------------------------------------------------------------
     glassCard: StyleSheet.create({
         container: {
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            backgroundColor: '#FFFFFF',
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.08)',
+            borderColor: 'rgba(0, 0, 0, 0.06)',
             borderRadius: 20,
             padding: 20,
             overflow: 'hidden',
         },
         containerElevated: {
-            backgroundColor: 'rgba(255, 255, 255, 0.06)',
+            backgroundColor: '#FFFFFF',
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(0, 0, 0, 0.08)',
             borderRadius: 20,
             padding: 20,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.25,
-            shadowRadius: 20,
-            elevation: 10,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 4,
             overflow: 'hidden',
         },
         containerSelected: {
-            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            backgroundColor: 'rgba(27, 75, 122, 0.06)',
             borderWidth: 1,
-            borderColor: 'rgba(99, 102, 241, 0.3)',
+            borderColor: 'rgba(27, 75, 122, 0.2)',
             borderRadius: 20,
             padding: 20,
             overflow: 'hidden',
@@ -1200,12 +1202,12 @@ export const componentStyles = {
         title: {
             fontSize: 17,
             fontWeight: '600',
-            color: '#ffffff',
+            color: '#0F172A',
             letterSpacing: 0,
         },
         subtitle: {
             fontSize: 14,
-            color: '#a1a1b5',
+            color: '#64748B',
             marginTop: 4,
         },
         content: {
@@ -1215,7 +1217,7 @@ export const componentStyles = {
             marginTop: 16,
             paddingTop: 16,
             borderTopWidth: 1,
-            borderTopColor: 'rgba(255, 255, 255, 0.06)',
+            borderTopColor: 'rgba(0, 0, 0, 0.06)',
         },
     }),
 
@@ -1270,51 +1272,51 @@ export const componentStyles = {
             position: 'relative',
         },
         inputWrapper: {
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            backgroundColor: '#FFFFFF',
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.08)',
+            borderColor: 'rgba(0, 0, 0, 0.1)',
             borderRadius: 12,
             overflow: 'hidden',
         },
         inputWrapperFocused: {
-            borderColor: '#6366f1',
-            shadowColor: '#6366f1',
+            borderColor: '#1B4B7A',
+            shadowColor: '#1B4B7A',
             shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.3,
-            shadowRadius: 12,
-            elevation: 4,
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 3,
         },
         inputWrapperError: {
-            borderColor: '#ef4444',
-            shadowColor: '#ef4444',
+            borderColor: '#DC2626',
+            shadowColor: '#DC2626',
             shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.3,
-            shadowRadius: 12,
-            elevation: 4,
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 3,
         },
         input: {
             paddingHorizontal: 16,
             paddingVertical: 14,
             fontSize: 17,
-            color: '#ffffff',
+            color: '#0F172A',
         },
         label: {
             fontSize: 14,
             fontWeight: '500',
-            color: '#a1a1b5',
+            color: '#64748B',
             marginBottom: 8,
         },
         labelFocused: {
-            color: '#6366f1',
+            color: '#1B4B7A',
         },
         errorText: {
             fontSize: 12,
-            color: '#ef4444',
+            color: '#DC2626',
             marginTop: 6,
         },
         helperText: {
             fontSize: 12,
-            color: '#71718a',
+            color: '#94A3B8',
             marginTop: 6,
         },
     }),
@@ -1324,9 +1326,9 @@ export const componentStyles = {
     // -------------------------------------------------------------------------
     biomarkerCard: StyleSheet.create({
         container: {
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            backgroundColor: '#FFFFFF',
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.08)',
+            borderColor: 'rgba(0, 0, 0, 0.06)',
             borderRadius: 20,
             padding: 20,
             minHeight: 140,
@@ -1351,18 +1353,18 @@ export const componentStyles = {
             fontSize: 34,
             fontWeight: '700',
             letterSpacing: -0.5,
-            color: '#ffffff',
+            color: '#0F172A',
         },
         unitLabel: {
             fontSize: 16,
             fontWeight: '500',
-            color: 'rgba(255, 255, 255, 0.5)',
+            color: 'rgba(15, 23, 42, 0.45)',
             marginLeft: 4,
         },
         rangeBar: {
             height: 6,
             borderRadius: 3,
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(0, 0, 0, 0.08)',
             marginTop: 16,
             overflow: 'hidden',
         },
@@ -1399,36 +1401,36 @@ export const componentStyles = {
             letterSpacing: 0.3,
         },
         primary: {
-            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+            backgroundColor: 'rgba(27, 75, 122, 0.1)',
         },
         primaryText: {
-            color: '#818cf8',
+            color: '#1B4B7A',
         },
         success: {
-            backgroundColor: 'rgba(34, 197, 94, 0.15)',
+            backgroundColor: 'rgba(22, 163, 74, 0.1)',
         },
         successText: {
-            color: '#4ade80',
+            color: '#16A34A',
         },
         warning: {
-            backgroundColor: 'rgba(245, 158, 11, 0.15)',
+            backgroundColor: 'rgba(217, 119, 6, 0.1)',
         },
         warningText: {
-            color: '#fbbf24',
+            color: '#D97706',
         },
         error: {
-            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+            backgroundColor: 'rgba(220, 38, 38, 0.1)',
         },
         errorText: {
-            color: '#f87171',
+            color: '#DC2626',
         },
         glass: {
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(0, 0, 0, 0.08)',
         },
         glassText: {
-            color: '#ffffff',
+            color: '#0F172A',
         },
     }),
 
@@ -1438,7 +1440,7 @@ export const componentStyles = {
     modal: StyleSheet.create({
         overlay: {
             flex: 1,
-            backgroundColor: 'rgba(5, 5, 7, 0.8)',
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
             justifyContent: 'center',
             alignItems: 'center',
             padding: 24,
@@ -1446,10 +1448,10 @@ export const componentStyles = {
         container: {
             width: '100%',
             maxWidth: 400,
-            backgroundColor: '#16161f',
+            backgroundColor: '#FFFFFF',
             borderRadius: 24,
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: 'rgba(0, 0, 0, 0.08)',
             overflow: 'hidden',
         },
         header: {
@@ -1459,12 +1461,12 @@ export const componentStyles = {
         title: {
             fontSize: 20,
             fontWeight: '600',
-            color: '#ffffff',
+            color: '#0F172A',
             textAlign: 'center',
         },
         subtitle: {
             fontSize: 14,
-            color: '#a1a1b5',
+            color: '#64748B',
             textAlign: 'center',
             marginTop: 8,
         },
@@ -1486,22 +1488,22 @@ export const componentStyles = {
     bottomSheet: StyleSheet.create({
         overlay: {
             flex: 1,
-            backgroundColor: 'rgba(5, 5, 7, 0.8)',
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
             justifyContent: 'flex-end',
         },
         container: {
-            backgroundColor: 'rgba(22, 22, 31, 0.98)',
+            backgroundColor: 'rgba(255, 255, 255, 0.98)',
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.08)',
+            borderColor: 'rgba(0, 0, 0, 0.08)',
             borderBottomWidth: 0,
             maxHeight: '90%',
         },
         handle: {
             width: 36,
             height: 4,
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            backgroundColor: 'rgba(0, 0, 0, 0.15)',
             borderRadius: 2,
             alignSelf: 'center',
             marginTop: 12,
@@ -1518,7 +1520,7 @@ export const componentStyles = {
     tabBar: StyleSheet.create({
         container: {
             flexDirection: 'row',
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
             borderRadius: 12,
             padding: 4,
         },
@@ -1531,15 +1533,15 @@ export const componentStyles = {
             borderRadius: 8,
         },
         tabActive: {
-            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+            backgroundColor: 'rgba(27, 75, 122, 0.1)',
         },
         tabText: {
             fontSize: 14,
             fontWeight: '500',
-            color: '#71718a',
+            color: '#94A3B8',
         },
         tabTextActive: {
-            color: '#818cf8',
+            color: '#1B4B7A',
         },
     }),
 
@@ -1549,7 +1551,7 @@ export const componentStyles = {
     progressBar: StyleSheet.create({
         container: {
             height: 8,
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(0, 0, 0, 0.08)',
             borderRadius: 4,
             overflow: 'hidden',
         },
@@ -1570,12 +1572,12 @@ export const componentStyles = {
         },
         labelText: {
             fontSize: 14,
-            color: '#a1a1b5',
+            color: '#64748B',
         },
         valueText: {
             fontSize: 14,
             fontWeight: '600',
-            color: '#ffffff',
+            color: '#0F172A',
         },
     }),
 
@@ -1584,7 +1586,7 @@ export const componentStyles = {
     // -------------------------------------------------------------------------
     skeleton: StyleSheet.create({
         container: {
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
             borderRadius: 8,
             overflow: 'hidden',
         },
@@ -1626,11 +1628,11 @@ export const componentStyles = {
             borderRadius: 28,
             alignItems: 'center',
             justifyContent: 'center',
-            shadowColor: '#6366f1',
+            shadowColor: '#1B4B7A',
             shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.4,
+            shadowOpacity: 0.2,
             shadowRadius: 12,
-            elevation: 8,
+            elevation: 6,
         },
         buttonSmall: {
             width: 44,

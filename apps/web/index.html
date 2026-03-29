@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioPoint — Your Biohacking Command Center</title>
+  <meta name="description" content="BioPoint is the biohacker's daily cockpit. Track stacks, nutrition, fasting, peptides, and your BioPoint Score. AI blood work analysis coming soon.">
+  <meta name="theme-color" content="#0A1628">
+
+  <meta property="og:title" content="BioPoint — Your Biohacking Command Center">
+  <meta property="og:description" content="Track stacks, nutrition, fasting, peptides, and your BioPoint Score. The biohacker's daily companion.">
+  <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12/dist/ScrollTrigger.min.js" defer></script>
+
+  <style>
+    :root {
+      --navy-950: #050D1A; --navy-900: #0A1628; --navy-800: #0F2140;
+      --navy-700: #1B3A6B; --navy-600: #1B4B7A; --navy-500: #2D6BA4;
+      --navy-400: #4A8BC4; --navy-300: #7BADD6;
+
+      --teal-500: #0D9488; --teal-400: #2DD4BF; --teal-300: #5EEAD4;
+      --teal-glow: rgba(45, 212, 191, 0.15);
+
+      --emerald-500: #10B981; --emerald-400: #34D399;
+      --emerald-glow: rgba(16, 185, 129, 0.2);
+
+      --amber-500: #F59E0B; --amber-400: #FBBF24;
+      --violet-500: #8B5CF6; --violet-400: #A78BFA;
+      --rose-500: #F43F5E; --rose-400: #FB7185;
+
+      --optimal: #10B981; --warning: #F59E0B; --critical: #EF4444;
+
+      --surface-0: #050D1A;
+      --surface-1: rgba(15, 33, 64, 0.6);
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-hover: rgba(255, 255, 255, 0.07);
+
+      --text-primary: #F0F5FA;
+      --text-secondary: #7BADD6;
+      --text-muted: rgba(123, 173, 214, 0.6);
+
+      --font-display: 'Instrument Sans', system-ui, sans-serif;
+      --font-body: 'Inter Tight', system-ui, sans-serif;
+
+      --section-pad: clamp(80px, 10vw, 140px);
+      --container: min(1200px, 90vw);
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      --dur-fast: 200ms; --dur-med: 400ms; --dur-slow: 800ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { font-family: var(--font-body); background: var(--surface-0); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+      .pulse-dot { animation: none !important; }
+      .score-ring { animation: none !important; }
+      .cta-card::before { animation: none !important; }
+    }
+    ::selection { background: rgba(45, 212, 191, 0.3); color: white; }
+    .container { width: var(--container); margin: 0 auto; }
+    .gs-reveal { opacity: 0; visibility: hidden; }
+
+    /* BG */
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: -2;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(27, 75, 122, 0.5) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 25%, rgba(13, 148, 136, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 50% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+        var(--surface-0);
+    }
+    .bg-noise {
+      position: fixed; inset: 0; z-index: -1; opacity: 0.025; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+    .cursor-glow {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(45, 212, 191, 0.06) 0%, transparent 70%);
+      pointer-events: none; transform: translate(-50%, -50%); will-change: transform;
+    }
+    @media (max-width: 768px) { .cursor-glow { display: none; } }
+
+    /* NAV */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 16px 0; transition: all var(--dur-med) var(--ease-out-quart); }
+    .nav.scrolled { background: rgba(5, 13, 26, 0.88); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); border-bottom: 1px solid var(--glass-border); }
+    .nav-inner { width: var(--container); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary); }
+    .nav-logo-mark { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--teal-400), var(--emerald-500)); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .nav-logo-mark::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2)); }
+    .nav-logo-mark span { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--navy-950); position: relative; }
+    .nav-logo-text { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: color var(--dur-fast); cursor: pointer; }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta { padding: 10px 24px !important; background: linear-gradient(135deg, var(--teal-400), var(--emerald-500)); color: var(--navy-950) !important; border-radius: 8px; font-weight: 600 !important; transition: transform var(--dur-fast), box-shadow var(--dur-fast); cursor: pointer; }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--emerald-glow); }
+    @media (max-width: 768px) { .nav-links { display: none; } }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: flex; align-items: center; padding: 100px 0 40px; }
+    .hero-content { width: var(--container); margin: 0 auto; text-align: center; max-width: 880px; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 100px; background: var(--teal-glow); border: 1px solid rgba(45, 212, 191, 0.2); font-size: 13px; font-weight: 500; color: var(--teal-300); margin-bottom: 32px; }
+    .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal-400); animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.8); } }
+    .hero h1 { font-family: var(--font-display); font-size: clamp(42px, 6.5vw, 76px); font-weight: 700; letter-spacing: -0.035em; line-height: 1.04; margin-bottom: 28px; }
+    .gradient-text { background: linear-gradient(135deg, var(--teal-300) 0%, var(--emerald-400) 50%, var(--teal-400) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub { font-size: clamp(16px, 2vw, 20px); color: var(--text-secondary); line-height: 1.65; max-width: 600px; margin: 0 auto 48px; font-weight: 300; }
+    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 10px; font-family: var(--font-body); font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: all var(--dur-fast) var(--ease-out-expo); }
+    .btn-primary { background: linear-gradient(135deg, var(--teal-400), var(--emerald-500)); color: var(--navy-950); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px var(--emerald-glow); }
+    .btn-ghost { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-primary); }
+    .btn-ghost:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.15); }
+
+    /* SCORE VISUAL — hero decoration */
+    .hero-visual { position: relative; margin-top: 64px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .score-ring {
+      width: 180px; height: 180px; border-radius: 50%; position: relative;
+      background: conic-gradient(var(--teal-400) 0deg, var(--emerald-500) 120deg, var(--teal-400) 280deg, rgba(255,255,255,0.05) 280deg);
+      display: flex; align-items: center; justify-content: center;
+      animation: ring-pulse 4s ease-in-out infinite;
+    }
+    .score-ring::before {
+      content: ''; position: absolute; inset: 6px; border-radius: 50%;
+      background: var(--navy-950);
+    }
+    .score-inner { position: relative; text-align: center; }
+    .score-num { font-family: var(--font-display); font-size: 48px; font-weight: 700; letter-spacing: -0.03em; }
+    .score-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; }
+    @keyframes ring-pulse { 0%, 100% { box-shadow: 0 0 30px rgba(45,212,191,0.15); } 50% { box-shadow: 0 0 50px rgba(45,212,191,0.25); } }
+
+    .metric-cards { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .metric-card {
+      background: var(--surface-1); border: 1px solid var(--glass-border);
+      border-radius: 14px; padding: 14px 18px; min-width: 120px;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      text-align: center; transition: border-color var(--dur-med), transform var(--dur-med);
+    }
+    .metric-card:hover { border-color: rgba(45,212,191,0.2); transform: translateY(-3px); }
+    .metric-icon { margin-bottom: 6px; }
+    .metric-val { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+    .metric-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+    /* TRUST BAR */
+    .trust-bar { padding: 52px 0; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); }
+    .trust-grid { display: flex; justify-content: center; gap: 56px; flex-wrap: wrap; }
+    .trust-item { text-align: center; }
+    .trust-val { font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--teal-300), var(--emerald-400)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .trust-lbl { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    /* MARQUEE */
+    .marquee-wrap { overflow: hidden; padding: 20px 0; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); margin: var(--section-pad) 0; }
+    .marquee { display: flex; gap: 80px; white-space: nowrap; animation: scroll-marquee 60s linear infinite !important; }
+    .marquee-item { font-family: var(--font-display); font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+    .marquee-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--teal-400); opacity: 0.5; }
+    @keyframes scroll-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* SECTION SHARED */
+    .section-label { font-size: 13px; font-weight: 600; color: var(--teal-400); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 16px; }
+    .section-title { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 52px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 20px; }
+    .section-desc { font-size: 17px; color: var(--text-secondary); max-width: 560px; line-height: 1.7; font-weight: 300; }
+    .divider { width: var(--container); margin: 0 auto; height: 1px; background: linear-gradient(90deg, transparent, var(--glass-border), transparent); }
+
+    /* FEATURES — 2x3 GRID */
+    .features { padding: var(--section-pad) 0; }
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
+    @media (max-width: 900px) { .feat-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .feat-grid { grid-template-columns: 1fr; } }
+    .feat-card {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: 18px; padding: 34px;
+      transition: background var(--dur-med), border-color var(--dur-med), transform var(--dur-med);
+    }
+    .feat-card:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.12); transform: translateY(-3px); }
+    .feat-icon {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+    }
+    .feat-icon.teal { background: var(--teal-glow); border: 1px solid rgba(45,212,191,0.15); color: var(--teal-400); }
+    .feat-icon.amber { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.15); color: var(--amber-400); }
+    .feat-icon.violet { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.15); color: var(--violet-400); }
+    .feat-icon.emerald { background: var(--emerald-glow); border: 1px solid rgba(16,185,129,0.15); color: var(--emerald-400); }
+    .feat-icon.rose { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.15); color: var(--rose-400); }
+    .feat-icon.navy { background: rgba(27,75,122,0.2); border: 1px solid rgba(45,139,196,0.15); color: var(--navy-400); }
+    .feat-card h3 { font-family: var(--font-display); font-size: 18px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .feat-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .feat-tag { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-top: 12px; }
+    .feat-tag.soon { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--amber-400); }
+
+    /* HOW IT WORKS */
+    .how { padding: var(--section-pad) 0; }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 56px; counter-reset: step; }
+    @media (max-width: 900px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+    .step { position: relative; padding: 32px 24px; counter-increment: step; }
+    .step::before { content: counter(step, decimal-leading-zero); font-family: var(--font-display); font-size: 52px; font-weight: 700; line-height: 1; display: block; margin-bottom: 18px; background: linear-gradient(135deg, var(--navy-700), var(--navy-800)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .step h3 { font-family: var(--font-display); font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* COMING SOON CTA */
+    .cta-section { padding: var(--section-pad) 0; }
+    .cta-card {
+      background: linear-gradient(135deg, rgba(27,75,122,0.35), rgba(13,148,136,0.12));
+      border: 1px solid rgba(45,212,191,0.15); border-radius: 28px;
+      padding: 72px 48px; text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-card::before { content: ''; position: absolute; top: -60%; left: -40%; width: 200%; height: 200%; background: radial-gradient(circle at 35% 35%, rgba(45,212,191,0.06) 0%, transparent 55%); animation: orb 25s linear infinite; }
+    @keyframes orb { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .cta-card > * { position: relative; z-index: 1; }
+    .cta-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 100px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); font-size: 13px; font-weight: 600; color: var(--warning); margin-bottom: 24px; }
+    .cta-card h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 48px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 16px; }
+    .cta-card .desc { font-size: 17px; color: var(--text-secondary); max-width: 520px; margin: 0 auto 40px; line-height: 1.7; font-weight: 300; }
+    .wl-form { display: flex; gap: 12px; max-width: 460px; margin: 0 auto; }
+    .wl-input { flex: 1; padding: 14px 20px; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-primary); font-family: var(--font-body); font-size: 15px; outline: none; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
+    .wl-input::placeholder { color: var(--text-muted); }
+    .wl-input:focus { border-color: var(--teal-400); box-shadow: 0 0 0 3px var(--teal-glow); }
+    .wl-count { font-size: 13px; color: var(--text-muted); margin-top: 18px; }
+    .wl-count span { color: var(--teal-300); font-weight: 600; }
+    @media (max-width: 480px) { .wl-form { flex-direction: column; } .cta-card { padding: 48px 24px; } }
+
+    /* FOOTER */
+    .footer { padding: 48px 0 32px; border-top: 1px solid var(--glass-border); }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+    .footer-copy { font-size: 13px; color: var(--text-muted); }
+    .footer-links { display: flex; gap: 24px; list-style: none; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color var(--dur-fast); cursor: pointer; }
+    .footer-links a:hover { color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-noise" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-mark"><span>B</span></div>
+        <span class="nav-logo-text">BioPoint</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#ai-bloodwork">AI Blood Work</a></li>
+        <li><a href="#waitlist" class="nav-cta">Get Early Access</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge gs-reveal">
+        <span class="pulse-dot"></span>
+        The Biohacker's Daily Cockpit
+      </div>
+      <h1 class="gs-reveal">Track. Stack.<br><span class="gradient-text">Optimize.</span></h1>
+      <p class="hero-sub gs-reveal">
+        BioPoint is your biohacking command center. Manage supplement stacks, track nutrition and fasting,
+        log your daily score, and let AI connect the dots across your biology.
+      </p>
+      <div class="hero-actions gs-reveal">
+        <a href="#waitlist" class="btn btn-primary">
+          <i data-lucide="zap" style="width:18px;height:18px"></i>
+          Get Early Access
+        </a>
+        <a href="#features" class="btn btn-ghost">
+          <i data-lucide="layers" style="width:18px;height:18px"></i>
+          See Features
+        </a>
+      </div>
+
+      <!-- BioPoint Score + Daily Metrics -->
+      <div class="hero-visual gs-reveal" aria-hidden="true">
+        <div class="score-ring">
+          <div class="score-inner">
+            <div class="score-num gradient-text">82</div>
+            <div class="score-label">BioPoint Score</div>
+          </div>
+        </div>
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="metric-icon"><i data-lucide="moon" style="width:18px;height:18px;color:var(--violet-400)"></i></div>
+            <div class="metric-val">7.5<span style="font-size:13px;color:var(--text-muted);font-weight:400">h</span></div>
+            <div class="metric-lbl">Sleep</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon"><i data-lucide="flame" style="width:18px;height:18px;color:var(--amber-400)"></i></div>
+            <div class="metric-val">1,840</div>
+            <div class="metric-lbl">Calories</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon"><i data-lucide="pill" style="width:18px;height:18px;color:var(--teal-400)"></i></div>
+            <div class="metric-val">12/14</div>
+            <div class="metric-lbl">Stack</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon"><i data-lucide="timer" style="width:18px;height:18px;color:var(--emerald-400)"></i></div>
+            <div class="metric-val">16:8</div>
+            <div class="metric-lbl">Fasting</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon"><i data-lucide="brain" style="width:18px;height:18px;color:var(--rose-400)"></i></div>
+            <div class="metric-val">8/10</div>
+            <div class="metric-lbl">Focus</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div class="trust-bar">
+    <div class="container">
+      <div class="trust-grid gs-reveal">
+        <div class="trust-item"><div class="trust-val">87</div><div class="trust-lbl">Compounds in Database</div></div>
+        <div class="trust-item"><div class="trust-val">5</div><div class="trust-lbl">Daily Metrics Tracked</div></div>
+        <div class="trust-item"><div class="trust-val">16:8</div><div class="trust-lbl">Fasting Protocol Support</div></div>
+        <div class="trust-item"><div class="trust-val">AI</div><div class="trust-lbl">Powered Correlations</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee">
+      <span class="marquee-item">Supplement Stacks <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Peptide Protocols <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Calorie Tracking <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Fasting Zones <span class="marquee-dot"></span></span>
+      <span class="marquee-item">BioPoint Score <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Stack Compliance <span class="marquee-dot"></span></span>
+      <span class="marquee-item">AI Blood Work <span class="marquee-dot"></span></span>
+      <span class="marquee-item">HealthKit Sync <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Supplement Stacks <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Peptide Protocols <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Calorie Tracking <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Fasting Zones <span class="marquee-dot"></span></span>
+      <span class="marquee-item">BioPoint Score <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Stack Compliance <span class="marquee-dot"></span></span>
+      <span class="marquee-item">AI Blood Work <span class="marquee-dot"></span></span>
+      <span class="marquee-item">HealthKit Sync <span class="marquee-dot"></span></span>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-label gs-reveal">Everything You Track</div>
+      <div class="section-title gs-reveal">Your Biology,<br><span class="gradient-text">One Dashboard</span></div>
+      <p class="section-desc gs-reveal">
+        Stacks, nutrition, fasting, sleep, energy, focus, mood — all feeding into one
+        score that tells you how optimized you actually are.
+      </p>
+
+      <div class="feat-grid">
+        <div class="feat-card gs-reveal">
+          <div class="feat-icon teal"><i data-lucide="pill" style="width:22px;height:22px"></i></div>
+          <h3>Supplement Stacks</h3>
+          <p>Build and manage your supplement and peptide protocols. Set doses, frequencies, routes, and schedules. Track compliance daily.</p>
+        </div>
+        <div class="feat-card gs-reveal">
+          <div class="feat-icon amber"><i data-lucide="utensils" style="width:22px;height:22px"></i></div>
+          <h3>Nutrition & Macros</h3>
+          <p>Log meals, track calories and macronutrients. Calorie gauge, macro breakdown bars, and food analysis powered by AI.</p>
+        </div>
+        <div class="feat-card gs-reveal">
+          <div class="feat-icon emerald"><i data-lucide="timer" style="width:22px;height:22px"></i></div>
+          <h3>Fasting Protocols</h3>
+          <p>16:8, 18:6, OMAD, and custom protocols. Live fasting timer, zone tracking, autophagy markers, and fasting zone timeline.</p>
+        </div>
+        <div class="feat-card gs-reveal">
+          <div class="feat-icon violet"><i data-lucide="gauge" style="width:22px;height:22px"></i></div>
+          <h3>BioPoint Score</h3>
+          <p>Your daily optimization score (0-100). Synthesizes sleep, energy, focus, mood, and weight into one number. Trend charts over time.</p>
+        </div>
+        <div class="feat-card gs-reveal">
+          <div class="feat-icon rose"><i data-lucide="flask-conical" style="width:22px;height:22px"></i></div>
+          <h3>Peptide Database</h3>
+          <p>Browse 87 compounds with dosage calculators, reconstitution guides, interaction checks, and protocol templates.</p>
+        </div>
+        <div class="feat-card gs-reveal">
+          <div class="feat-icon navy"><i data-lucide="git-compare" style="width:22px;height:22px"></i></div>
+          <h3>Stack Correlations</h3>
+          <p>AI finds connections between your stacks and your scores. See which supplements actually move the needle on your metrics.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="container">
+      <div class="section-label gs-reveal">How It Works</div>
+      <div class="section-title gs-reveal">Log. Score.<br>Correlate. Optimize.</div>
+      <div class="steps">
+        <div class="step gs-reveal">
+          <h3>Build Your Stacks</h3>
+          <p>Add your supplements, peptides, and nootropics. Set doses, timing, and frequency. BioPoint tracks compliance.</p>
+        </div>
+        <div class="step gs-reveal">
+          <h3>Log Daily</h3>
+          <p>Rate sleep, energy, focus, mood. Log meals and fasting windows. Or sync automatically from HealthKit.</p>
+        </div>
+        <div class="step gs-reveal">
+          <h3>Get Your Score</h3>
+          <p>BioPoint calculates your daily optimization score from all inputs. Watch it trend over weeks and months.</p>
+        </div>
+        <div class="step gs-reveal">
+          <h3>See What Works</h3>
+          <p>AI correlates your stacks with your scores. Find out which protocols actually move the needle for YOUR biology.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- AI BLOOD WORK — COMING SOON -->
+  <section class="cta-section" id="ai-bloodwork">
+    <div class="container">
+      <div class="cta-card gs-reveal">
+        <div class="cta-badge">
+          <i data-lucide="sparkles" style="width:14px;height:14px"></i>
+          Coming Soon
+        </div>
+        <h2>AI Blood Work<br><span class="gradient-text">Analysis</span></h2>
+        <p class="desc">
+          Upload any lab report. Our AI extracts every biomarker, flags what's off,
+          and suggests protocol adjustments based on your stack and goals.
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:40px">
+          <span style="padding:6px 14px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;font-size:13px;color:var(--text-secondary)"><i data-lucide="scan-eye" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px"></i>AI Lab OCR</span>
+          <span style="padding:6px 14px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;font-size:13px;color:var(--text-secondary)"><i data-lucide="trending-up" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px"></i>Biomarker Trends</span>
+          <span style="padding:6px 14px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;font-size:13px;color:var(--text-secondary)"><i data-lucide="brain" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px"></i>Protocol Suggestions</span>
+          <span style="padding:6px 14px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;font-size:13px;color:var(--text-secondary)"><i data-lucide="shield-check" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px"></i>HIPAA Compliant</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WAITLIST CTA -->
+  <section class="cta-section" id="waitlist" style="padding-top:0">
+    <div class="container">
+      <div style="text-align:center;padding:64px 0">
+        <h2 class="section-title gs-reveal" style="margin-bottom:16px">Ready to Optimize?</h2>
+        <p class="section-desc gs-reveal" style="margin:0 auto 40px;text-align:center">
+          BioPoint is launching soon. Get on the list for early access.
+        </p>
+        <form class="wl-form gs-reveal" id="waitlistForm" style="margin:0 auto">
+          <input type="email" class="wl-input" placeholder="Enter your email" required aria-label="Email for waitlist">
+          <button type="submit" class="btn btn-primary">Join Waitlist</button>
+        </form>
+        <p class="wl-count gs-reveal"><span id="wlCount">312</span> biohackers already on the waitlist</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-copy">&copy; 2026 BioPoint &middot; GoldenMind Enterprize LLC</div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="mailto:hello@biopoint.health">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+
+    const glow = document.getElementById('cursorGlow');
+    let mx=0,my=0,gx=0,gy=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function anim() { gx+=(mx-gx)*0.08; gy+=(my-gy)*0.08; glow.style.transform=`translate(${gx-250}px,${gy-250}px)`; requestAnimationFrame(anim); })();
+
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 50); }, { passive: true });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.gsap || !window.ScrollTrigger) {
+        document.querySelectorAll('.gs-reveal').forEach(el => { el.style.opacity='1'; el.style.visibility='visible'; });
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger);
+      document.querySelectorAll('section, .trust-bar, .cta-section').forEach(section => {
+        const els = section.querySelectorAll('.gs-reveal');
+        if (!els.length) return;
+        gsap.fromTo(els, { opacity:0, y:40, visibility:'hidden' }, { opacity:1, y:0, visibility:'visible', duration:0.9, ease:'power3.out', stagger:0.12, scrollTrigger: { trigger:section, start:'top 80%', once:true } });
+      });
+      const heroEls = document.querySelectorAll('.hero .gs-reveal');
+      gsap.fromTo(heroEls, { opacity:0, y:50, visibility:'hidden' }, { opacity:1, y:0, visibility:'visible', duration:1, ease:'power3.out', stagger:0.15, delay:0.2 });
+    });
+
+    document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = this.querySelector('input');
+      input.value = '';
+      input.placeholder = "You're on the list!";
+      input.disabled = true;
+      const ct = document.getElementById('wlCount');
+      ct.textContent = parseInt(ct.textContent) + 1;
+      setTimeout(() => { input.placeholder='Enter your email'; input.disabled=false; }, 3000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+# Datadog Agent Helm Chart Values for BioPoint Production
+# Optimized for HIPAA compliance and healthcare workloads
+
+# Global configuration
+datadog:
+  # API key and site configuration
+  apiKey: "${DATADOG_API_KEY}"
+  appKey: "${DATADOG_APP_KEY}"
+  site: "datadoghq.com"
+  
+  # Cluster identification
+  clusterName: "biopoint-production"
+  
+  # HIPAA Compliance Settings
+  tags:
+    - env:production
+    - app:biopoint
+    - compliance:hipaa
+    - tier:healthcare
+    - team:sre
+    - cost-center:engineering
+  
+  # Log collection configuration
+  logs:
+    enabled: true
+    containerCollectAll: true
+    containerCollectUsingFiles: true
+    autoMultiLineDetection: true
+    
+  # APM configuration
+  apm:
+    portEnabled: true
+    enabled: true
+    port: 8126
+    unixDomainSocketEnabled: true
+    hostPortConfig:
+      enabled: true
+    
+  # Process monitoring
+  processAgent:
+    enabled: true
+    processCollection: true
+    
+  # Network monitoring
+  networkMonitoring:
+    enabled: true
+    
+  # System probe configuration
+  systemProbe:
+    enabled: true
+    
+  # Security monitoring
+  securityAgent:
+    compliance:
+      enabled: true
+    runtime:
+      enabled: true
+      syscallMonitor:
+        enabled: true
+        
+  # DogStatsD configuration
+  dogstatsd:
+    port: 8125
+    nonLocalTraffic: true
+    originDetection: true
+    
+  # Health check configuration
+  livenessProbe:
+    httpGet:
+      path: /live
+      port: 5555
+    initialDelaySeconds: 15
+    periodSeconds: 15
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 6
+    
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: 5555
+    initialDelaySeconds: 15
+    periodSeconds: 15
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 6
+
+# Agent configuration
+agents:
+  enabled: true
+  image:
+    repository: datadog/agent
+    tag: "7.51.0"
+    pullPolicy: IfNotPresent
+    
+  # Resource limits for production
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      
+  # Node selector for production nodes
+  nodeSelector:
+    node-type: monitoring
+    
+  # Tolerations for tainted nodes
+  tolerations:
+    - key: "monitoring"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+      
+  # Pod annotations
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
+    prometheus.io/path: "/metrics"
+
+# Cluster Agent configuration
+clusterAgent:
+  enabled: true
+  image:
+    repository: datadog/cluster-agent
+    tag: "7.51.0"
+    
+  # Resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+      
+  # Metrics provider configuration
+  metricsProvider:
+    enabled: true
+    
+  # Admission controller
+  admissionController:
+    enabled: true
+    mutateUnlabelled: false
+
+# Cluster checks configuration
+clusterChecksRunner:
+  enabled: true
+  image:
+    repository: datadog/agent
+    tag: "7.51.0"
+    
+  # Resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Kube-state-metrics configuration
+kubeStateMetricsEnabled: true
+
+# Kubernetes event collection
+collectEvents: true
+
+# Leader election
+leaderElection: true
+
+# RBAC configuration
+rbac:
+  create: true
+  
+# Service account configuration
+serviceAccount:
+  create: true
+  name: datadog-agent
+
+# Daemonset configuration
+daemonset:
+  enabled: true
+  useHostNetwork: false
+  useHostPID: false
+  useHostIPC: false
+
+# Deployment configuration
+deployment:
+  enabled: true
+
+# Pod security policies
+podSecurityPolicy:
+  enabled: false
+
+# Network policy
+networkPolicy:
+  enabled: true
+  
+# Monitoring configuration
+monitoring:
+  enabled: true
+  
+# Datadog monitoring integration
+datadogMonitor:
+  enabled: true
+  
+# Orchestrator explorer
+orchestratorExplorer:
+  enabled: true
+
+# External metrics server
+externalMetricsServer:
+  enabled: true
+  
+# Prometheus scraping
+prometheusScrape:
+  enabled: true
+  serviceEndpoints: true
+  
+# Additional environment variables
+env:
+  - name: DD_APM_IGNORE_RESOURCES
+    value: "GET /health,GET /health/db,GET /health/s3,GET /health/external"
+  - name: DD_LOGS_CONFIG_AUTO_MULTI_LINE_DETECTION
+    value: "true"
+  - name: DD_LOGS_CONFIG_PROCESSING_RULES
+    value: |
+      [
+        {
+          "type": "mask_sequences",
+          "name": "mask_phi_data",
+          "replace_placeholder": "[PHI_MASKED]",
+          "pattern": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+        },
+        {
+          "type": "mask_sequences", 
+          "name": "mask_ssn",
+          "replace_placeholder": "[SSN_MASKED]",
+          "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+        },
+        {
+          "type": "mask_sequences",
+          "name": "mask_phone",
+          "replace_placeholder": "[PHONE_MASKED]",
+          "pattern": "\\b\\d{3}-\\d{3}-\\d{4}\\b"
+        }
+      ]
+
+# Provider-specific configurations
+providers:
+  eks:
+    enabled: false
+  gke:
+    enabled: false
+  aks:
+    enabled: false
+
+# Registry configuration
+registry: "docker.io"
+
+# Image pull secrets
+imagePullSecrets: []
+
+# Name override
+nameOverride: ""
+
+# Full name override
+fullnameOverride: "biopoint-datadog"

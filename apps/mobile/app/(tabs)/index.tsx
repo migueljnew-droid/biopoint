@@ -6,12 +6,14 @@ import { useDashboardStore } from '../../src/store/dashboardStore';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { WeightPicker, ScreenWrapper, GlassView, AnimatedButton, GlassPicker, ScoreChart, DigitalTwinViewer, BreathingGuide } from '../../src/components';
+import { TodayStack } from '../../src/components/TodayStack';
+import { useStacksStore } from '../../src/store/stacksStore';
 import Animated, { FadeInDown, FadeInRight, SlideInDown, SlideOutDown, LinearTransition } from 'react-native-reanimated';
 import { healthKitService } from '../../src/services/healthKitService';
 
 export default function DashboardScreen() {
-    const { bioPointScore, weeklyTrend, scoreHistory, isLoading, fetchDashboard, logToday } = useDashboardStore();
-    // logout moved to settings
+    const { bioPointScore, weeklyTrend, scoreHistory, activeFasting, todayNutrition, isLoading, fetchDashboard, logToday } = useDashboardStore();
+    const fetchStacks = useStacksStore((s) => s.fetchStacks);
     const [showLogModal, setShowLogModal] = useState(false);
     const [showTwinModal, setShowTwinModal] = useState(false);
     const [showBreathing, setShowBreathing] = useState(false);
@@ -62,7 +64,7 @@ export default function DashboardScreen() {
         );
     };
 
-    useEffect(() => { fetchDashboard(); }, []);
+    useEffect(() => { fetchDashboard(); fetchStacks(); }, []);
 
     const handleLogSubmit = async () => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -153,23 +155,64 @@ export default function DashboardScreen() {
                     </GlassView>
                 </Animated.View>
 
-                {/* The Oracle - Neural Interface */}
+                {/* Today's Stack Checklist */}
+                <TodayStack />
+
+                {/* The Oracle - Coming Soon */}
                 <Animated.View entering={FadeInDown.delay(100).springify()}>
-                    <Pressable onPress={() => router.push('/oracle' as any)} style={styles.oracleCard}>
+                    <Pressable onPress={() => Alert.alert('Coming Soon', 'The Oracle AI assistant is launching soon. Stay tuned!')} style={styles.oracleCard}>
                         <GlassView variant="heavy" borderRadius={borderRadius.lg} style={styles.oracleContent}>
                             <View style={styles.oracleIconContainer}>
                                 <Ionicons name="sparkles" size={24} color={colors.primary} />
                             </View>
                             <View style={styles.oracleTextContainer}>
-                                <Text style={styles.oracleTitle}>Ask The Oracle</Text>
-                                <Text style={styles.oracleDesc}>AI-Powered Analysis of your biometrics.</Text>
+                                <Text style={styles.oracleTitle}>The Oracle</Text>
+                                <Text style={styles.oracleDesc}>AI-Powered Analysis — Coming Soon</Text>
                             </View>
-                            <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+                            <View style={{ backgroundColor: 'rgba(245,158,11,0.15)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                                <Text style={{ color: '#FBBF24', fontSize: 11, fontWeight: '600' }}>SOON</Text>
+                            </View>
                         </GlassView>
                     </Pressable>
                 </Animated.View>
 
 
+
+                {/* Active Fast Mini-Card */}
+                {activeFasting && (
+                    <Animated.View entering={FadeInDown.delay(150)}>
+                        <Pressable onPress={() => router.push('/(tabs)/nutrition' as any)}>
+                            <GlassView variant="medium" borderRadius={borderRadius.lg} style={[styles.miniCard, { borderLeftColor: '#f59e0b', borderLeftWidth: 3 }]}>
+                                <View style={styles.miniCardIcon}>
+                                    <Ionicons name="timer" size={22} color="#f59e0b" />
+                                </View>
+                                <View style={styles.miniCardText}>
+                                    <Text style={styles.miniCardTitle}>{activeFasting.protocolName}</Text>
+                                    <Text style={styles.miniCardSub}>Fasting active</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                            </GlassView>
+                        </Pressable>
+                    </Animated.View>
+                )}
+
+                {/* Today's Nutrition Mini-Card */}
+                {todayNutrition && todayNutrition.mealCount > 0 && (
+                    <Animated.View entering={FadeInDown.delay(175)}>
+                        <Pressable onPress={() => router.push('/(tabs)/nutrition' as any)}>
+                            <GlassView variant="medium" borderRadius={borderRadius.lg} style={[styles.miniCard, { borderLeftColor: colors.accent, borderLeftWidth: 3 }]}>
+                                <View style={[styles.miniCardIcon, { backgroundColor: 'rgba(74, 222, 128, 0.1)' }]}>
+                                    <Ionicons name="restaurant" size={22} color={colors.accent} />
+                                </View>
+                                <View style={styles.miniCardText}>
+                                    <Text style={styles.miniCardTitle}>{todayNutrition.totalCalories} cal</Text>
+                                    <Text style={styles.miniCardSub}>{todayNutrition.mealCount} meal{todayNutrition.mealCount !== 1 ? 's' : ''} logged</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                            </GlassView>
+                        </Pressable>
+                    </Animated.View>
+                )}
 
                 {/* Quick Actions */}
                 <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -177,14 +220,17 @@ export default function DashboardScreen() {
                     <Animated.View entering={FadeInRight.delay(200)}>
                         <ActionButton icon="create" label="Log" onPress={() => setShowLogModal(true)} delay={0} />
                     </Animated.View>
+                    <Animated.View entering={FadeInRight.delay(225)}>
+                        <ActionButton icon="restaurant" label="Eat" onPress={() => router.push('/(tabs)/nutrition' as any)} delay={1} />
+                    </Animated.View>
                     <Animated.View entering={FadeInRight.delay(250)}>
-                        <ActionButton icon="layers" label="Stack" onPress={() => router.push('/(tabs)/stacks')} delay={1} />
+                        <ActionButton icon="layers" label="Stack" onPress={() => router.push('/(tabs)/stacks')} delay={2} />
                     </Animated.View>
                     <Animated.View entering={FadeInRight.delay(300)}>
-                        <ActionButton icon="flask" label="Labs" onPress={() => router.push('/(tabs)/labs')} delay={2} />
+                        <ActionButton icon="flask" label="Labs" onPress={() => router.push('/(tabs)/labs')} delay={3} />
                     </Animated.View>
                     <Animated.View entering={FadeInRight.delay(350)}>
-                        <ActionButton icon="infinite" label="Breathe" onPress={() => setShowBreathing(true)} delay={3} />
+                        <ActionButton icon="infinite" label="Breathe" onPress={() => setShowBreathing(true)} delay={4} />
                     </Animated.View>
                 </Animated.View>
 
@@ -407,13 +453,14 @@ const styles = StyleSheet.create({
 
     actionsGrid: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start',
         gap: spacing.sm,
         marginBottom: spacing.xxl,
     },
     actionButton: {
-        width: 80,
-        height: 80,
+        width: 72,
+        height: 72,
         alignItems: 'center',
         justifyContent: 'center',
         gap: spacing.xs,
@@ -513,6 +560,37 @@ const styles = StyleSheet.create({
     breatheDesc: {
         ...typography.caption,
         color: colors.textSecondary,
+    },
+    // Mini Cards (Fasting/Nutrition on Dashboard)
+    miniCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: spacing.md,
+        marginBottom: spacing.md,
+        gap: spacing.md,
+        borderWidth: 1,
+        borderColor: colors.glass.border,
+    },
+    miniCardIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: borderRadius.full,
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    miniCardText: {
+        flex: 1,
+    },
+    miniCardTitle: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: colors.textPrimary,
+    },
+    miniCardSub: {
+        fontSize: 12,
+        color: colors.textSecondary,
+        marginTop: 1,
     },
     // Oracle
     oracleCard: {

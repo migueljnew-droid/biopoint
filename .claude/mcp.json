@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "council": {
+      "command": "python3",
+      "args": [
+        "/Users/GRAMMY/The-Council/genetic_system/mcp/council_full_mcp_server.py"
+      ],
+      "env": {
+        "COUNCIL_ROOT": "/Users/GRAMMY/The-Council",
+        "PYTHONPATH": "/Users/GRAMMY/The-Council/genetic_system/scripts:/Users/GRAMMY/The-Council/genetic_system/agents:/Users/GRAMMY/The-Council/genetic_system/mcp:/Users/GRAMMY/The-Council/autonomous_agency:/Users/GRAMMY/The-Council/src/orchestration",
+        "LOG_LEVEL": "INFO",
+        "CACHE_ENABLED": "true",
+        "MEMORY_ENABLED": "true",
+        "QUANTUM_ROUTER_ENABLED": "true"
+      },
+      "timeout": 60000
+    },
+    "council-god-mode": {
+      "command": "python3",
+      "args": [
+        "/Users/GRAMMY/The-Council/genetic_system/mcp/god_mode_workflows.py"
+      ],
+      "env": {
+        "COUNCIL_ROOT": "/Users/GRAMMY/The-Council",
+        "PYTHONPATH": "/Users/GRAMMY/The-Council/genetic_system/scripts:/Users/GRAMMY/The-Council/genetic_system/agents:/Users/GRAMMY/The-Council/src/orchestration"
+      },
+      "timeout": 60000
+    },
+    "qmd": {
+      "command": "/Users/GRAMMY/.bun/bin/qmd",
+      "args": ["mcp"],
+      "env": {
+        "BREW_PREFIX": "/opt/homebrew"
+      }
+    }
+  }
+}

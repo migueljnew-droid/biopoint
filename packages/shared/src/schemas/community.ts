@@ -43,7 +43,7 @@ export interface PostResponse {
     id: string;
     groupId: string;
     userId: string;
-    authorEmail: string;
+    authorHandle: string;
     content: string;
     createdAt: string;
 }

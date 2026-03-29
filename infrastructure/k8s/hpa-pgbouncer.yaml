@@ -1,0 +1,211 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer-deployment
+  namespace: biopoint-production
+  labels:
+    app: pgbouncer
+    tier: database
+    component: connection-pooler
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pgbouncer
+  template:
+    metadata:
+      labels:
+        app: pgbouncer
+        tier: database
+    spec:
+      containers:
+      - name: pgbouncer
+        image: pgbouncer/pgbouncer:1.20.1
+        ports:
+        - containerPort: 6432
+          name: pgbouncer
+        env:
+        - name: DATABASES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: biopoint-secrets
+              key: database-host
+        - name: DATABASES_PORT
+          value: "5432"
+        - name: DATABASES_USER
+          valueFrom:
+            secretKeyRef:
+              name: biopoint-secrets
+              key: database-user
+        - name: DATABASES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: biopoint-secrets
+              key: database-password
+        - name: DATABASES_DBNAME
+          value: "biopoint_production"
+        - name: POOL_MODE
+          value: "transaction"
+        - name: SERVER_RESET_QUERY
+          value: "DISCARD ALL"
+        - name: MAX_CLIENT_CONN
+          value: "200"
+        - name: DEFAULT_POOL_SIZE
+          value: "20"
+        - name: MIN_POOL_SIZE
+          value: "5"
+        - name: RESERVE_POOL_SIZE
+          value: "5"
+        - name: RESERVE_POOL_TIMEOUT
+          value: "3"
+        - name: SERVER_LIFETIME
+          value: "3600"
+        - name: SERVER_IDLE_TIMEOUT
+          value: "600"
+        - name: SERVER_CONNECT_TIMEOUT
+          value: "15"
+        - name: SERVER_LOGIN_RETRY
+          value: "3"
+        - name: CLIENT_LOGIN_TIMEOUT
+          value: "60"
+        - name: AUTH_TYPE
+          value: "plain"
+        - name: ADMIN_USERS
+          value: "postgres"
+        command:
+        - pgbouncer
+        - /etc/pgbouncer/pgbouncer.ini
+        volumeMounts:
+        - name: pgbouncer-config
+          mountPath: /etc/pgbouncer
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          tcpSocket:
+            port: 6432
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 6432
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+      volumes:
+      - name: pgbouncer-config
+        configMap:
+          name: pgbouncer-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgbouncer-service
+  namespace: biopoint-production
+  labels:
+    app: pgbouncer
+    tier: database
+spec:
+  selector:
+    app: pgbouncer
+  ports:
+  - name: pgbouncer
+    port: 6432
+    targetPort: 6432
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-config
+  namespace: biopoint-production
+data:
+  pgbouncer.ini: |
+    [databases]
+    biopoint_production = host=${DATABASES_HOST} port=${DATABASES_PORT} dbname=${DATABASES_DBNAME}
+    
+    [pgbouncer]
+    listen_addr = 0.0.0.0
+    listen_port = 6432
+    auth_type = plain
+    auth_file = /etc/pgbouncer/userlist.txt
+    admin_users = postgres
+    stats_users = stats, postgres
+    
+    pool_mode = transaction
+    server_reset_query = DISCARD ALL
+    
+    max_client_conn = 200
+    default_pool_size = 20
+    min_pool_size = 5
+    reserve_pool_size = 5
+    reserve_pool_timeout = 3
+    
+    server_lifetime = 3600
+    server_idle_timeout = 600
+    server_connect_timeout = 15
+    server_login_retry = 3
+    
+    client_login_timeout = 60
+    
+    log_connections = 1
+    log_disconnections = 1
+    log_pooler_errors = 1
+    
+    stats_period = 60
+    verbose = 0
+    
+  userlist.txt: |
+    "${DATABASES_USER}" "${DATABASES_PASSWORD}"
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pgbouncer-hpa
+  namespace: biopoint-production
+  labels:
+    app: pgbouncer
+    tier: database
+    component: autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pgbouncer-deployment
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 30

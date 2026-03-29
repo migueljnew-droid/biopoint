@@ -65,8 +65,8 @@ export function ScreenWrapper({
                     />
 
                     {/* Ambient Orbs */}
-                    <Animated.View style={[styles.orb1, orb1Style]} />
-                    <Animated.View style={[styles.orb2, orb2Style]} />
+                    <Animated.View style={[styles.orb1, orb1Style]} pointerEvents="none" />
+                    <Animated.View style={[styles.orb2, orb2Style]} pointerEvents="none" />
                 </>
             )}
 

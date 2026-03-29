@@ -136,28 +136,11 @@ export default function LabsScreen() {
     };
 
     const handleAnalyze = async (id: string) => {
-        if (!isPremium) {
-            Alert.alert(
-                'Premium Required',
-                'AI Lab Analysis is a BioPoint+ feature. Instant interpretation requires an upgrade.',
-                [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Upgrade', onPress: () => router.push('/premium') }
-                ]
-            );
-            return;
-        }
-
-        setAnalyzingId(id);
-        try {
-            const result = await labsService.analyzeReport(id);
-            setAnalysisResult(result);
-            setModalVisible(true);
-        } catch (e: any) {
-            Alert.alert('Error', 'Failed to analyze report. Please try again.');
-        } finally {
-            setAnalyzingId(null);
-        }
+        Alert.alert(
+            'Coming Soon',
+            'AI Blood Work Analysis is launching soon. Upload your labs now and be first to get AI-powered insights when it goes live.',
+            [{ text: 'Got It', style: 'default' }]
+        );
     };
 
     return (

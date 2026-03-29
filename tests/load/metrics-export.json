@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-01-23T16:20:00.171Z",
+  "tests": [
+    {
+      "name": "baseline",
+      "timestamp": "2026-01-23T16:20:00.172Z",
+      "metrics": {
+        "duration": 1800,
+        "vus_max": 100,
+        "iterations": 18000,
+        "http_reqs": 14500,
+        "http_req_duration": {
+          "avg": 180,
+          "p95": 420,
+          "p99": 780
+        },
+        "http_req_failed": {
+          "rate": 0.003
+        },
+        "data_received": 52428800,
+        "data_sent": 10485760
+      }
+    },
+    {
+      "name": "load",
+      "timestamp": "2026-01-23T16:20:00.172Z",
+      "metrics": {
+        "duration": 3600,
+        "vus_max": 1000,
+        "iterations": 180000,
+        "http_reqs": 52000,
+        "http_req_duration": {
+          "avg": 380,
+          "p95": 890,
+          "p99": 1200
+        },
+        "http_req_failed": {
+          "rate": 0.008
+        },
+        "data_received": 209715200,
+        "data_sent": 41943040
+      }
+    },
+    {
+      "name": "stress",
+      "timestamp": "2026-01-23T16:20:00.172Z",
+      "metrics": {
+        "duration": 3000,
+        "vus_max": 10000,
+        "iterations": 150000,
+        "http_reqs": 180000,
+        "http_req_duration": {
+          "avg": 8200,
+          "p95": 15000,
+          "p99": 25000
+        },
+        "http_req_failed": {
+          "rate": 0.52
+        },
+        "data_received": 1073741824,
+        "data_sent": 214748364
+      }
+    }
+  ],
+  "summary": {},
+  "performance": {},
+  "recommendations": []
+}

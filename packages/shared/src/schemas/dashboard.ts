@@ -34,7 +34,9 @@ export interface BioPointBreakdown {
     energy: number;
     focus: number;
     mood: number;
-    weight: number;
+    compliance: number;
+    fasting: number;
+    nutrition: number;
 }
 
 export interface BioPointScoreResponse {
@@ -48,4 +50,18 @@ export interface DashboardResponse {
     todayLog: DailyLogResponse | null;
     recentLogs: DailyLogResponse[];
     weeklyTrend: number | null;
+    scoreHistory: { date: string; score: number }[];
+    activeStacks: number;
+    weeklyComplianceEvents: number;
+    activeFasting: {
+        id: string;
+        protocolName: string;
+        startedAt: string;
+        targetEndAt: string;
+        currentZone: string | null;
+    } | null;
+    todayNutrition: {
+        totalCalories: number;
+        mealCount: number;
+    } | null;
 }

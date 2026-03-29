@@ -1,0 +1,223 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_STAGING }}
+  AWS_REGION: us-east-1
+  STAGING_CLUSTER: biopoint-staging
+  STAGING_NAMESPACE: biopoint-staging
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Doppler
+        uses: dopplerhq/cli-action@v3
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN_STAGING }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and tag Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build API image
+          docker build -t $ECR_REGISTRY/biopoint-api:$IMAGE_TAG -f apps/api/Dockerfile .
+          docker tag $ECR_REGISTRY/biopoint-api:$IMAGE_TAG $ECR_REGISTRY/biopoint-api:latest
+          
+          # Build mobile build image
+          docker build -t $ECR_REGISTRY/biopoint-mobile:$IMAGE_TAG -f apps/mobile/Dockerfile .
+          docker tag $ECR_REGISTRY/biopoint-mobile:$IMAGE_TAG $ECR_REGISTRY/biopoint-mobile:latest
+
+      - name: Push Docker images to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker push $ECR_REGISTRY/biopoint-api:$IMAGE_TAG
+          docker push $ECR_REGISTRY/biopoint-api:latest
+          docker push $ECR_REGISTRY/biopoint-mobile:$IMAGE_TAG
+          docker push $ECR_REGISTRY/biopoint-mobile:latest
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.STAGING_CLUSTER }}
+
+      - name: Deploy to staging
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Create namespace if it doesn't exist
+          kubectl create namespace ${{ env.STAGING_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+          
+          # Apply database migrations
+          doppler run -- npm run db:migrate
+          
+          # Update Kubernetes manifests
+          envsubst < k8s/staging/api-deployment.yaml | kubectl apply -f -
+          envsubst < k8s/staging/api-service.yaml | kubectl apply -f -
+          envsubst < k8s/staging/ingress.yaml | kubectl apply -f -
+          
+          # Wait for deployment to be ready
+          kubectl rollout status deployment/biopoint-api -n ${{ env.STAGING_NAMESPACE }} --timeout=300s
+
+      - name: Run smoke tests
+        run: |
+          chmod +x scripts/run-smoke-tests.sh
+          ./scripts/run-smoke-tests.sh staging
+
+      - name: Run health checks
+        run: |
+          # Wait for services to be ready
+          sleep 30
+          
+          # Check API health
+          STAGING_URL="https://api-staging.biopoint.health/health"
+          curl -f $STAGING_URL || exit 1
+          
+          # Check database connectivity
+          doppler run -- npm run db:health || exit 1
+
+      - name: Notify deployment success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: "🚀 BioPoint staging deployment successful!"
+
+      - name: Notify deployment failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#devops-alerts'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: "❌ BioPoint staging deployment failed!"
+
+      - name: Create deployment record
+        if: success()
+        run: |
+          DEPLOYMENT_ID=$(date +%s)
+          cat > deployment-record.json << EOF
+          {
+            "deploymentId": "$DEPLOYMENT_ID",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "environment": "staging",
+            "commitSha": "${{ github.sha }}",
+            "commitMessage": "${{ github.event.head_commit.message }}",
+            "deployedBy": "${{ github.actor }}",
+            "status": "success",
+            "imageTag": "${{ github.sha }}"
+          }
+          EOF
+          
+          # Store deployment record in S3
+          aws s3 cp deployment-record.json s3://biopoint-deployments/staging/${{ github.sha }}.json
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Doppler
+        uses: dopplerhq/cli-action@v3
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN_STAGING }}
+
+      - name: Run performance tests
+        run: |
+          # Wait for deployment to stabilize
+          sleep 60
+          
+          # Run load tests
+          doppler run -- npm run test:performance
+          
+          # Run database performance tests
+          doppler run -- npm run db:performance
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results
+          path: |
+            performance-results.json
+            database-performance.json
+
+  security-scan-staging:
+    name: Security Scan Staging
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    environment: staging
+    steps:
+      - name: Run security scan on staging
+        run: |
+          # Run OWASP ZAP scan
+          docker run -t owasp/zap2docker-stable zap-baseline.py \
+            -t https://api-staging.biopoint.health \
+            -r zap-report.html
+          
+          # Run SSL/TLS scan
+          nmap --script ssl-enum-ciphers -p 443 api-staging.biopoint.health
+
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-results
+          path: |
+            zap-report.html
+            nmap-results.txt

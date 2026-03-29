@@ -12,6 +12,7 @@ import { ScreenWrapper, GlassView, AnimatedButton, GlassPicker, GlassAutocomplet
 import Animated, { LinearTransition, SlideInDown, SlideOutDown, FadeInDown } from 'react-native-reanimated';
 
 import { useSubscriptionStore } from '../../src/store/subscriptionStore';
+import { scheduleItemReminders } from '../../src/services/notificationService';
 
 export default function StacksScreen() {
     const { stacks, isLoading, fetchStacks, createStack, addItem, updateItem, logCompliance, addReminder, getReminders } = useStacksStore();
@@ -215,11 +216,22 @@ export default function StacksScreen() {
                 }
 
                 if (remindersToAdd.length > 0 && !editingItemId) {
-                    // Only auto-add for NEW items to avoid duplicates on edit for now
+                    // Save to API + schedule local push notifications
                     for (const reminder of remindersToAdd) {
                         await addReminder(targetItemId, reminder.time, reminder.days);
+                        // Schedule actual push notification
+                        const stack = stacks.find(s => s.id === selectedStackId);
+                        await scheduleItemReminders({
+                            itemId: targetItemId,
+                            itemName: itemData.name,
+                            dose: parseFloat(itemData.dose),
+                            unit: itemData.unit,
+                            stackName: stack?.name || 'Stack',
+                            time: reminder.time,
+                            daysOfWeek: reminder.days || [0,1,2,3,4,5,6],
+                        });
                     }
-                    Alert.alert("Reminders Set", `Successfully scheduled automatic reminders.`);
+                    Alert.alert("Reminders Set", `You'll get notified when it's time to take ${itemData.name}.`);
                 }
             } catch (reminderErr) {
                 console.log("Failed to set automatic reminders", reminderErr);
@@ -292,7 +304,25 @@ export default function StacksScreen() {
         if (!selectedItemId) return;
         const timeStr = `${scheduleTime.getHours().toString().padStart(2, '0')}:${scheduleTime.getMinutes().toString().padStart(2, '0')}`;
         await addReminder(selectedItemId, timeStr);
-        Alert.alert('Success', `Reminder set for ${timeStr}`);
+
+        // Find item details to schedule push notification
+        for (const stack of stacks) {
+            const item = stack.items.find(i => i.id === selectedItemId);
+            if (item) {
+                await scheduleItemReminders({
+                    itemId: item.id,
+                    itemName: item.name,
+                    dose: item.dose,
+                    unit: item.unit,
+                    stackName: stack.name,
+                    time: timeStr,
+                    daysOfWeek: [0,1,2,3,4,5,6],
+                });
+                break;
+            }
+        }
+
+        Alert.alert('Reminder Set', `You'll be notified at ${scheduleTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`);
         setShowScheduleModal(false);
     };
 

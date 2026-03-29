@@ -7,3 +7,5 @@ export * from './ui';
 export * from './ScoreChart';
 export * from './CreateGroupModal';
 export * from './DigitalTwinViewer';
+export * from './nutrition';
+export * from './TodayStack';

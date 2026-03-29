@@ -1,0 +1,396 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: biopoint-database-backup-daily
+  namespace: biopoint
+  labels:
+    app: biopoint-backup
+    component: database
+    schedule: daily
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: biopoint-backup
+            component: database
+            schedule: daily
+        spec:
+          serviceAccountName: biopoint-backup-sa
+          restartPolicy: OnFailure
+          containers:
+          - name: database-backup
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Install required tools
+              apk add --no-cache \
+                bash \
+                openssl \
+                aws-cli \
+                curl \
+                jq \
+                bc
+              
+              # Execute backup from local scripts
+              cd /scripts
+              ./backup-database.sh daily
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-secrets
+                  key: database-url
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: secret-access-key
+            - name: S3_BUCKET_NAME
+              value: "biopoint-uploads"
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-encryption-keys
+                  key: backup-encryption-key
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-monitoring
+                  key: slack-webhook-url
+                  optional: true
+            - name: ALERT_EMAIL
+              value: "infrastructure@biopoint.com"
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            volumeMounts:
+            - name: backup-scripts
+              mountPath: /scripts
+            - name: tmp-storage
+              mountPath: /tmp
+          volumes:
+          - name: backup-scripts
+            configMap:
+              name: biopoint-backup-scripts
+              defaultMode: 0755
+          - name: tmp-storage
+            emptyDir: {}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 2000
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: biopoint-database-backup-weekly
+  namespace: biopoint
+  labels:
+    app: biopoint-backup
+    component: database
+    schedule: weekly
+spec:
+  schedule: "0 3 * * 0"  # Weekly on Sunday at 3 AM UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 4
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: biopoint-backup
+            component: database
+            schedule: weekly
+        spec:
+          serviceAccountName: biopoint-backup-sa
+          restartPolicy: OnFailure
+          containers:
+          - name: database-backup
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Install required tools
+              apk add --no-cache \
+                bash \
+                openssl \
+                aws-cli \
+                curl \
+                jq \
+                bc
+              
+              # Execute backup from local scripts
+              cd /scripts
+              ./backup-database.sh weekly
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-secrets
+                  key: database-url
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: secret-access-key
+            - name: S3_BUCKET_NAME
+              value: "biopoint-uploads"
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-encryption-keys
+                  key: backup-encryption-key
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-monitoring
+                  key: slack-webhook-url
+                  optional: true
+            - name: ALERT_EMAIL
+              value: "infrastructure@biopoint.com"
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            volumeMounts:
+            - name: backup-scripts
+              mountPath: /scripts
+            - name: tmp-storage
+              mountPath: /tmp
+          volumes:
+          - name: backup-scripts
+            configMap:
+              name: biopoint-backup-scripts
+              defaultMode: 0755
+          - name: tmp-storage
+            emptyDir: {}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 2000
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: biopoint-s3-backup-incremental
+  namespace: biopoint
+  labels:
+    app: biopoint-backup
+    component: s3-storage
+    schedule: daily-incremental
+spec:
+  schedule: "0 4 * * *"  # Daily at 4 AM UTC (after database backup)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: biopoint-backup
+            component: s3-storage
+            schedule: daily-incremental
+        spec:
+          serviceAccountName: biopoint-backup-sa
+          restartPolicy: OnFailure
+          containers:
+          - name: s3-backup
+            image: amazon/aws-cli:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Install additional tools
+              yum install -y \
+                bash \
+                openssl \
+                curl \
+                jq \
+                bc
+              
+              # Execute backup from local scripts
+              cd /scripts
+              ./backup-s3.sh incremental
+            env:
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: secret-access-key
+            - name: S3_BUCKET_NAME
+              value: "biopoint-uploads"
+            - name: CROSS_REGION_BACKUP
+              value: "true"
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-monitoring
+                  key: slack-webhook-url
+                  optional: true
+            - name: ALERT_EMAIL
+              value: "infrastructure@biopoint.com"
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "250m"
+            volumeMounts:
+            - name: backup-scripts
+              mountPath: /scripts
+            - name: tmp-storage
+              mountPath: /tmp
+          volumes:
+          - name: backup-scripts
+            configMap:
+              name: biopoint-backup-scripts
+              defaultMode: 0755
+          - name: tmp-storage
+            emptyDir: {}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 2000
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: biopoint-backup-verification
+  namespace: biopoint
+  labels:
+    app: biopoint-backup
+    component: verification
+    schedule: weekly
+spec:
+  schedule: "0 6 * * 1"  # Weekly on Monday at 6 AM UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 4
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: biopoint-backup
+            component: verification
+            schedule: weekly
+        spec:
+          serviceAccountName: biopoint-backup-sa
+          restartPolicy: OnFailure
+          containers:
+          - name: backup-verification
+            image: amazon/aws-cli:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Install required tools
+              yum install -y \
+                bash \
+                openssl \
+                curl \
+                jq \
+                bc
+              
+              # Install PostgreSQL client
+              amazon-linux-extras install postgresql15 -y
+              
+              # Execute verification from local scripts
+              cd /scripts
+              ./verify-backups.sh weekly
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-secrets
+                  key: database-url
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-aws-credentials
+                  key: secret-access-key
+            - name: S3_BUCKET_NAME
+              value: "biopoint-uploads"
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-encryption-keys
+                  key: backup-encryption-key
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biopoint-monitoring
+                  key: slack-webhook-url
+                  optional: true
+            - name: ALERT_EMAIL
+              value: "infrastructure@biopoint.com"
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            volumeMounts:
+            - name: backup-scripts
+              mountPath: /scripts
+            - name: tmp-storage
+              mountPath: /tmp
+          volumes:
+          - name: backup-scripts
+            configMap:
+              name: biopoint-backup-scripts
+              defaultMode: 0755
+          - name: tmp-storage
+            emptyDir: {}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 2000

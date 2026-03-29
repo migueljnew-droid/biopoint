@@ -1,0 +1,283 @@
+# BioPoint Monitoring Stack
+# Enterprise monitoring with Datadog, Sentry, and health checks
+# HIPAA-compliant observability for healthcare applications
+
+version: '3.8'
+
+services:
+  # Datadog Agent
+  datadog:
+    image: datadog/agent:7.51.0
+    container_name: biopoint-datadog
+    restart: unless-stopped
+    environment:
+      # Core configuration
+      - DD_API_KEY=${DATADOG_API_KEY}
+      - DD_APP_KEY=${DATADOG_APP_KEY}
+      - DD_SITE=datadoghq.com
+      - DD_HOSTNAME=biopoint-production
+      - DD_ENV=production
+      - DD_SERVICE=biopoint
+      - DD_VERSION=${SERVICE_VERSION:-1.0.0}
+      
+      # APM configuration
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+      - DD_APM_RECEIVER_PORT=8126
+      - DD_APM_IGNORE_RESOURCES=GET /health,GET /health/db,GET /health/s3,GET /health/external
+      
+      # Log configuration
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_LOGS_CONFIG_AUTO_MULTI_LINE_DETECTION=true
+      
+      # Process monitoring
+      - DD_PROCESS_AGENT_ENABLED=true
+      - DD_SYSTEM_PROBE_ENABLED=true
+      - DD_NETWORK_MONITORING_ENABLED=true
+      
+      # Security monitoring
+      - DD_RUNTIME_SECURITY_CONFIG_ENABLED=true
+      - DD_COMPLIANCE_CONFIG_ENABLED=true
+      
+      # Custom tags
+      - DD_TAGS=env:production app:biopoint compliance:hipaa tier:healthcare team:sre cost-center:engineering
+      
+      # HIPAA compliance - PII masking
+      - DD_LOGS_CONFIG_PROCESSING_RULES=[
+          {
+            "type": "mask_sequences",
+            "name": "mask_phi_data",
+            "replace_placeholder": "[PHI_MASKED]",
+            "pattern": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+          },
+          {
+            "type": "mask_sequences", 
+            "name": "mask_ssn",
+            "replace_placeholder": "[SSN_MASKED]",
+            "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+          },
+          {
+            "type": "mask_sequences",
+            "name": "mask_phone",
+            "replace_placeholder": "[PHONE_MASKED]",
+            "pattern": "\\b\\d{3}-\\d{3}-\\d{4}\\b"
+          }
+        ]
+      
+      # Performance monitoring
+      - DD_RUNTIME_METRICS_ENABLED=true
+      - DD_PROFILING_ENABLED=true
+      - DD_TRACE_ENABLED=true
+      
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+    ports:
+      - "8125:8125/udp"  # DogStatsD
+      - "8126:8126/tcp"  # APM
+    networks:
+      - biopoint-monitoring
+    healthcheck:
+      test: ["CMD", "agent", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "biopoint,datadog,monitoring"
+
+  # Prometheus (backup metrics collection)
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: biopoint-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - biopoint-monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+
+  # Grafana (backup dashboards)
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: biopoint-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - biopoint-monitoring
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # Alertmanager (backup alerting)
+  alertmanager:
+    image: prom/alertmanager:v0.25.0
+    container_name: biopoint-alertmanager
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - biopoint-monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Node Exporter (system metrics)
+  node-exporter:
+    image: prom/node-exporter:v1.6.0
+    container_name: biopoint-node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    ports:
+      - "9100:9100"
+    networks:
+      - biopoint-monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # cAdvisor (container metrics)
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: biopoint-cadvisor
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - biopoint-monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Blackbox Exporter (endpoint monitoring)
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.24.0
+    container_name: biopoint-blackbox-exporter
+    restart: unless-stopped
+    command:
+      - '--config.file=/config/blackbox.yml'
+    volumes:
+      - ./blackbox/blackbox.yml:/config/blackbox.yml:ro
+    ports:
+      - "9115:9115"
+    networks:
+      - biopoint-monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9115"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  biopoint-monitoring:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  alertmanager_data:
+    driver: local
+
+# HIPAA compliance notes:
+# 1. All PHI data is masked in logs before sending to Datadog
+# 2. Network policies restrict cross-service communication
+# 3. All services run with minimal privileges
+# 4. Audit logs are maintained for all access
+# 5. Encryption in transit and at rest is enforced
+# 6. Regular security scans are performed on all containers

@@ -1,0 +1,27 @@
+{
+  "name": "@biopoint/load-tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:baseline": "k6 run baseline-test.js",
+    "test:load": "k6 run load-test.js",
+    "test:stress": "k6 run stress-test.js",
+    "test:spike": "k6 run spike-test.js",
+    "test:endurance": "k6 run endurance-test.js",
+    "test:database": "k6 run database-test.js",
+    "test:all": "npm run test:baseline && npm run test:load && npm run test:stress && npm run test:spike && npm run test:endurance && npm run test:database",
+    "test:cloud": "k6 cloud run",
+    "report:generate": "node report-generator.js",
+    "metrics:export": "node metrics-exporter.js"
+  },
+  "devDependencies": {
+    "k6": "^0.49.0",
+    "@types/k6": "^0.49.0",
+    "json2csv": "^6.0.0",
+    "chalk": "^5.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}

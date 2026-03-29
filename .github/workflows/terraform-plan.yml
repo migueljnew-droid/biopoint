@@ -1,0 +1,223 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+    paths:
+      - 'infrastructure/terraform/**'
+      - 'infrastructure/environments/**'
+      - '.github/workflows/terraform-*.yml'
+
+env:
+  TF_VERSION: '1.6.0'
+  TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  TF_VAR_neon_api_key: ${{ secrets.NEON_API_KEY }}
+  TF_VAR_datadog_api_key: ${{ secrets.DATADOG_API_KEY }}
+  TF_VAR_datadog_app_key: ${{ secrets.DATADOG_APP_KEY }}
+  TF_VAR_doppler_service_token: ${{ secrets.DOPPLER_SERVICE_TOKEN }}
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        environment: [dev, staging, production]
+        include:
+          - environment: dev
+            tf_workspace: dev
+          - environment: staging
+            tf_workspace: staging
+          - environment: production
+            tf_workspace: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        
+    - name: Terraform Format Check
+      run: |
+        cd infrastructure/terraform
+        terraform fmt -check -recursive
+        
+    - name: Terraform Init
+      run: |
+        cd infrastructure/terraform
+        terraform init -backend=true -backend-config="workspace_key_prefix=workspaces"
+        
+    - name: Terraform Workspace Select
+      run: |
+        cd infrastructure/terraform
+        terraform workspace select ${{ matrix.tf_workspace }} || terraform workspace new ${{ matrix.tf_workspace }}
+        
+    - name: Terraform Validate
+      run: |
+        cd infrastructure/terraform
+        terraform validate
+        
+    - name: Terraform Plan
+      id: plan
+      run: |
+        cd infrastructure/terraform
+        terraform plan -var-file=../environments/${{ matrix.environment }}.tfvars -out=tfplan-${{ matrix.environment }}
+        
+    - name: Upload Plan Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: terraform-plan-${{ matrix.environment }}
+        path: infrastructure/terraform/tfplan-${{ matrix.environment }}
+        retention-days: 7
+        
+    - name: Comment PR with Plan
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Plan 📖 \`${{ matrix.environment }}\`
+          
+          <details><summary>Show Plan</summary>
+          
+          \`\`\`terraform
+          ${process.env.PLAN}
+          \`\`\`
+          
+          </details>
+          
+          *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+          
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+      
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Checkov Security Scan
+      uses: bridgecrewio/checkov-action@v12
+      with:
+        directory: infrastructure/terraform
+        framework: terraform
+        output_format: sarif
+        output_file_path: checkov-results.sarif
+        
+    - name: Upload Checkov Results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: checkov-results.sarif
+        
+    - name: Run tfsec Security Scan
+      uses: aquasecurity/tfsec-action@v1.0.3
+      with:
+        working_directory: infrastructure/terraform
+        format: sarif
+        out: tfsec-results.sarif
+        
+    - name: Upload tfsec Results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: tfsec-results.sarif
+        
+  cost-estimation:
+    name: Cost Estimation
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        
+    - name: Terraform Init
+      run: |
+        cd infrastructure/terraform
+        terraform init -backend=true
+        
+    - name: Download Plan Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: terraform-plan-*
+        path: infrastructure/terraform
+        
+    - name: Estimate Costs
+      run: |
+        cd infrastructure/terraform
+        # Install infracost
+        curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+        
+        # Set up infracost API key
+        export INFRACOST_API_KEY=${{ secrets.INFRACOST_API_KEY }}
+        
+        # Estimate costs for each environment
+        for env in dev staging production; do
+          echo "Cost estimation for $env environment:"
+          infracost breakdown --path tfplan-$env --format json --out-file cost-$env.json || true
+        done
+        
+    - name: Comment PR with Cost
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          
+          let costSummary = '## 💰 Cost Estimation Summary\n\n';
+          
+          for (const env of ['dev', 'staging', 'production']) {
+            try {
+              const costData = JSON.parse(fs.readFileSync(`infrastructure/terraform/cost-${env}.json`, 'utf8'));
+              const monthlyCost = costData.totalMonthlyCost || 0;
+              costSummary += `**${env}:** $${monthlyCost}/month\n`;
+            } catch (e) {
+              costSummary += `**${env}:** Cost estimation unavailable\n`;
+            }
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: costSummary
+          });

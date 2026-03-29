@@ -1,0 +1,149 @@
+title = "BioPoint GitLeaks Configuration"
+
+[extend]
+# Use default configuration as base
+useDefault = true
+
+[allowlist]
+# Allow these files/paths to be scanned but not flagged
+description = "BioPoint allowlist for false positives"
+
+# Allow example/test files
+paths = [
+    '''\.env\.example$''',
+    '''\.env\.template$''',
+    '''\.env\.test$''',
+    '''test/''',
+    '''tests/''',
+    '''__tests__/''',
+    '''\.test\.''',
+    '''\.spec\.''',
+    '''mock''',
+    '''fixture''',
+    '''docs/''',
+    '''\.md$''',
+    '''\.gitleaks\.toml$'''
+]
+
+# Allow specific patterns that are false positives
+regexes = [
+    # Allow fake/example credentials
+    '''example''',
+    '''fake''',
+    '''test''',
+    '''dummy''',
+    '''placeholder''',
+    '''your-.*-here''',
+    '''changeme''',
+    '''password123''',
+    '''admin''',
+    
+    # Allow localhost configurations
+    '''localhost:3000''',
+    '''localhost:3001''',
+    '''127\.0\.0\.1''',
+    
+    # Allow common development patterns
+    '''development''',
+    '''staging''',
+    '''localhost''',
+    
+    # Allow documentation examples
+    '''biopoint\.health''',
+    '''example\.com''',
+    '''your-domain\.com'''
+]
+
+# Commits to ignore (use commit hashes)
+commits = [
+    # Add specific commit hashes here if needed
+]
+
+[rules]
+# Override or add custom rules
+
+# JWT Secret Rule
+[[rules]]
+id = "jwt-secret"
+description = "JWT Secret"
+regex = '''(?i)(jwt[_-]?secret|jwt[_-]?key)\s*[=:]\s*['"]?([a-zA-Z0-9_\-]{32,})['"]?'''
+tags = ["secret", "jwt", "authentication"]
+
+# Database Connection String Rule
+[[rules]]
+id = "database-url"
+description = "Database Connection URL"
+regex = '''(?i)(database[_-]?url|db[_-]?url)\s*[=:]\s*['"]?(postgresql|mongodb|mysql)://[^'"\s]+['"]?'''
+tags = ["secret", "database", "connection"]
+
+# API Key Rule (more specific)
+[[rules]]
+id = "api-key"
+description = "API Key"
+regex = '''(?i)(api[_-]?key|apikey)\s*[=:]\s*['"]?([a-zA-Z0-9_\-]{20,})['"]?'''
+tags = ["secret", "api", "key"]
+
+# AWS Credentials Rule
+[[rules]]
+id = "aws-credentials"
+description = "AWS Credentials"
+regex = '''(?i)(aws[_-]?access[_-]?key[_-]?id|aws[_-]?secret[_-]?access[_-]?key)\s*[=:]\s*['"]?([A-Z0-9]{16,})['"]?'''
+tags = ["secret", "aws", "cloud"]
+
+# Cloudflare R2 Credentials
+[[rules]]
+id = "cloudflare-r2"
+description = "Cloudflare R2 Credentials"
+regex = '''(?i)(r2[_-]?access[_-]?key|r2[_-]?secret[_-]?key)\s*[=:]\s*['"]?([a-zA-Z0-9_\-]{20,})['"]?'''
+tags = ["secret", "cloudflare", "r2", "storage"]
+
+# Healthcare Data Patterns (HIPAA sensitive)
+[[rules]]
+id = "healthcare-data"
+description = "Healthcare Identifiers"
+regex = '''(?i)(ssn|social[_-]?security)\s*[=:]\s*['"]?([0-9]{3}-?[0-9]{2}-?[0-9]{4})['"]?'''
+tags = ["phi", "hipaa", "pii", "healthcare"]
+
+[[rules]]
+id = "patient-id"
+description = "Patient Identifier"
+regex = '''(?i)(patient[_-]?id|mrn|medical[_-]?record[_-]?number)\s*[=:]\s*['"]?([0-9]{6,})['"]?'''
+tags = ["phi", "hipaa", "pii", "healthcare"]
+
+# Enhanced Secret Detection
+[[rules]]
+id = "generic-secret"
+description = "Generic Secret Pattern"
+regex = '''(?i)(secret|password|token|key)\s*[=:]\s*['"]?([a-zA-Z0-9_\-]{16,})['"]?'''
+tags = ["secret", "generic"]
+
+# Private Keys
+[[rules]]
+id = "private-key"
+description = "Private Key"
+regex = '''-----BEGIN [A-Z ]+ PRIVATE KEY-----'''
+tags = ["secret", "key", "cryptography"]
+
+# OAuth Tokens
+[[rules]]
+id = "oauth-token"
+description = "OAuth Token"
+regex = '''(?i)(oauth[_-]?token|bearer[_-]?token|access[_-]?token)\s*[=:]\s*['"]?([a-zA-Z0-9_\-]{20,})['"]?'''
+tags = ["secret", "oauth", "token"]
+
+# Webhook URLs with tokens
+[[rules]]
+id = "webhook-url"
+description = "Webhook URL with Token"
+regex = '''https?://[^/\s]+/[a-zA-Z0-9_/\-]+\?token=[a-zA-Z0-9_\-]{16,}'''
+tags = ["secret", "webhook", "url"]
+
+[rules.allowlist]
+# Allow specific patterns in test files
+description = "Allow test patterns"
+regexes = [
+    '''test[_-]?secret''',
+    '''fake[_-]?token''',
+    '''dummy[_-]?key''',
+    '''example[_-]?password'''
+]

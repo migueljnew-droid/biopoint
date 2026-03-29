@@ -5,8 +5,8 @@ import Purchases from 'react-native-purchases';
 import { Platform } from 'react-native';
 
 const REVENUECAT_API_KEY = Platform.select({
-    ios: 'appl_REVENUECAT_PUBLIC_KEY', // TODO: Replace with your actual RevenueCat API Key
-    android: 'goog_REVENUECAT_PUBLIC_KEY',
+    ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '',
+    android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '',
 });
 
 interface SubscriptionState {
@@ -30,15 +30,14 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             error: null,
 
             initialize: async () => {
-                if (REVENUECAT_API_KEY) {
+                if (!REVENUECAT_API_KEY) return;
+                try {
                     Purchases.configure({ apiKey: REVENUECAT_API_KEY });
-                    try {
-                        const customerInfo = await Purchases.getCustomerInfo();
-                        const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
-                        set({ isPremium });
-                    } catch (e) {
-                        console.log("RevenueCat init error", e);
-                    }
+                    const customerInfo = await Purchases.getCustomerInfo();
+                    const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
+                    set({ isPremium });
+                } catch (e) {
+                    // RevenueCat not configured — IAP disabled gracefully
                 }
             },
 

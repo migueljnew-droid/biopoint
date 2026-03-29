@@ -1,0 +1,1851 @@
+{
+    "metrics": {
+        "http_req_blocked": {
+            "p(50)": 0.01,
+            "p(95)": 0.05329999999999995,
+            "p(99)": 2.163799999999999,
+            "count": 838,
+            "med": 0.01,
+            "max": 8.766,
+            "p(99.9)": 8.0980740000001,
+            "p(99.99)": 8.699207399999892,
+            "avg": 0.07371002386634881,
+            "min": 0.001
+        },
+        "api_response_time": {
+            "min": 51.224,
+            "max": 260.594,
+            "p(50)": 145.54649999999998,
+            "p(95)": 243.27039999999997,
+            "count": 552,
+            "avg": 147.77776086956527,
+            "med": 145.54649999999998,
+            "p(99)": 250.96058,
+            "p(99.9)": 257.8825290000003,
+            "p(99.99)": 260.3228528999998,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "dashboard_load_time": {
+            "p(95)": 243,
+            "p(99)": 250,
+            "p(99.9)": 259.2500000000002,
+            "p(99.99)": 260.82499999999976,
+            "count": 251,
+            "min": 53,
+            "med": 151,
+            "avg": 151.0597609561753,
+            "max": 261,
+            "p(50)": 151,
+            "thresholds": {
+                "p(95)<1000": false
+            }
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "max": 0,
+            "p(99)": 0,
+            "p(99.9)": 0,
+            "p(99.99)": 0,
+            "count": 838,
+            "min": 0,
+            "med": 0,
+            "p(50)": 0,
+            "p(95)": 0
+        },
+        "data_sent": {
+            "count": 121671,
+            "rate": 1932.3088564894408
+        },
+        "photos_response_time": {
+            "avg": 143.1209916666667,
+            "min": 51.224,
+            "med": 138.083,
+            "p(50)": 138.083,
+            "p(95)": 240.90210000000002,
+            "p(99.9)": 253.55057000000008,
+            "max": 254.142,
+            "p(99)": 248.53379,
+            "p(99.99)": 254.08285699999993,
+            "count": 120,
+            "thresholds": {
+                "p(95)<600": false
+            }
+        },
+        "api_error_rate": {
+            "passes": 0,
+            "fails": 0,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_sending": {
+            "avg": 0.1434594272076377,
+            "max": 18.548,
+            "p(95)": 0.2000999999999997,
+            "p(99)": 3.441169999999995,
+            "p(99.9)": 9.269855000001382,
+            "p(99.99)": 17.6201854999985,
+            "count": 838,
+            "min": 0.007,
+            "med": 0.045,
+            "p(50)": 0.045
+        },
+        "data_received": {
+            "count": 289451,
+            "rate": 4596.894336528221
+        },
+        "vus_max": {
+            "value": 15,
+            "min": 15,
+            "max": 15
+        },
+        "http_req_waiting": {
+            "p(99.9)": 259.1527070000002,
+            "p(99.99)": 260.2743706999998,
+            "min": 49.514,
+            "med": 146.8,
+            "max": 260.399,
+            "count": 838,
+            "avg": 149.21409188544138,
+            "p(50)": 146.8,
+            "p(95)": 243.45605,
+            "p(99)": 251.12763
+        },
+        "db_query_time": {
+            "p(99.99)": 0,
+            "med": 0,
+            "max": 0,
+            "p(50)": 0,
+            "p(99)": 0,
+            "count": 0,
+            "avg": 0,
+            "min": 0,
+            "p(95)": 0,
+            "p(99.9)": 0,
+            "thresholds": {
+                "p(95)<100": false
+            }
+        },
+        "photos_uploaded": {
+            "count": 19,
+            "rate": 0.3017470742683086
+        },
+        "http_req_receiving": {
+            "min": 0.026,
+            "med": 0.19,
+            "max": 9.987,
+            "p(99.9)": 8.43436500000023,
+            "p(99.99)": 9.83173649999975,
+            "count": 838,
+            "avg": 0.34451312649164656,
+            "p(50)": 0.19,
+            "p(95)": 0.79415,
+            "p(99)": 4.27619
+        },
+        "vus": {
+            "value": 0,
+            "min": 0,
+            "max": 15
+        },
+        "http_req_connecting": {
+            "p(99.9)": 4.4929120000001275,
+            "p(99.99)": 5.264291199999861,
+            "avg": 0.030878281622911695,
+            "min": 0,
+            "med": 0,
+            "p(50)": 0,
+            "p(95)": 0,
+            "count": 838,
+            "max": 5.35,
+            "p(99)": 0.48456999999999983
+        },
+        "labs_response_time": {
+            "avg": 147.07683977900547,
+            "min": 55.999,
+            "p(99)": 251.57719999999998,
+            "p(99.9)": 255.07054000000008,
+            "p(99.99)": 255.6127539999999,
+            "count": 181,
+            "med": 141.734,
+            "max": 255.673,
+            "p(50)": 141.734,
+            "p(95)": 245.698,
+            "thresholds": {
+                "p(95)<800": false
+            }
+        },
+        "s3_presign_time": {
+            "avg": 149.125,
+            "max": 255,
+            "p(95)": 236.2,
+            "p(99)": 247.09999999999994,
+            "p(99.9)": 254.21000000000006,
+            "min": 56,
+            "med": 142,
+            "p(50)": 142,
+            "p(99.99)": 254.92099999999994,
+            "count": 80,
+            "thresholds": {
+                "p(95)<200": true
+            }
+        },
+        "http_req_duration": {
+            "max": 260.594,
+            "p(99.9)": 259.3033460000002,
+            "p(99.99)": 260.46493459999976,
+            "count": 838,
+            "min": 51.224,
+            "med": 147.106,
+            "p(50)": 147.106,
+            "p(95)": 243.9673,
+            "p(99)": 251.93325,
+            "avg": 149.7020644391408,
+            "thresholds": {
+                "p(50)<200": false,
+                "p(95)<500": false,
+                "p(99)<1000": false
+            }
+        },
+        "http_req_failed": {
+            "passes": 8,
+            "fails": 830,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0.00954653937947494
+        },
+        "checks": {
+            "passes": 1753,
+            "fails": 19,
+            "value": 0.9892776523702032
+        },
+        "dashboard_views": {
+            "count": 251,
+            "rate": 3.9862376653339715
+        },
+        "iterations": {
+            "count": 583,
+            "rate": 9.258870752548628
+        },
+        "s3_upload_time": {
+            "p(99)": 0,
+            "p(99.9)": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(50)": 0,
+            "p(99.99)": 0,
+            "count": 0,
+            "p(95)": 0,
+            "thresholds": {
+                "p(95)<5000": false
+            }
+        },
+        "iteration_duration": {
+            "min": 0.02975,
+            "p(95)": 2510.6752002999992,
+            "p(99)": 3561.515759439999,
+            "p(99.9)": 3950.206141138048,
+            "p(99.99)": 4159.234576313778,
+            "count": 583,
+            "avg": 1181.6127379845618,
+            "med": 1157.8425,
+            "max": 4182.459958,
+            "p(50)": 1157.8425
+        },
+        "http_reqs": {
+            "count": 838,
+            "rate": 13.308634117728559,
+            "thresholds": {
+                "rate>=100": true
+            }
+        },
+        "group_duration": {
+            "avg": 294.6087356655229,
+            "med": 0.004875,
+            "p(50)": 0.004875,
+            "p(95)": 1230.3673016,
+            "p(99)": 1321.9029942500001,
+            "p(99.99)": 1447.6873858222968,
+            "count": 2332,
+            "min": 0.0005,
+            "max": 1449.609917,
+            "p(99.9)": 1439.2599578040015
+        },
+        "auth_success_rate": {
+            "passes": 0,
+            "fails": 0,
+            "thresholds": {
+                "rate>=0.99": false
+            },
+            "value": 0
+        },
+        "lab_reports_uploaded": {
+            "count": 61,
+            "rate": 0.9687669226508855
+        }
+    },
+    "setup_data": {
+        "authData": [
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest0@biopoint.com",
+                    "name": "Load Test User 0",
+                    "password": "LoadTest0!"
+                },
+                "refreshToken": null
+            },
+            {
+                "user": {
+                    "email": "loadtest1@biopoint.com",
+                    "name": "Load Test User 1",
+                    "password": "LoadTest1!"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest2@biopoint.com",
+                    "name": "Load Test User 2",
+                    "password": "LoadTest2!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest3@biopoint.com",
+                    "name": "Load Test User 3",
+                    "password": "LoadTest3!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest4@biopoint.com",
+                    "name": "Load Test User 4",
+                    "password": "LoadTest4!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest5@biopoint.com",
+                    "name": "Load Test User 5",
+                    "password": "LoadTest5!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest6@biopoint.com",
+                    "name": "Load Test User 6",
+                    "password": "LoadTest6!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest7@biopoint.com",
+                    "name": "Load Test User 7",
+                    "password": "LoadTest7!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "name": "Load Test User 8",
+                    "password": "LoadTest8!",
+                    "email": "loadtest8@biopoint.com"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest9@biopoint.com",
+                    "name": "Load Test User 9",
+                    "password": "LoadTest9!"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest10@biopoint.com",
+                    "name": "Load Test User 10",
+                    "password": "LoadTest10!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest11@biopoint.com",
+                    "name": "Load Test User 11",
+                    "password": "LoadTest11!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "name": "Load Test User 12",
+                    "password": "LoadTest12!",
+                    "email": "loadtest12@biopoint.com"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest13@biopoint.com",
+                    "name": "Load Test User 13",
+                    "password": "LoadTest13!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest14@biopoint.com",
+                    "name": "Load Test User 14",
+                    "password": "LoadTest14!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest15@biopoint.com",
+                    "name": "Load Test User 15",
+                    "password": "LoadTest15!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest16@biopoint.com",
+                    "name": "Load Test User 16",
+                    "password": "LoadTest16!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest17!",
+                    "email": "loadtest17@biopoint.com",
+                    "name": "Load Test User 17"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest18@biopoint.com",
+                    "name": "Load Test User 18",
+                    "password": "LoadTest18!"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "password": "LoadTest19!",
+                    "email": "loadtest19@biopoint.com",
+                    "name": "Load Test User 19"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest20@biopoint.com",
+                    "name": "Load Test User 20",
+                    "password": "LoadTest20!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "name": "Load Test User 21",
+                    "password": "LoadTest21!",
+                    "email": "loadtest21@biopoint.com"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest22@biopoint.com",
+                    "name": "Load Test User 22",
+                    "password": "LoadTest22!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest23!",
+                    "email": "loadtest23@biopoint.com",
+                    "name": "Load Test User 23"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "name": "Load Test User 24",
+                    "password": "LoadTest24!",
+                    "email": "loadtest24@biopoint.com"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest25@biopoint.com",
+                    "name": "Load Test User 25",
+                    "password": "LoadTest25!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest26@biopoint.com",
+                    "name": "Load Test User 26",
+                    "password": "LoadTest26!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest27@biopoint.com",
+                    "name": "Load Test User 27",
+                    "password": "LoadTest27!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest28@biopoint.com",
+                    "name": "Load Test User 28",
+                    "password": "LoadTest28!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest29!",
+                    "email": "loadtest29@biopoint.com",
+                    "name": "Load Test User 29"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest30@biopoint.com",
+                    "name": "Load Test User 30",
+                    "password": "LoadTest30!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest31@biopoint.com",
+                    "name": "Load Test User 31",
+                    "password": "LoadTest31!"
+                }
+            },
+            {
+                "user": {
+                    "email": "loadtest32@biopoint.com",
+                    "name": "Load Test User 32",
+                    "password": "LoadTest32!"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest33@biopoint.com",
+                    "name": "Load Test User 33",
+                    "password": "LoadTest33!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest34@biopoint.com",
+                    "name": "Load Test User 34",
+                    "password": "LoadTest34!"
+                }
+            },
+            {
+                "user": {
+                    "email": "loadtest35@biopoint.com",
+                    "name": "Load Test User 35",
+                    "password": "LoadTest35!"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "name": "Load Test User 36",
+                    "password": "LoadTest36!",
+                    "email": "loadtest36@biopoint.com"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest37@biopoint.com",
+                    "name": "Load Test User 37",
+                    "password": "LoadTest37!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest38@biopoint.com",
+                    "name": "Load Test User 38",
+                    "password": "LoadTest38!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest39@biopoint.com",
+                    "name": "Load Test User 39",
+                    "password": "LoadTest39!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest40@biopoint.com",
+                    "name": "Load Test User 40",
+                    "password": "LoadTest40!"
+                }
+            },
+            {
+                "user": {
+                    "name": "Load Test User 41",
+                    "password": "LoadTest41!",
+                    "email": "loadtest41@biopoint.com"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "user": {
+                    "name": "Load Test User 42",
+                    "password": "LoadTest42!",
+                    "email": "loadtest42@biopoint.com"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest43!",
+                    "email": "loadtest43@biopoint.com",
+                    "name": "Load Test User 43"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest44@biopoint.com",
+                    "name": "Load Test User 44",
+                    "password": "LoadTest44!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest45@biopoint.com",
+                    "name": "Load Test User 45",
+                    "password": "LoadTest45!"
+                }
+            },
+            {
+                "user": {
+                    "password": "LoadTest46!",
+                    "email": "loadtest46@biopoint.com",
+                    "name": "Load Test User 46"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "user": {
+                    "email": "loadtest47@biopoint.com",
+                    "name": "Load Test User 47",
+                    "password": "LoadTest47!"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest48@biopoint.com",
+                    "name": "Load Test User 48",
+                    "password": "LoadTest48!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest49@biopoint.com",
+                    "name": "Load Test User 49",
+                    "password": "LoadTest49!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest50@biopoint.com",
+                    "name": "Load Test User 50",
+                    "password": "LoadTest50!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest51@biopoint.com",
+                    "name": "Load Test User 51",
+                    "password": "LoadTest51!"
+                }
+            },
+            {
+                "user": {
+                    "email": "loadtest52@biopoint.com",
+                    "name": "Load Test User 52",
+                    "password": "LoadTest52!"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest53@biopoint.com",
+                    "name": "Load Test User 53",
+                    "password": "LoadTest53!"
+                },
+                "refreshToken": null
+            },
+            {
+                "token": null,
+                "user": {
+                    "password": "LoadTest54!",
+                    "email": "loadtest54@biopoint.com",
+                    "name": "Load Test User 54"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest55@biopoint.com",
+                    "name": "Load Test User 55",
+                    "password": "LoadTest55!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest56@biopoint.com",
+                    "name": "Load Test User 56",
+                    "password": "LoadTest56!"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest57@biopoint.com",
+                    "name": "Load Test User 57",
+                    "password": "LoadTest57!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest58!",
+                    "email": "loadtest58@biopoint.com",
+                    "name": "Load Test User 58"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest59@biopoint.com",
+                    "name": "Load Test User 59",
+                    "password": "LoadTest59!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest60@biopoint.com",
+                    "name": "Load Test User 60",
+                    "password": "LoadTest60!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest61@biopoint.com",
+                    "name": "Load Test User 61",
+                    "password": "LoadTest61!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest62@biopoint.com",
+                    "name": "Load Test User 62",
+                    "password": "LoadTest62!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest63@biopoint.com",
+                    "name": "Load Test User 63",
+                    "password": "LoadTest63!"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "name": "Load Test User 64",
+                    "password": "LoadTest64!",
+                    "email": "loadtest64@biopoint.com"
+                },
+                "refreshToken": null
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest65@biopoint.com",
+                    "name": "Load Test User 65",
+                    "password": "LoadTest65!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest66!",
+                    "email": "loadtest66@biopoint.com",
+                    "name": "Load Test User 66"
+                }
+            },
+            {
+                "user": {
+                    "email": "loadtest67@biopoint.com",
+                    "name": "Load Test User 67",
+                    "password": "LoadTest67!"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest68@biopoint.com",
+                    "name": "Load Test User 68",
+                    "password": "LoadTest68!"
+                }
+            },
+            {
+                "user": {
+                    "name": "Load Test User 69",
+                    "password": "LoadTest69!",
+                    "email": "loadtest69@biopoint.com"
+                },
+                "refreshToken": null,
+                "token": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest70@biopoint.com",
+                    "name": "Load Test User 70",
+                    "password": "LoadTest70!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest71@biopoint.com",
+                    "name": "Load Test User 71",
+                    "password": "LoadTest71!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "name": "Load Test User 72",
+                    "password": "LoadTest72!",
+                    "email": "loadtest72@biopoint.com"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest73@biopoint.com",
+                    "name": "Load Test User 73",
+                    "password": "LoadTest73!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest74@biopoint.com",
+                    "name": "Load Test User 74",
+                    "password": "LoadTest74!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest75@biopoint.com",
+                    "name": "Load Test User 75",
+                    "password": "LoadTest75!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest76@biopoint.com",
+                    "name": "Load Test User 76",
+                    "password": "LoadTest76!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest77@biopoint.com",
+                    "name": "Load Test User 77",
+                    "password": "LoadTest77!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest78@biopoint.com",
+                    "name": "Load Test User 78",
+                    "password": "LoadTest78!"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest79@biopoint.com",
+                    "name": "Load Test User 79",
+                    "password": "LoadTest79!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest80@biopoint.com",
+                    "name": "Load Test User 80",
+                    "password": "LoadTest80!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest81@biopoint.com",
+                    "name": "Load Test User 81",
+                    "password": "LoadTest81!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest82@biopoint.com",
+                    "name": "Load Test User 82",
+                    "password": "LoadTest82!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest83@biopoint.com",
+                    "name": "Load Test User 83",
+                    "password": "LoadTest83!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest84@biopoint.com",
+                    "name": "Load Test User 84",
+                    "password": "LoadTest84!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest85@biopoint.com",
+                    "name": "Load Test User 85",
+                    "password": "LoadTest85!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest86@biopoint.com",
+                    "name": "Load Test User 86",
+                    "password": "LoadTest86!"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest87@biopoint.com",
+                    "name": "Load Test User 87",
+                    "password": "LoadTest87!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest88@biopoint.com",
+                    "name": "Load Test User 88",
+                    "password": "LoadTest88!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest89!",
+                    "email": "loadtest89@biopoint.com",
+                    "name": "Load Test User 89"
+                }
+            },
+            {
+                "token": null,
+                "user": {
+                    "email": "loadtest90@biopoint.com",
+                    "name": "Load Test User 90",
+                    "password": "LoadTest90!"
+                },
+                "refreshToken": null
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest91@biopoint.com",
+                    "name": "Load Test User 91",
+                    "password": "LoadTest91!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest92@biopoint.com",
+                    "name": "Load Test User 92",
+                    "password": "LoadTest92!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest93@biopoint.com",
+                    "name": "Load Test User 93",
+                    "password": "LoadTest93!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest94@biopoint.com",
+                    "name": "Load Test User 94",
+                    "password": "LoadTest94!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest95@biopoint.com",
+                    "name": "Load Test User 95",
+                    "password": "LoadTest95!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest96@biopoint.com",
+                    "name": "Load Test User 96",
+                    "password": "LoadTest96!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest97@biopoint.com",
+                    "name": "Load Test User 97",
+                    "password": "LoadTest97!"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "password": "LoadTest98!",
+                    "email": "loadtest98@biopoint.com",
+                    "name": "Load Test User 98"
+                }
+            },
+            {
+                "refreshToken": null,
+                "token": null,
+                "user": {
+                    "email": "loadtest99@biopoint.com",
+                    "name": "Load Test User 99",
+                    "password": "LoadTest99!"
+                }
+            }
+        ],
+        "startTime": "2026-01-23T16:17:46.073Z",
+        "testUsers": [
+            {
+                "email": "loadtest0@biopoint.com",
+                "name": "Load Test User 0",
+                "password": "LoadTest0!"
+            },
+            {
+                "email": "loadtest1@biopoint.com",
+                "name": "Load Test User 1",
+                "password": "LoadTest1!"
+            },
+            {
+                "name": "Load Test User 2",
+                "password": "LoadTest2!",
+                "email": "loadtest2@biopoint.com"
+            },
+            {
+                "email": "loadtest3@biopoint.com",
+                "name": "Load Test User 3",
+                "password": "LoadTest3!"
+            },
+            {
+                "email": "loadtest4@biopoint.com",
+                "name": "Load Test User 4",
+                "password": "LoadTest4!"
+            },
+            {
+                "email": "loadtest5@biopoint.com",
+                "name": "Load Test User 5",
+                "password": "LoadTest5!"
+            },
+            {
+                "name": "Load Test User 6",
+                "password": "LoadTest6!",
+                "email": "loadtest6@biopoint.com"
+            },
+            {
+                "email": "loadtest7@biopoint.com",
+                "name": "Load Test User 7",
+                "password": "LoadTest7!"
+            },
+            {
+                "email": "loadtest8@biopoint.com",
+                "name": "Load Test User 8",
+                "password": "LoadTest8!"
+            },
+            {
+                "email": "loadtest9@biopoint.com",
+                "name": "Load Test User 9",
+                "password": "LoadTest9!"
+            },
+            {
+                "email": "loadtest10@biopoint.com",
+                "name": "Load Test User 10",
+                "password": "LoadTest10!"
+            },
+            {
+                "email": "loadtest11@biopoint.com",
+                "name": "Load Test User 11",
+                "password": "LoadTest11!"
+            },
+            {
+                "email": "loadtest12@biopoint.com",
+                "name": "Load Test User 12",
+                "password": "LoadTest12!"
+            },
+            {
+                "email": "loadtest13@biopoint.com",
+                "name": "Load Test User 13",
+                "password": "LoadTest13!"
+            },
+            {
+                "name": "Load Test User 14",
+                "password": "LoadTest14!",
+                "email": "loadtest14@biopoint.com"
+            },
+            {
+                "email": "loadtest15@biopoint.com",
+                "name": "Load Test User 15",
+                "password": "LoadTest15!"
+            },
+            {
+                "email": "loadtest16@biopoint.com",
+                "name": "Load Test User 16",
+                "password": "LoadTest16!"
+            },
+            {
+                "password": "LoadTest17!",
+                "email": "loadtest17@biopoint.com",
+                "name": "Load Test User 17"
+            },
+            {
+                "email": "loadtest18@biopoint.com",
+                "name": "Load Test User 18",
+                "password": "LoadTest18!"
+            },
+            {
+                "email": "loadtest19@biopoint.com",
+                "name": "Load Test User 19",
+                "password": "LoadTest19!"
+            },
+            {
+                "email": "loadtest20@biopoint.com",
+                "name": "Load Test User 20",
+                "password": "LoadTest20!"
+            },
+            {
+                "name": "Load Test User 21",
+                "password": "LoadTest21!",
+                "email": "loadtest21@biopoint.com"
+            },
+            {
+                "email": "loadtest22@biopoint.com",
+                "name": "Load Test User 22",
+                "password": "LoadTest22!"
+            },
+            {
+                "email": "loadtest23@biopoint.com",
+                "name": "Load Test User 23",
+                "password": "LoadTest23!"
+            },
+            {
+                "email": "loadtest24@biopoint.com",
+                "name": "Load Test User 24",
+                "password": "LoadTest24!"
+            },
+            {
+                "email": "loadtest25@biopoint.com",
+                "name": "Load Test User 25",
+                "password": "LoadTest25!"
+            },
+            {
+                "email": "loadtest26@biopoint.com",
+                "name": "Load Test User 26",
+                "password": "LoadTest26!"
+            },
+            {
+                "email": "loadtest27@biopoint.com",
+                "name": "Load Test User 27",
+                "password": "LoadTest27!"
+            },
+            {
+                "email": "loadtest28@biopoint.com",
+                "name": "Load Test User 28",
+                "password": "LoadTest28!"
+            },
+            {
+                "password": "LoadTest29!",
+                "email": "loadtest29@biopoint.com",
+                "name": "Load Test User 29"
+            },
+            {
+                "email": "loadtest30@biopoint.com",
+                "name": "Load Test User 30",
+                "password": "LoadTest30!"
+            },
+            {
+                "password": "LoadTest31!",
+                "email": "loadtest31@biopoint.com",
+                "name": "Load Test User 31"
+            },
+            {
+                "email": "loadtest32@biopoint.com",
+                "name": "Load Test User 32",
+                "password": "LoadTest32!"
+            },
+            {
+                "email": "loadtest33@biopoint.com",
+                "name": "Load Test User 33",
+                "password": "LoadTest33!"
+            },
+            {
+                "email": "loadtest34@biopoint.com",
+                "name": "Load Test User 34",
+                "password": "LoadTest34!"
+            },
+            {
+                "email": "loadtest35@biopoint.com",
+                "name": "Load Test User 35",
+                "password": "LoadTest35!"
+            },
+            {
+                "email": "loadtest36@biopoint.com",
+                "name": "Load Test User 36",
+                "password": "LoadTest36!"
+            },
+            {
+                "email": "loadtest37@biopoint.com",
+                "name": "Load Test User 37",
+                "password": "LoadTest37!"
+            },
+            {
+                "email": "loadtest38@biopoint.com",
+                "name": "Load Test User 38",
+                "password": "LoadTest38!"
+            },
+            {
+                "email": "loadtest39@biopoint.com",
+                "name": "Load Test User 39",
+                "password": "LoadTest39!"
+            },
+            {
+                "name": "Load Test User 40",
+                "password": "LoadTest40!",
+                "email": "loadtest40@biopoint.com"
+            },
+            {
+                "password": "LoadTest41!",
+                "email": "loadtest41@biopoint.com",
+                "name": "Load Test User 41"
+            },
+            {
+                "email": "loadtest42@biopoint.com",
+                "name": "Load Test User 42",
+                "password": "LoadTest42!"
+            },
+            {
+                "email": "loadtest43@biopoint.com",
+                "name": "Load Test User 43",
+                "password": "LoadTest43!"
+            },
+            {
+                "name": "Load Test User 44",
+                "password": "LoadTest44!",
+                "email": "loadtest44@biopoint.com"
+            },
+            {
+                "password": "LoadTest45!",
+                "email": "loadtest45@biopoint.com",
+                "name": "Load Test User 45"
+            },
+            {
+                "email": "loadtest46@biopoint.com",
+                "name": "Load Test User 46",
+                "password": "LoadTest46!"
+            },
+            {
+                "email": "loadtest47@biopoint.com",
+                "name": "Load Test User 47",
+                "password": "LoadTest47!"
+            },
+            {
+                "name": "Load Test User 48",
+                "password": "LoadTest48!",
+                "email": "loadtest48@biopoint.com"
+            },
+            {
+                "name": "Load Test User 49",
+                "password": "LoadTest49!",
+                "email": "loadtest49@biopoint.com"
+            },
+            {
+                "email": "loadtest50@biopoint.com",
+                "name": "Load Test User 50",
+                "password": "LoadTest50!"
+            },
+            {
+                "email": "loadtest51@biopoint.com",
+                "name": "Load Test User 51",
+                "password": "LoadTest51!"
+            },
+            {
+                "email": "loadtest52@biopoint.com",
+                "name": "Load Test User 52",
+                "password": "LoadTest52!"
+            },
+            {
+                "name": "Load Test User 53",
+                "password": "LoadTest53!",
+                "email": "loadtest53@biopoint.com"
+            },
+            {
+                "email": "loadtest54@biopoint.com",
+                "name": "Load Test User 54",
+                "password": "LoadTest54!"
+            },
+            {
+                "email": "loadtest55@biopoint.com",
+                "name": "Load Test User 55",
+                "password": "LoadTest55!"
+            },
+            {
+                "email": "loadtest56@biopoint.com",
+                "name": "Load Test User 56",
+                "password": "LoadTest56!"
+            },
+            {
+                "password": "LoadTest57!",
+                "email": "loadtest57@biopoint.com",
+                "name": "Load Test User 57"
+            },
+            {
+                "email": "loadtest58@biopoint.com",
+                "name": "Load Test User 58",
+                "password": "LoadTest58!"
+            },
+            {
+                "name": "Load Test User 59",
+                "password": "LoadTest59!",
+                "email": "loadtest59@biopoint.com"
+            },
+            {
+                "email": "loadtest60@biopoint.com",
+                "name": "Load Test User 60",
+                "password": "LoadTest60!"
+            },
+            {
+                "email": "loadtest61@biopoint.com",
+                "name": "Load Test User 61",
+                "password": "LoadTest61!"
+            },
+            {
+                "email": "loadtest62@biopoint.com",
+                "name": "Load Test User 62",
+                "password": "LoadTest62!"
+            },
+            {
+                "email": "loadtest63@biopoint.com",
+                "name": "Load Test User 63",
+                "password": "LoadTest63!"
+            },
+            {
+                "password": "LoadTest64!",
+                "email": "loadtest64@biopoint.com",
+                "name": "Load Test User 64"
+            },
+            {
+                "name": "Load Test User 65",
+                "password": "LoadTest65!",
+                "email": "loadtest65@biopoint.com"
+            },
+            {
+                "email": "loadtest66@biopoint.com",
+                "name": "Load Test User 66",
+                "password": "LoadTest66!"
+            },
+            {
+                "email": "loadtest67@biopoint.com",
+                "name": "Load Test User 67",
+                "password": "LoadTest67!"
+            },
+            {
+                "email": "loadtest68@biopoint.com",
+                "name": "Load Test User 68",
+                "password": "LoadTest68!"
+            },
+            {
+                "password": "LoadTest69!",
+                "email": "loadtest69@biopoint.com",
+                "name": "Load Test User 69"
+            },
+            {
+                "email": "loadtest70@biopoint.com",
+                "name": "Load Test User 70",
+                "password": "LoadTest70!"
+            },
+            {
+                "name": "Load Test User 71",
+                "password": "LoadTest71!",
+                "email": "loadtest71@biopoint.com"
+            },
+            {
+                "name": "Load Test User 72",
+                "password": "LoadTest72!",
+                "email": "loadtest72@biopoint.com"
+            },
+            {
+                "email": "loadtest73@biopoint.com",
+                "name": "Load Test User 73",
+                "password": "LoadTest73!"
+            },
+            {
+                "email": "loadtest74@biopoint.com",
+                "name": "Load Test User 74",
+                "password": "LoadTest74!"
+            },
+            {
+                "email": "loadtest75@biopoint.com",
+                "name": "Load Test User 75",
+                "password": "LoadTest75!"
+            },
+            {
+                "name": "Load Test User 76",
+                "password": "LoadTest76!",
+                "email": "loadtest76@biopoint.com"
+            },
+            {
+                "email": "loadtest77@biopoint.com",
+                "name": "Load Test User 77",
+                "password": "LoadTest77!"
+            },
+            {
+                "email": "loadtest78@biopoint.com",
+                "name": "Load Test User 78",
+                "password": "LoadTest78!"
+            },
+            {
+                "email": "loadtest79@biopoint.com",
+                "name": "Load Test User 79",
+                "password": "LoadTest79!"
+            },
+            {
+                "email": "loadtest80@biopoint.com",
+                "name": "Load Test User 80",
+                "password": "LoadTest80!"
+            },
+            {
+                "email": "loadtest81@biopoint.com",
+                "name": "Load Test User 81",
+                "password": "LoadTest81!"
+            },
+            {
+                "email": "loadtest82@biopoint.com",
+                "name": "Load Test User 82",
+                "password": "LoadTest82!"
+            },
+            {
+                "name": "Load Test User 83",
+                "password": "LoadTest83!",
+                "email": "loadtest83@biopoint.com"
+            },
+            {
+                "email": "loadtest84@biopoint.com",
+                "name": "Load Test User 84",
+                "password": "LoadTest84!"
+            },
+            {
+                "email": "loadtest85@biopoint.com",
+                "name": "Load Test User 85",
+                "password": "LoadTest85!"
+            },
+            {
+                "name": "Load Test User 86",
+                "password": "LoadTest86!",
+                "email": "loadtest86@biopoint.com"
+            },
+            {
+                "name": "Load Test User 87",
+                "password": "LoadTest87!",
+                "email": "loadtest87@biopoint.com"
+            },
+            {
+                "password": "LoadTest88!",
+                "email": "loadtest88@biopoint.com",
+                "name": "Load Test User 88"
+            },
+            {
+                "email": "loadtest89@biopoint.com",
+                "name": "Load Test User 89",
+                "password": "LoadTest89!"
+            },
+            {
+                "email": "loadtest90@biopoint.com",
+                "name": "Load Test User 90",
+                "password": "LoadTest90!"
+            },
+            {
+                "email": "loadtest91@biopoint.com",
+                "name": "Load Test User 91",
+                "password": "LoadTest91!"
+            },
+            {
+                "email": "loadtest92@biopoint.com",
+                "name": "Load Test User 92",
+                "password": "LoadTest92!"
+            },
+            {
+                "password": "LoadTest93!",
+                "email": "loadtest93@biopoint.com",
+                "name": "Load Test User 93"
+            },
+            {
+                "email": "loadtest94@biopoint.com",
+                "name": "Load Test User 94",
+                "password": "LoadTest94!"
+            },
+            {
+                "email": "loadtest95@biopoint.com",
+                "name": "Load Test User 95",
+                "password": "LoadTest95!"
+            },
+            {
+                "email": "loadtest96@biopoint.com",
+                "name": "Load Test User 96",
+                "password": "LoadTest96!"
+            },
+            {
+                "password": "LoadTest97!",
+                "email": "loadtest97@biopoint.com",
+                "name": "Load Test User 97"
+            },
+            {
+                "email": "loadtest98@biopoint.com",
+                "name": "Load Test User 98",
+                "password": "LoadTest98!"
+            },
+            {
+                "email": "loadtest99@biopoint.com",
+                "name": "Load Test User 99",
+                "password": "LoadTest99!"
+            }
+        ]
+    },
+    "root_group": {
+        "groups": {
+            "Dashboard Operations": {
+                "path": "::Dashboard Operations",
+                "id": "32a32a05d955963c5410354d501118a3",
+                "groups": {},
+                "checks": {
+                        "dashboard status is 200": {
+                            "name": "dashboard status is 200",
+                            "path": "::Dashboard Operations::dashboard status is 200",
+                            "id": "a286fcf120427df5d97815f2d0c03099",
+                            "passes": 251,
+                            "fails": 0
+                        },
+                        "dashboard response time < 1s": {
+                            "name": "dashboard response time < 1s",
+                            "path": "::Dashboard Operations::dashboard response time < 1s",
+                            "id": "5907d213e4b6d5ca70ba0e14ceee7b5e",
+                            "passes": 251,
+                            "fails": 0
+                        },
+                        "dashboard has data": {
+                            "name": "dashboard has data",
+                            "path": "::Dashboard Operations::dashboard has data",
+                            "id": "f5cb527ca9887bb195098496a71ccdd1",
+                            "passes": 251,
+                            "fails": 0
+                        }
+                    },
+                "name": "Dashboard Operations"
+            },
+            "Lab Reports Operations": {
+                "id": "5814b4bcf59df7865f5d657390ceff15",
+                "groups": {},
+                "checks": {
+                        "labs list status is 200": {
+                            "passes": 181,
+                            "fails": 0,
+                            "name": "labs list status is 200",
+                            "path": "::Lab Reports Operations::labs list status is 200",
+                            "id": "ccc6b9646a22fe734a057b15ebe865cb"
+                        },
+                        "labs response time < 800ms": {
+                            "id": "83e0c3b5bd5b14aede4d3ec8a319f354",
+                            "passes": 181,
+                            "fails": 0,
+                            "name": "labs response time < 800ms",
+                            "path": "::Lab Reports Operations::labs response time < 800ms"
+                        },
+                        "presign status is 200": {
+                            "path": "::Lab Reports Operations::presign status is 200",
+                            "id": "bf180b8bcf55107922a2786f29342619",
+                            "passes": 61,
+                            "fails": 0,
+                            "name": "presign status is 200"
+                        },
+                        "presign response time < 200ms": {
+                            "passes": 46,
+                            "fails": 15,
+                            "name": "presign response time < 200ms",
+                            "path": "::Lab Reports Operations::presign response time < 200ms",
+                            "id": "3de7cdd5e6c65bdcce8082cced7aae0c"
+                        },
+                        "presign has upload URL": {
+                            "name": "presign has upload URL",
+                            "path": "::Lab Reports Operations::presign has upload URL",
+                            "id": "b69f884960a803399118a4f2d871b1a1",
+                            "passes": 61,
+                            "fails": 0
+                        }
+                    },
+                "name": "Lab Reports Operations",
+                "path": "::Lab Reports Operations"
+            },
+            "Photos Operations": {
+                "name": "Photos Operations",
+                "path": "::Photos Operations",
+                "id": "833542d9b3725b9c82fb2819dc6433d5",
+                "groups": {},
+                "checks": {
+                        "photos list status is 200": {
+                            "path": "::Photos Operations::photos list status is 200",
+                            "id": "836ffe3e510f1bbb191a8f0a7e3070f2",
+                            "passes": 120,
+                            "fails": 0,
+                            "name": "photos list status is 200"
+                        },
+                        "photos response time < 600ms": {
+                            "name": "photos response time < 600ms",
+                            "path": "::Photos Operations::photos response time < 600ms",
+                            "id": "10ad8ae9673b13436e630658477e93c0",
+                            "passes": 120,
+                            "fails": 0
+                        },
+                        "photo presign status is 200": {
+                            "path": "::Photos Operations::photo presign status is 200",
+                            "id": "7d08efdfc152ea966d061657ab2d6fdf",
+                            "passes": 19,
+                            "fails": 0,
+                            "name": "photo presign status is 200"
+                        },
+                        "photo presign response time < 200ms": {
+                            "name": "photo presign response time < 200ms",
+                            "path": "::Photos Operations::photo presign response time < 200ms",
+                            "id": "107d0eef1e353d14bc17286cae8e273d",
+                            "passes": 15,
+                            "fails": 4
+                        }
+                    }
+            },
+            "Health and Monitoring": {
+                "groups": {},
+                "checks": {
+                        "health status is 200": {
+                            "passes": 49,
+                            "fails": 0,
+                            "name": "health status is 200",
+                            "path": "::Health and Monitoring::health status is 200",
+                            "id": "524ec4eb84e156ceee59aaa4e068d5cb"
+                        },
+                        "health response is ok": {
+                            "name": "health response is ok",
+                            "path": "::Health and Monitoring::health response is ok",
+                            "id": "90d1482e5e495094fdc6c1f46d2fe4e3",
+                            "passes": 49,
+                            "fails": 0
+                        },
+                        "db health status is 200": {
+                            "id": "7411dd937659dcae0f77f669369604fd",
+                            "passes": 49,
+                            "fails": 0,
+                            "name": "db health status is 200",
+                            "path": "::Health and Monitoring::db health status is 200"
+                        },
+                        "db is connected": {
+                            "name": "db is connected",
+                            "path": "::Health and Monitoring::db is connected",
+                            "id": "208b5806518773eee57cba9ba9a05702",
+                            "passes": 49,
+                            "fails": 0
+                        }
+                    },
+                "name": "Health and Monitoring",
+                "path": "::Health and Monitoring",
+                "id": "05d9d6edbb8d7956a5a8c9076e6c770d"
+            }
+        },
+        "checks": {},
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+}

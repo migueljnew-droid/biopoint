@@ -4,3 +4,17 @@
 
 expo-env.d.ts
 # @end expo-cli
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# Build
+ios/
+android/
+dist/
+.expo/

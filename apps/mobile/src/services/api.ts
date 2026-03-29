@@ -104,3 +104,45 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+// API Service wrapper for type-safe requests
+export const apiService = {
+    get: async <T>(url: string, params?: any): Promise<T> => {
+        const response = await api.get(url, { params });
+        return response.data;
+    },
+
+    post: async <T>(url: string, data?: any): Promise<T> => {
+        const response = await api.post(url, data);
+        return response.data;
+    },
+
+    put: async <T>(url: string, data?: any): Promise<T> => {
+        const response = await api.put(url, data);
+        return response.data;
+    },
+
+    delete: async <T>(url: string): Promise<T> => {
+        const response = await api.delete(url);
+        return response.data;
+    },
+
+    // For binary data (PDF exports, etc.)
+    getBlob: async (url: string, params?: any): Promise<Blob> => {
+        const response = await api.get(url, { 
+            params,
+            responseType: 'blob' 
+        });
+        return response.data;
+    },
+
+    // For file uploads
+    upload: async <T>(url: string, formData: FormData): Promise<T> => {
+        const response = await api.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    }
+};

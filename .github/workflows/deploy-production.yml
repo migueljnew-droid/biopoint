@@ -1,0 +1,353 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - production-blue
+          - production-green
+
+env:
+  NODE_VERSION: '20'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRODUCTION }}
+  AWS_REGION: us-east-1
+  PRODUCTION_CLUSTER: biopoint-production
+  PRODUCTION_NAMESPACE: biopoint-production
+
+jobs:
+  pre-deployment-checks:
+    name: Pre-deployment Checks
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Doppler
+        uses: dopplerhq/cli-action@v3
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN_PRODUCTION }}
+
+      - name: Run final tests
+        run: |
+          npm run test:all
+          npm run test:compliance
+
+      - name: Validate database migrations
+        run: |
+          doppler run -- npm run db:generate
+          doppler run -- npm run db:migrate -- --dry-run
+
+      - name: Security validation
+        run: |
+          npm run encryption:validate
+          npm run encryption:check
+
+      - name: Create deployment artifact
+        run: |
+          mkdir -p deployment-artifacts
+          echo "${{ github.sha }}" > deployment-artifacts/commit-sha.txt
+          echo "${{ github.ref_name }}" > deployment-artifacts/version.txt
+          echo "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > deployment-artifacts/timestamp.txt
+          
+          # Copy deployment scripts
+          cp scripts/deploy-production.sh deployment-artifacts/
+          
+          # Create deployment manifest
+          cat > deployment-artifacts/manifest.json << EOF
+          {
+            "version": "${{ github.ref_name }}",
+            "commitSha": "${{ github.sha }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "deployedBy": "${{ github.actor }}",
+            "environment": "production"
+          }
+          EOF
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-artifacts
+          path: deployment-artifacts/
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: pre-deployment-checks
+    environment: 
+      name: production
+      url: https://api.biopoint.health
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Doppler
+        uses: dopplerhq/cli-action@v3
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN_PRODUCTION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and tag Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build API image
+          docker build -t $ECR_REGISTRY/biopoint-api:$IMAGE_TAG -f apps/api/Dockerfile .
+          docker tag $ECR_REGISTRY/biopoint-api:$IMAGE_TAG $ECR_REGISTRY/biopoint-api:production
+          docker tag $ECR_REGISTRY/biopoint-api:$IMAGE_TAG $ECR_REGISTRY/biopoint-api:${{ github.ref_name }}
+          
+          # Build mobile build image
+          docker build -t $ECR_REGISTRY/biopoint-mobile:$IMAGE_TAG -f apps/mobile/Dockerfile .
+          docker tag $ECR_REGISTRY/biopoint-mobile:$IMAGE_TAG $ECR_REGISTRY/biopoint-mobile:production
+          docker tag $ECR_REGISTRY/biopoint-mobile:$IMAGE_TAG $ECR_REGISTRY/biopoint-mobile:${{ github.ref_name }}
+
+      - name: Push Docker images to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker push $ECR_REGISTRY/biopoint-api:$IMAGE_TAG
+          docker push $ECR_REGISTRY/biopoint-api:production
+          docker push $ECR_REGISTRY/biopoint-api:${{ github.ref_name }}
+          docker push $ECR_REGISTRY/biopoint-mobile:$IMAGE_TAG
+          docker push $ECR_REGISTRY/biopoint-mobile:production
+          docker push $ECR_REGISTRY/biopoint-mobile:${{ github.ref_name }}
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.PRODUCTION_CLUSTER }}
+
+      - name: Determine deployment strategy
+        id: deployment-strategy
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "production-blue" ]]; then
+            echo "strategy=blue" >> $GITHUB_OUTPUT
+            echo "active=blue" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.environment }}" == "production-green" ]]; then
+            echo "strategy=green" >> $GITHUB_OUTPUT
+            echo "active=green" >> $GITHUB_OUTPUT
+          else
+            # Default to blue-green based on current active
+            CURRENT_ACTIVE=$(kubectl get service biopoint-production-service -n ${{ env.PRODUCTION_NAMESPACE }} -o jsonpath='{.spec.selector.color}' || echo "blue")
+            if [[ "$CURRENT_ACTIVE" == "blue" ]]; then
+              echo "strategy=green" >> $GITHUB_OUTPUT
+              echo "active=green" >> $GITHUB_OUTPUT
+            else
+              echo "strategy=blue" >> $GITHUB_OUTPUT
+              echo "active=blue" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Deploy to production (Blue-Green)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          DEPLOYMENT_COLOR: ${{ steps.deployment-strategy.outputs.strategy }}
+        run: |
+          # Create namespace if it doesn't exist
+          kubectl create namespace ${{ env.PRODUCTION_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+          
+          # Apply database migrations
+          doppler run -- npm run db:migrate
+          
+          # Deploy to inactive environment first
+          envsubst < k8s/production/api-deployment-${DEPLOYMENT_COLOR}.yaml | kubectl apply -f -
+          envsubst < k8s/production/api-service-${DEPLOYMENT_COLOR}.yaml | kubectl apply -f -
+          
+          # Wait for deployment to be ready
+          kubectl rollout status deployment/biopoint-api-${DEPLOYMENT_COLOR} -n ${{ env.PRODUCTION_NAMESPACE }} --timeout=600s
+
+      - name: Run production smoke tests
+        env:
+          DEPLOYMENT_COLOR: ${{ steps.deployment-strategy.outputs.strategy }}
+        run: |
+          # Get the service endpoint for the new deployment
+          SMOKE_TEST_URL=$(kubectl get service biopoint-api-${DEPLOYMENT_COLOR} -n ${{ env.PRODUCTION_NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          
+          # Run smoke tests against new deployment
+          chmod +x scripts/run-smoke-tests.sh
+          DEPLOYMENT_COLOR=${DEPLOYMENT_COLOR} SMOKE_TEST_URL=${SMOKE_TEST_URL} ./scripts/run-smoke-tests.sh production
+
+      - name: Switch traffic (Blue-Green)
+        if: success()
+        env:
+          DEPLOYMENT_COLOR: ${{ steps.deployment-strategy.outputs.strategy }}
+        run: |
+          # Update the main service to point to new deployment
+          kubectl patch service biopoint-production-service -n ${{ env.PRODUCTION_NAMESPACE }} -p '{"spec":{"selector":{"color":"'${DEPLOYMENT_COLOR}'"}}}'
+          
+          # Wait for traffic switch
+          sleep 30
+          
+          # Verify traffic is flowing
+          PRODUCTION_URL="https://api.biopoint.health/health"
+          for i in {1..10}; do
+            if curl -f $PRODUCTION_URL; then
+              echo "Traffic switch successful"
+              break
+            fi
+            if [[ $i -eq 10 ]]; then
+              echo "Traffic switch failed"
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Cleanup old deployment
+        if: success()
+        env:
+          DEPLOYMENT_COLOR: ${{ steps.deployment-strategy.outputs.strategy }}
+        run: |
+          # Determine which color to cleanup (the inactive one)
+          if [[ "$DEPLOYMENT_COLOR" == "blue" ]]; then
+            CLEANUP_COLOR="green"
+          else
+            CLEANUP_COLOR="blue"
+          fi
+          
+          # Scale down old deployment
+          kubectl scale deployment/biopoint-api-${CLEANUP_COLOR} -n ${{ env.PRODUCTION_NAMESPACE }} --replicas=0
+
+      - name: Create production deployment record
+        if: success()
+        run: |
+          DEPLOYMENT_ID=$(date +%s)
+          cat > production-deployment-record.json << EOF
+          {
+            "deploymentId": "$DEPLOYMENT_ID",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "environment": "production",
+            "commitSha": "${{ github.sha }}",
+            "commitMessage": "${{ github.event.head_commit.message }}",
+            "deployedBy": "${{ github.actor }}",
+            "status": "success",
+            "imageTag": "${{ github.sha }}",
+            "version": "${{ github.ref_name }}",
+            "deploymentColor": "${{ steps.deployment-strategy.outputs.strategy }}",
+            "rollbackAvailable": true
+          }
+          EOF
+          
+          # Store deployment record in S3
+          aws s3 cp production-deployment-record.json s3://biopoint-deployments/production/${{ github.sha }}.json
+
+      - name: Notify deployment success
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: "🎉 BioPoint production deployment successful! Version: ${{ github.ref_name }}"
+
+      - name: Notify deployment failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#devops-alerts'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: "🚨 BioPoint production deployment failed! Version: ${{ github.ref_name }}"
+
+  post-deployment-validation:
+    name: Post-deployment Validation
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Doppler
+        uses: dopplerhq/cli-action@v3
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN_PRODUCTION }}
+
+      - name: Run comprehensive health checks
+        run: |
+          # API health check
+          PRODUCTION_URL="https://api.biopoint.health"
+          
+          # Basic health endpoint
+          curl -f $PRODUCTION_URL/health || exit 1
+          
+          # Database health
+          doppler run -- npm run db:health || exit 1
+          
+          # Security headers check
+          curl -I $PRODUCTION_URL | grep -E "(X-Content-Type-Options|X-Frame-Options|X-XSS-Protection|Strict-Transport-Security)" || exit 1
+
+      - name: Monitor key metrics
+        run: |
+          # Check application metrics
+          METRICS_URL="https://api.biopoint.health/metrics"
+          
+          # Get current metrics
+          curl -s $METRICS_URL | jq '.status' | grep -q "healthy" || exit 1
+          
+          # Check error rates (should be < 1%)
+          ERROR_RATE=$(curl -s $METRICS_URL | jq '.error_rate' | sed 's/%//')
+          if (( $(echo "$ERROR_RATE > 1" | bc -l) )); then
+            echo "Error rate ($ERROR_RATE%) is above threshold (1%)"
+            exit 1
+          fi
+
+      - name: Run end-to-end tests
+        run: |
+          # Run critical path E2E tests
+          npm run test:e2e -- --grep "@critical"
+
+      - name: Security validation
+        run: |
+          # Validate encryption is working
+          npm run encryption:validate
+          
+          # Check for any security warnings
+          npm run test:security

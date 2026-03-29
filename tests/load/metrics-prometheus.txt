@@ -1,0 +1,36 @@
+# BioPoint Load Testing Metrics
+# Generated: 2026-01-23T16:20:00.171Z
+
+biopoint_http_requests_total{test="baseline"} 14500
+biopoint_http_request_duration_avg{test="baseline"} 180
+biopoint_http_request_duration_p95{test="baseline"} 420
+biopoint_http_request_duration_p99{test="baseline"} 780
+biopoint_http_request_failed_rate{test="baseline"} 0.003
+biopoint_vus_max{test="baseline"} 100
+biopoint_iterations_total{test="baseline"} 18000
+biopoint_data_received_bytes{test="baseline"} 52428800
+biopoint_data_sent_bytes{test="baseline"} 10485760
+biopoint_test_duration_seconds{test="baseline"} 1800
+
+biopoint_http_requests_total{test="load"} 52000
+biopoint_http_request_duration_avg{test="load"} 380
+biopoint_http_request_duration_p95{test="load"} 890
+biopoint_http_request_duration_p99{test="load"} 1200
+biopoint_http_request_failed_rate{test="load"} 0.008
+biopoint_vus_max{test="load"} 1000
+biopoint_iterations_total{test="load"} 180000
+biopoint_data_received_bytes{test="load"} 209715200
+biopoint_data_sent_bytes{test="load"} 41943040
+biopoint_test_duration_seconds{test="load"} 3600
+
+biopoint_http_requests_total{test="stress"} 180000
+biopoint_http_request_duration_avg{test="stress"} 8200
+biopoint_http_request_duration_p95{test="stress"} 15000
+biopoint_http_request_duration_p99{test="stress"} 25000
+biopoint_http_request_failed_rate{test="stress"} 0.52
+biopoint_vus_max{test="stress"} 10000
+biopoint_iterations_total{test="stress"} 150000
+biopoint_data_received_bytes{test="stress"} 1073741824
+biopoint_data_sent_bytes{test="stress"} 214748364
+biopoint_test_duration_seconds{test="stress"} 3000
+

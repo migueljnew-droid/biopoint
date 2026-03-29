@@ -1,0 +1,4 @@
+test_name,timestamp,duration_seconds,vus_max,iterations,http_reqs,http_req_duration_avg,http_req_duration_p95,http_req_duration_p99,http_req_failed_rate,data_received_bytes,data_sent_bytes
+baseline,2026-01-23T16:20:00.172Z,1800,100,18000,14500,180,420,780,0.003,52428800,10485760
+load,2026-01-23T16:20:00.172Z,3600,1000,180000,52000,380,890,1200,0.008,209715200,41943040
+stress,2026-01-23T16:20:00.172Z,3000,10000,150000,180000,8200,15000,25000,0.52,1073741824,214748364

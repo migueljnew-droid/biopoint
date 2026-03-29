@@ -9,6 +9,7 @@ import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAuthStore } from '../src/store/authStore';
 import { colors } from '../src/theme';
+import { requestPermissions } from '../src/services/notificationService';
 
 export default function RootLayout() {
     const checkAuth = useAuthStore((s) => s.checkAuth);
@@ -16,6 +17,7 @@ export default function RootLayout() {
     useEffect(() => {
         SystemUI.setBackgroundColorAsync(colors.background);
         checkAuth();
+        requestPermissions();
     }, []);
 
     return (
