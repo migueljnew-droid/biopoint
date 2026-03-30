@@ -96,7 +96,7 @@ export default function TabLayout() {
                     tabBarIcon: ({ color, focused }) => (
                         <AnimatedTabIcon name={focused ? 'analytics' : 'analytics-outline'} color={color} focused={focused} />
                     ),
-                    headerTitle: 'BioPoint',
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen

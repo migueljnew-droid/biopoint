@@ -16,7 +16,6 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [focusedField, setFocusedField] = useState<string | null>(null);
     const { register, loginWithGoogle, loginWithApple, isLoading, error, clearError } = useAuthStore();
 
     const handleGoogleSignUp = async () => {

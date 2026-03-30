@@ -67,6 +67,8 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@bacons/apple-targets": "^4.0.6",
+    "@rollup/rollup-darwin-arm64": "^4.60.1",
     "react": "19.1.0",
     "tsx": "^4.7.0"
   },

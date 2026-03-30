@@ -1,12 +1,22 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { useAuthStore } from '../src/store/authStore';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInUp, useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import { colors, spacing, typography, borderRadius, gradients } from '../src/theme';
 import { ScreenWrapper, GlassView, AnimatedButton, GradientText } from '../src/components/ui';
 
 export default function WelcomeScreen() {
+    const { isAuthenticated, isLoading } = useAuthStore();
+
+    // Auto-redirect to dashboard if already signed in
+    useEffect(() => {
+        if (isAuthenticated && !isLoading) {
+            router.replace('/(tabs)');
+        }
+    }, [isAuthenticated, isLoading]);
+
     // Logo rotation animation
     const rotation = useSharedValue(0);
 

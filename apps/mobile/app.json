@@ -31,7 +31,10 @@
       },
       "entitlements": {
         "com.apple.developer.healthkit": true,
-        "com.apple.developer.healthkit.background-delivery": true
+        "com.apple.developer.healthkit.background-delivery": true,
+        "com.apple.security.application-groups": [
+          "group.com.biopoint.app"
+        ]
       }
     },
     "android": {
@@ -50,13 +53,13 @@
       "expo-router",
       "expo-secure-store",
       "expo-apple-authentication",
-      "@react-native-google-signin/google-signin",
       [
         "expo-notifications",
         {
           "sounds": []
         }
-      ]
+      ],
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true
