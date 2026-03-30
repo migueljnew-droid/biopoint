@@ -107,11 +107,16 @@ export default function StacksScreen() {
 
     const handleCreateStack = async () => {
         if (!stackName) { Alert.alert('Error', 'Name is required'); return; }
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        await createStack({ name: stackName, goal: stackGoal || undefined });
-        setShowCreateModal(false);
-        setStackName('');
-        setStackGoal('');
+        try {
+            await createStack({ name: stackName, goal: stackGoal || undefined });
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            setShowCreateModal(false);
+            setStackName('');
+            setStackGoal('');
+            fetchStacks();
+        } catch (e: any) {
+            Alert.alert('Error', e.response?.data?.message || e.message || 'Failed to create stack');
+        }
     };
 
     const handleSaveItem = async () => {
