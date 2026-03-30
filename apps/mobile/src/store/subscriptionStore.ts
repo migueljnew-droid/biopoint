@@ -30,6 +30,15 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             error: null,
 
             initialize: async () => {
+                // Grant premium to founder/admin accounts
+                const { useAuthStore } = require('./authStore');
+                const user = useAuthStore.getState().user;
+                const adminEmails = ['migueljnew@gmail.com', 'booklouisgold@gmail.com'];
+                if (user?.email && adminEmails.includes(user.email.toLowerCase())) {
+                    set({ isPremium: true, plan: 'yearly' });
+                    return;
+                }
+
                 if (!REVENUECAT_API_KEY) return;
                 try {
                     Purchases.configure({ apiKey: REVENUECAT_API_KEY });
