@@ -6,9 +6,28 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
 import { LoginSchema } from '@biopoint/shared';
-import { colors, spacing, typography, borderRadius, gradients } from '../src/theme';
+import { colors, spacing, typography, borderRadius, gradients, glass } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { ScreenWrapper, GlassView, AnimatedButton, GradientText } from '../src/components/ui';
+
+// Glass-styled input wrapper — uses native View instead of BlurView to prevent
+// TextInput focus loss on iOS (BlurView re-renders steal focus from inputs)
+function InputContainer({ children, style }: { children: React.ReactNode; style?: any }) {
+    return (
+        <View style={[{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: spacing.md,
+            borderRadius: borderRadius.lg,
+            backgroundColor: glass.light?.backgroundColor || 'rgba(255,255,255,0.06)',
+            borderWidth: 1,
+            borderColor: glass.light?.borderColor || 'rgba(255,255,255,0.1)',
+            overflow: 'hidden',
+        }, style]}>
+            {children}
+        </View>
+    );
+}
 
 import { socialAuth } from '../src/services/socialAuth';
 
@@ -124,7 +143,7 @@ export default function LoginScreen() {
                     <View style={styles.form}>
                         <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.inputGroup}>
                             <Text style={styles.label}>Email</Text>
-                            <GlassView variant="light" intensity={30} style={styles.inputContainer} borderRadius={borderRadius.lg}>
+                            <InputContainer>
                                 <Ionicons name="mail-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
@@ -137,12 +156,12 @@ export default function LoginScreen() {
                                     autoComplete="email"
                                     autoCorrect={false}
                                 />
-                            </GlassView>
+                            </InputContainer>
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.inputGroup}>
                             <Text style={styles.label}>Password</Text>
-                            <GlassView variant="light" intensity={30} style={styles.inputContainer} borderRadius={borderRadius.lg}>
+                            <InputContainer>
                                 <Ionicons name="lock-closed-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
@@ -159,7 +178,7 @@ export default function LoginScreen() {
                                 <Pressable style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
                                     <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color={colors.textMuted} />
                                 </Pressable>
-                            </GlassView>
+                            </InputContainer>
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(500).duration(400)}>
