@@ -23,6 +23,7 @@ exports.CreateStackItemSchema = zod_1.z.object({
     unit: zod_1.z.string().min(1).max(20),
     route: zod_1.z.enum(['SubQ', 'IM', 'IV', 'Oral', 'Sublingual', 'Transdermal', 'Nasal', 'Other']).optional(),
     frequency: zod_1.z.string().min(1).max(50),
+    scheduleDays: zod_1.z.array(zod_1.z.number().min(0).max(6)).optional(),
     timing: zod_1.z.string().max(100).optional(),
     cycleJson: exports.CycleJsonSchema,
     notes: zod_1.z.string().max(1000).optional(),

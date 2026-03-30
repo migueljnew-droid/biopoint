@@ -41,6 +41,7 @@ export declare const CreateStackItemSchema: z.ZodObject<{
     unit: z.ZodString;
     route: z.ZodOptional<z.ZodEnum<["SubQ", "IM", "IV", "Oral", "Sublingual", "Transdermal", "Nasal", "Other"]>>;
     frequency: z.ZodString;
+    scheduleDays: z.ZodOptional<z.ZodArray<z.ZodNumber>>;
     timing: z.ZodOptional<z.ZodString>;
     cycleJson: z.ZodOptional<z.ZodObject<{
         daysOn: z.ZodNumber;
