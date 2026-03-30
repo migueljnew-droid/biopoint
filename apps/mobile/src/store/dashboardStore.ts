@@ -60,6 +60,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     fetchDashboard: async () => {
         set({ isLoading: true, error: null });
         try {
+            // Recalculate score before fetching
+            await api.post('/dashboard/calculate').catch(() => {});
             const response = await api.get('/dashboard');
             set({
                 bioPointScore: response.data.bioPointScore,
@@ -88,7 +90,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
                 todayLog: response.data,
                 isLoading: false,
             }));
-            // Re-fetch to get updated score
+            // Calculate score then re-fetch
+            await api.post('/dashboard/calculate');
             const dashResponse = await api.get('/dashboard');
             set({
                 bioPointScore: dashResponse.data.bioPointScore,
