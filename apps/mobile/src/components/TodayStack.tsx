@@ -30,25 +30,26 @@ export function TodayStack() {
             if (!item.isActive) continue;
 
             let shouldShow = false;
+            // today: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
             switch (item.frequency) {
                 case 'Daily': case 'Morning': case 'Evening':
                 case 'Twice Daily': case '3x Daily':
                     shouldShow = true;
                     break;
                 case 'Weekly':
-                    shouldShow = today === 1;
+                    shouldShow = today === 1; // Monday
                     break;
                 case 'Twice a week':
-                    shouldShow = today === 1 || today === 4;
+                    shouldShow = today === 2 || today === 5; // Tue & Fri
                     break;
                 case 'Three times a week':
-                    shouldShow = today === 1 || today === 3 || today === 5;
+                    shouldShow = today === 2 || today === 4 || today === 6; // Tue, Thu, Sat
                     break;
                 case 'As Needed':
                     shouldShow = false;
                     break;
                 default:
-                    shouldShow = true;
+                    shouldShow = false; // Unknown frequency = don't show (was true, causing everything to show)
             }
 
             if (shouldShow) {

@@ -80,7 +80,7 @@ export function GlassAutocomplete({ value, onChangeText, placeholder, label }: G
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => {
                         // Small delay to allow press on suggestion to register
-                        setTimeout(() => setIsFocused(false), 200);
+                        setTimeout(() => setIsFocused(false), 400);
                     }}
                 />
             </GlassView>
@@ -92,7 +92,7 @@ export function GlassAutocomplete({ value, onChangeText, placeholder, label }: G
                             <Pressable
                                 key={index}
                                 style={({ pressed }) => [styles.suggestionItem, pressed && styles.suggestionPressed]}
-                                onPress={() => handleSelect(item)}
+                                onPressIn={() => handleSelect(item)}
                             >
                                 <Text style={styles.suggestionText}>{item}</Text>
                             </Pressable>
