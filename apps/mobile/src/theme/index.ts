@@ -145,69 +145,69 @@ export const colors = {
     infoGlow: 'rgba(2, 132, 199, 0.2)',
 
     // -------------------------------------------------------------------------
-    // Background Colors - Clean Institutional Whites
+    // Background Colors - True Dark Mode (OLED Optimized)
     // -------------------------------------------------------------------------
-    background: '#F8FAFC',
-    backgroundSecondary: '#F1F5F9',
-    backgroundCard: '#FFFFFF',
-    backgroundElevated: '#FFFFFF',
-    backgroundHover: '#F1F5F9',
-    backgroundActive: '#E2E8F0',
-    backgroundSubtle: '#EFF2F7',
-    backgroundMuted: '#E8ECF1',
+    background: '#0A0A0F',
+    backgroundSecondary: '#111118',
+    backgroundCard: '#16161E',
+    backgroundElevated: '#1C1C26',
+    backgroundHover: '#1E1E28',
+    backgroundActive: '#252530',
+    backgroundSubtle: '#131318',
+    backgroundMuted: '#1A1A22',
 
-    // Clean whites
-    backgroundVoid: '#FFFFFF',
-    backgroundAbyss: '#FAFBFC',
+    // Deep blacks
+    backgroundVoid: '#000000',
+    backgroundAbyss: '#050508',
 
     // -------------------------------------------------------------------------
-    // Surface Colors (Light Mode Glass)
+    // Surface Colors (Dark Mode Glass)
     // -------------------------------------------------------------------------
     glass: {
-        ultraLight: 'rgba(255, 255, 255, 0.4)',
-        light: 'rgba(255, 255, 255, 0.6)',
-        medium: 'rgba(255, 255, 255, 0.75)',
-        heavy: 'rgba(255, 255, 255, 0.85)',
-        solid: 'rgba(255, 255, 255, 0.95)',
-        border: 'rgba(0, 0, 0, 0.06)',
-        borderLight: 'rgba(0, 0, 0, 0.08)',
-        borderStrong: 'rgba(0, 0, 0, 0.12)',
-        highlight: 'rgba(0, 0, 0, 0.02)',
-        innerGlow: 'rgba(0, 0, 0, 0.01)',
+        ultraLight: 'rgba(255, 255, 255, 0.04)',
+        light: 'rgba(255, 255, 255, 0.06)',
+        medium: 'rgba(255, 255, 255, 0.10)',
+        heavy: 'rgba(255, 255, 255, 0.14)',
+        solid: 'rgba(255, 255, 255, 0.18)',
+        border: 'rgba(255, 255, 255, 0.08)',
+        borderLight: 'rgba(255, 255, 255, 0.05)',
+        borderStrong: 'rgba(255, 255, 255, 0.15)',
+        highlight: 'rgba(255, 255, 255, 0.04)',
+        innerGlow: 'rgba(255, 255, 255, 0.02)',
     },
 
     // Colored surface variants
     glassColored: {
-        primary: 'rgba(27, 75, 122, 0.06)',
-        primaryBorder: 'rgba(27, 75, 122, 0.15)',
-        accent: 'rgba(13, 148, 136, 0.06)',
-        accentBorder: 'rgba(13, 148, 136, 0.15)',
-        success: 'rgba(22, 163, 74, 0.06)',
-        successBorder: 'rgba(22, 163, 74, 0.15)',
-        warning: 'rgba(217, 119, 6, 0.06)',
-        warningBorder: 'rgba(217, 119, 6, 0.15)',
-        error: 'rgba(220, 38, 38, 0.06)',
-        errorBorder: 'rgba(220, 38, 38, 0.15)',
+        primary: 'rgba(27, 75, 122, 0.15)',
+        primaryBorder: 'rgba(27, 75, 122, 0.25)',
+        accent: 'rgba(13, 148, 136, 0.15)',
+        accentBorder: 'rgba(13, 148, 136, 0.25)',
+        success: 'rgba(22, 163, 74, 0.15)',
+        successBorder: 'rgba(22, 163, 74, 0.25)',
+        warning: 'rgba(217, 119, 6, 0.15)',
+        warningBorder: 'rgba(217, 119, 6, 0.25)',
+        error: 'rgba(220, 38, 38, 0.15)',
+        errorBorder: 'rgba(220, 38, 38, 0.25)',
     },
 
     // -------------------------------------------------------------------------
-    // Text Colors - WCAG 2.1 Compliant on Light Backgrounds
+    // Text Colors - WCAG 2.1 Compliant on Dark Backgrounds
     // -------------------------------------------------------------------------
-    textPrimary: '#0F172A',
-    textSecondary: '#334155',
+    textPrimary: '#F1F5F9',
+    textSecondary: '#94A3B8',
     textTertiary: '#64748B',
-    textMuted: '#94A3B8',
-    textDisabled: '#CBD5E1',
-    textInverse: '#FFFFFF',
+    textMuted: '#475569',
+    textDisabled: '#334155',
+    textInverse: '#0F172A',
 
     // -------------------------------------------------------------------------
     // Border Colors
     // -------------------------------------------------------------------------
-    border: 'rgba(0, 0, 0, 0.08)',
-    borderLight: 'rgba(0, 0, 0, 0.05)',
-    borderFocus: '#1B4B7A',
-    borderSubtle: 'rgba(0, 0, 0, 0.03)',
-    borderAccent: 'rgba(27, 75, 122, 0.2)',
+    border: 'rgba(255, 255, 255, 0.08)',
+    borderLight: 'rgba(255, 255, 255, 0.05)',
+    borderFocus: '#2D6BA4',
+    borderSubtle: 'rgba(255, 255, 255, 0.03)',
+    borderAccent: 'rgba(45, 107, 164, 0.3)',
 
     // -------------------------------------------------------------------------
     // Overlay Colors
@@ -367,20 +367,20 @@ export const gradients = {
     // -------------------------------------------------------------------------
     // Surface Gradients (Light Mode)
     // -------------------------------------------------------------------------
-    glass: ['rgba(255, 255, 255, 0.9)', 'rgba(255, 255, 255, 0.6)'] as const,
-    glassReverse: ['rgba(255, 255, 255, 0.6)', 'rgba(255, 255, 255, 0.9)'] as const,
-    glassDark: ['rgba(0, 0, 0, 0.04)', 'rgba(0, 0, 0, 0.02)'] as const,
+    glass: ['rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.04)'] as const,
+    glassReverse: ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.08)'] as const,
+    glassDark: ['rgba(255, 255, 255, 0.06)', 'rgba(255, 255, 255, 0.02)'] as const,
     glassColored: ['rgba(27, 75, 122, 0.06)', 'rgba(13, 148, 136, 0.03)'] as const,
 
     // -------------------------------------------------------------------------
     // Background Gradients
     // -------------------------------------------------------------------------
     background: {
-        primary: ['#F8FAFC', '#F1F5F9', '#EFF2F7', '#F8FAFC'] as const,
-        ambient: ['#F8FAFC', '#F1F5F9', '#F8FAFC'] as const,
-        radial: ['#FFFFFF', '#F8FAFC'] as const,
-        diagonal: ['#F1F5F9', '#F8FAFC'] as const,
-        cardSurface: ['#FFFFFF', '#FAFBFC'] as const,
+        primary: ['#0A0A0F', '#0E0E16', '#111118', '#0A0A0F'] as const,
+        ambient: ['#0A0A0F', '#0E0E16', '#0A0A0F'] as const,
+        radial: ['#16161E', '#0A0A0F'] as const,
+        diagonal: ['#0E0E16', '#0A0A0F'] as const,
+        cardSurface: ['#16161E', '#111118'] as const,
     },
 
     // -------------------------------------------------------------------------
