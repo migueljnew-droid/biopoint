@@ -5,7 +5,7 @@ services:
     region: virginia
     plan: free
     rootDir: .
-    buildCommand: npm install --force && cd db && npx prisma generate && npx prisma db push --accept-data-loss && cd ../packages/shared && npx tsc || true && cd ../apps/api && npx tsc
+    buildCommand: npm install --force && cd db && npx prisma generate && cd ../packages/shared && npx tsc || true && cd ../apps/api && npx tsc
     startCommand: node --import tsx apps/api/dist/index.js
     envVars:
       - key: NODE_ENV
