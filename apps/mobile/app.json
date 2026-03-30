@@ -26,7 +26,8 @@
         "NSPhotoLibraryAddUsageDescription": "BioPoint saves progress photos to your library.",
         "NSFaceIDUsageDescription": "BioPoint uses Face ID to protect your health data.",
         "NSHealthShareUsageDescription": "BioPoint reads your health data from Apple Health to calculate your BioPoint Score.",
-        "NSHealthUpdateUsageDescription": "BioPoint writes health data to Apple Health."
+        "NSHealthUpdateUsageDescription": "BioPoint writes health data to Apple Health.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
         "com.apple.developer.healthkit": true,
@@ -59,6 +60,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b4fad390-ffb4-4771-b244-ec395f364fd0"
+      }
+    },
+    "owner": "louisgoldlive"
   }
 }
