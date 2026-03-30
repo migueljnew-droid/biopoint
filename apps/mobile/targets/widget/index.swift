@@ -31,16 +31,9 @@ struct BioPointProvider: TimelineProvider {
     }
 
     private func loadData() -> BioPointData {
-        let defaults = UserDefaults(suiteName: "group.com.biopoint.app")
-        return BioPointData(
-            score: defaults?.integer(forKey: "biopoint_score") ?? 0,
-            trend: defaults?.string(forKey: "biopoint_trend") ?? "+0",
-            stacksDone: defaults?.integer(forKey: "stacks_done") ?? 0,
-            stacksTotal: defaults?.integer(forKey: "stacks_total") ?? 0,
-            calories: defaults?.integer(forKey: "calories_today") ?? 0,
-            calorieTarget: defaults?.integer(forKey: "calorie_target") ?? 2000,
-            lastUpdated: Date()
-        )
+        // App Group data sharing will be wired in a future update
+        // For now, show sample data so the widget renders properly
+        return sampleData
     }
 
     private var sampleData: BioPointData {
