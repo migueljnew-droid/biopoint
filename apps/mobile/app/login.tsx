@@ -6,28 +6,9 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
 import { LoginSchema } from '@biopoint/shared';
-import { colors, spacing, typography, borderRadius, gradients, glass } from '../src/theme';
+import { colors, spacing, typography, borderRadius, gradients } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { ScreenWrapper, GlassView, AnimatedButton, GradientText } from '../src/components/ui';
-
-// Glass-styled input wrapper — uses native View instead of BlurView to prevent
-// TextInput focus loss on iOS (BlurView re-renders steal focus from inputs)
-function InputContainer({ children, style }: { children: React.ReactNode; style?: any }) {
-    return (
-        <View style={[{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: spacing.md,
-            borderRadius: borderRadius.lg,
-            backgroundColor: glass.light?.backgroundColor || 'rgba(255,255,255,0.06)',
-            borderWidth: 0,
-            borderColor: 'transparent',
-            overflow: 'hidden',
-        }, style]}>
-            {children}
-        </View>
-    );
-}
 
 import { socialAuth } from '../src/services/socialAuth';
 

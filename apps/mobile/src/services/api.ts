@@ -64,7 +64,9 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Don't try token refresh on auth endpoints — they handle their own auth
+        const isAuthRoute = originalRequest.url?.startsWith('/auth/');
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });

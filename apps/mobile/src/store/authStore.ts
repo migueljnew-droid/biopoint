@@ -47,6 +47,9 @@ export const useAuthStore = create<AuthState>()(
             login: async (email, password) => {
                 set({ isLoading: true, error: null });
                 try {
+                    // Clear any stale tokens so the request interceptor doesn't
+                    // attach an expired Authorization header to the login request
+                    await clearTokens();
                     const response = await api.post('/auth/login', { email, password });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);
@@ -69,6 +72,7 @@ export const useAuthStore = create<AuthState>()(
             loginWithGoogle: async (idToken: string) => {
                 set({ isLoading: true, error: null });
                 try {
+                    await clearTokens();
                     const response = await api.post('/auth/google', { idToken });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);
@@ -89,6 +93,7 @@ export const useAuthStore = create<AuthState>()(
             loginWithApple: async (identityToken: string, fullName?: { givenName?: string | null, familyName?: string | null }) => {
                 set({ isLoading: true, error: null });
                 try {
+                    await clearTokens();
                     const response = await api.post('/auth/apple', { identityToken, fullName });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);
@@ -109,6 +114,7 @@ export const useAuthStore = create<AuthState>()(
             register: async (email, password) => {
                 set({ isLoading: true, error: null });
                 try {
+                    await clearTokens();
                     const response = await api.post('/auth/register', { email, password });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);
