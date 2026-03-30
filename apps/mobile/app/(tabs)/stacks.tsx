@@ -12,6 +12,7 @@ import { ScreenWrapper, GlassView, AnimatedButton, GlassPicker, GlassAutocomplet
 import Animated, { LinearTransition, SlideInDown, SlideOutDown, FadeInDown } from 'react-native-reanimated';
 
 import { useSubscriptionStore } from '../../src/store/subscriptionStore';
+import { useAuthStore } from '../../src/store/authStore';
 import { scheduleItemReminders } from '../../src/services/notificationService';
 
 export default function StacksScreen() {
@@ -366,7 +367,11 @@ export default function StacksScreen() {
                         style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
                         onPress={() => {
                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            if (!isPremium && stacks.length >= 1) {
+                            // Premium check - admin emails always have access
+                            const adminEmails = ['migueljnew@gmail.com', 'booklouisgold@gmail.com'];
+                            const userEmail = useAuthStore.getState().user?.email?.toLowerCase();
+                            const hasAccess = isPremium || (userEmail && adminEmails.includes(userEmail));
+                            if (!hasAccess && stacks.length >= 1) {
                                 Alert.alert(
                                     'Premium Required',
                                     'Free users can only create 1 stack. Upgrade to BioPoint+ for unlimited stacks.',
