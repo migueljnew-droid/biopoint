@@ -180,9 +180,8 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
             const response = await api.post('/nutrition/analyze-photo', { imageBase64, mimeType });
             set({ analysisResult: response.data, isAnalyzing: false });
         } catch (error: any) {
-            const msg = error.response?.data?.message || 'Failed to analyze photo';
-            set({ error: msg, isAnalyzing: false });
-            Alert.alert('Error', msg);
+            set({ error: null, isAnalyzing: false });
+            Alert.alert('Coming Soon', 'AI meal analysis is launching soon. For now, add your meals manually with the form below.');
         }
     },
 
