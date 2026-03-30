@@ -66,17 +66,6 @@ export async function communityRoutes(app: FastifyInstance) {
             }
         }
 
-        // 3. Populate with "Global Elite" if empty (Cold Start)
-        if (leaderboard.length < 5) {
-            const bots = [
-                { id: 'elite1', name: 'Atlas', score: 99, trend: '+2', avatar: 'A', elite: true, isUser: false },
-                { id: 'elite2', name: 'Nova', score: 98, trend: '+1', avatar: 'N', elite: true, isUser: false },
-                { id: 'elite3', name: 'Cyber', score: 96, trend: '+3', avatar: 'C', elite: true, isUser: false },
-            ];
-            // Filter out bots that clash with real IDs (unlikely) and add
-            leaderboard = [...bots, ...leaderboard];
-        }
-
         // Sort
         return leaderboard.sort((a, b) => b.score - a.score);
     });

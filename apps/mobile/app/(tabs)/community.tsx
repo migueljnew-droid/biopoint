@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, RefreshControl, Alert } from 'react-
 import { colors, spacing, typography, borderRadius } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { ScreenWrapper, GlassView, CreateGroupModal, Leaderboard } from '../../src/components';
 import Animated, { LinearTransition, FadeInDown } from 'react-native-reanimated';
 
@@ -111,6 +112,7 @@ export default function CommunityScreen() {
                         )}
                         {groups.map((group, index) => (
                             <Animated.View key={group.id} entering={FadeInDown.delay(index * 100)} layout={LinearTransition}>
+                                <Pressable onPress={() => router.push({ pathname: '/community/group', params: { id: group.id, name: group.name } })}>
                                 <GlassView style={styles.groupCard} variant="medium" borderRadius={borderRadius.lg}>
                                     <View style={styles.groupIcon}>
                                         <Ionicons name="people" size={24} color={colors.primary} />
@@ -128,6 +130,7 @@ export default function CommunityScreen() {
                                         </Pressable>
                                     )}
                                 </GlassView>
+                                </Pressable>
                             </Animated.View>
                         ))}
                     </>
@@ -166,6 +169,7 @@ export default function CommunityScreen() {
                                         <Text style={styles.forkButtonText}>Use This Stack</Text>
                                     </Pressable>
                                 </GlassView>
+                                </Pressable>
                             </Animated.View>
                         ))}
                     </>
