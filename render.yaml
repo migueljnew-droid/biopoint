@@ -11,7 +11,9 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false
+        value: "postgresql://postgres:q2Ec168dvPFJTPPC@db.iygpnvihbhjkwbkkkwvq.supabase.co:5432/postgres"
+      - key: DIRECT_URL
+        value: "postgresql://postgres:q2Ec168dvPFJTPPC@db.iygpnvihbhjkwbkkkwvq.supabase.co:5432/postgres"
       - key: JWT_SECRET
         sync: false
       - key: JWT_ACCESS_EXPIRES
