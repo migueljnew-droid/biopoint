@@ -56,8 +56,10 @@ export const useAuthStore = create<AuthState>()(
                         isLoading: false,
                     });
                 } catch (error: any) {
+                    const msg = error.response?.data?.message || error.message || 'Login failed';
+                    console.error('Login error:', msg, error?.response?.status);
                     set({
-                        error: error.response?.data?.message || 'Login failed',
+                        error: msg,
                         isLoading: false,
                     });
                     throw error;

@@ -38,10 +38,13 @@ export default function LoginScreen() {
     const { login, loginWithGoogle, loginWithApple, isLoading, error, clearError } = useAuthStore();
 
     React.useEffect(() => {
-        socialAuth.google.configure({
-            webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Replace with actual ID
-            offlineAccess: true,
-        });
+        const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+        if (googleClientId) {
+            socialAuth.google.configure({
+                webClientId: googleClientId,
+                offlineAccess: true,
+            });
+        }
         clearError();
     }, []);
 
