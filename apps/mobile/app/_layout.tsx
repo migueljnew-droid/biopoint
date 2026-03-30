@@ -8,15 +8,17 @@ import { useEffect } from 'react';
 import * as SystemUI from 'expo-system-ui';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAuthStore } from '../src/store/authStore';
+import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { colors } from '../src/theme';
 import { requestPermissions } from '../src/services/notificationService';
 
 export default function RootLayout() {
     const checkAuth = useAuthStore((s) => s.checkAuth);
+    const initSubscription = useSubscriptionStore((s) => s.initialize);
 
     useEffect(() => {
         SystemUI.setBackgroundColorAsync(colors.background);
-        checkAuth();
+        checkAuth().then(() => initSubscription());
         requestPermissions();
     }, []);
 
