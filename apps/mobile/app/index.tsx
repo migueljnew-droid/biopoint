@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
         height: 100,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     title: {
         fontSize: 48,
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     },
     secondaryButton: {
         backgroundColor: colors.glass.light, // Fallback if gradient overrides not used correctly in AnimatedButton props logic, but explicit variant works
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         shadowOpacity: 0,
     }
 });

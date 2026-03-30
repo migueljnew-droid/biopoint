@@ -20,8 +20,8 @@ function InputContainer({ children, style }: { children: React.ReactNode; style?
             paddingHorizontal: spacing.md,
             borderRadius: borderRadius.lg,
             backgroundColor: glass.light?.backgroundColor || 'rgba(255,255,255,0.06)',
-            borderWidth: 1,
-            borderColor: glass.light?.borderColor || 'rgba(255,255,255,0.1)',
+            borderWidth: 0,
+            borderColor: 'transparent',
             overflow: 'hidden',
         }, style]}>
             {children}
@@ -245,8 +245,8 @@ const styles = StyleSheet.create({
         height: 44,
         borderRadius: borderRadius.full,
         backgroundColor: colors.glass.light,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.lg,
@@ -299,8 +299,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacing.md,
         borderRadius: borderRadius.lg,
         backgroundColor: 'rgba(255,255,255,0.06)',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     inputIcon: {
         marginRight: spacing.sm,

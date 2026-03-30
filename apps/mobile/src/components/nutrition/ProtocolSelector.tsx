@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: spacing.xs,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     cardSelected: {
         borderColor: colors.primary,
-        borderWidth: 2,
+        borderWidth: 2,  // keep selected state visible
     },
     name: {
         fontSize: 13,

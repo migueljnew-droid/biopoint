@@ -130,13 +130,13 @@ const styles = StyleSheet.create({
     },
     title: {
         ...typography.h3,
-        color: colors.textPrimary,
+        color: '#FFFFFF',
         marginBottom: spacing.xs,
         letterSpacing: 1,
     },
     subtitle: {
         ...typography.body,
-        color: colors.textSecondary,
+        color: 'rgba(255,255,255,0.6)',
         marginBottom: spacing.xxl * 2,
     },
     circleContainer: {
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 100,
         backgroundColor: 'rgba(99, 102, 241, 0.2)',
-        borderWidth: 1,
-        borderColor: colors.primary,
+        borderWidth: 0,
+        borderColor: 'transparent',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
@@ -178,12 +178,12 @@ const styles = StyleSheet.create({
     statsRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.3)',
+        backgroundColor: 'rgba(0,0,0,0.6)',
         paddingHorizontal: spacing.xl,
         paddingVertical: spacing.lg,
         borderRadius: borderRadius.xl,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     statItem: {
         alignItems: 'center',
@@ -192,16 +192,16 @@ const styles = StyleSheet.create({
     },
     statValue: {
         ...typography.h4,
-        color: colors.textPrimary,
+        color: '#FFFFFF',
     },
     statLabel: {
         ...typography.caption,
-        color: colors.textSecondary,
+        color: 'rgba(255,255,255,0.7)',
     },
     divider: {
         width: 1,
         height: 40,
-        backgroundColor: colors.glass.border,
+        backgroundColor: 'rgba(255,255,255,0.15)',
         marginHorizontal: spacing.xl,
     }
 });

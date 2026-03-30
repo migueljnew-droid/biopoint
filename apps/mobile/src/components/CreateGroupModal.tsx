@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
     },
     input: {
         backgroundColor: colors.glass.light,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         borderRadius: borderRadius.md,
         padding: spacing.md,
         color: colors.textPrimary,

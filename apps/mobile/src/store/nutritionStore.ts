@@ -76,6 +76,7 @@ interface NutritionState {
     }) => Promise<void>;
     updateMeal: (id: string, data: Partial<MealEntry>) => Promise<void>;
     deleteMeal: (id: string) => Promise<void>;
+    analyzeText: (foodDescription: string) => Promise<void>;
     analyzePhoto: (imageBase64: string, mimeType?: string) => Promise<void>;
     saveMealFromAnalysis: (meal: {
         date: string;
@@ -157,6 +158,18 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
         } catch (error: any) {
             const msg = error.response?.data?.message || 'Failed to delete meal';
             set({ error: msg, isLoading: false });
+            Alert.alert('Error', msg);
+        }
+    },
+
+    analyzeText: async (foodDescription: string) => {
+        set({ isAnalyzing: true, error: null, analysisResult: null });
+        try {
+            const response = await api.post('/nutrition/analyze-text', { description: foodDescription });
+            set({ analysisResult: response.data, isAnalyzing: false });
+        } catch (error: any) {
+            const msg = error.response?.data?.message || 'Failed to analyze food';
+            set({ error: msg, isAnalyzing: false });
             Alert.alert('Error', msg);
         }
     },

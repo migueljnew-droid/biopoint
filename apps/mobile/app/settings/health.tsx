@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     section: { padding: spacing.lg, marginBottom: spacing.xl },
     inputGroup: { marginBottom: spacing.lg },
     label: { ...typography.label, color: colors.textSecondary, marginBottom: spacing.xs },
-    input: { backgroundColor: colors.glass.light, borderWidth: 1, borderColor: colors.glass.border, borderRadius: borderRadius.md, padding: spacing.md, color: colors.textPrimary, ...typography.body },
+    input: { backgroundColor: colors.glass.light, borderWidth: 0, borderColor: 'transparent', borderRadius: borderRadius.md, padding: spacing.md, color: colors.textPrimary, ...typography.body },
     textArea: { minHeight: 80 },
     backButton: {},
 });

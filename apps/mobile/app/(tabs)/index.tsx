@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
         padding: spacing.xl,
         marginBottom: spacing.xl,
         alignItems: 'center',
-        borderWidth: 1,
+        borderWidth: 0,
     },
     scoreHeader: {
         flexDirection: 'row',
@@ -464,8 +464,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: spacing.xs,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     actionIcon: {
         marginBottom: 4,
@@ -485,8 +485,8 @@ const styles = StyleSheet.create({
     modalContent: {
         height: '85%',
         padding: spacing.lg,
-        borderWidth: 1,
-        borderColor: colors.glass.borderLight,
+        borderWidth: 0,
+        borderColor: 'transparent',
         backgroundColor: colors.backgroundSecondary, // Fallback opacity
     },
     modalHandle: {
@@ -568,8 +568,8 @@ const styles = StyleSheet.create({
         padding: spacing.md,
         marginBottom: spacing.md,
         gap: spacing.md,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     miniCardIcon: {
         width: 40,
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: spacing.md,
         gap: spacing.md,
-        borderWidth: 1,
+        borderWidth: 0,
         borderColor: colors.primary + '40', // Low opacity primary
     },
     oracleIconContainer: {

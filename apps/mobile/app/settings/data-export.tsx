@@ -259,8 +259,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
         borderRadius: borderRadius.md,
-        borderWidth: 1,
-        borderColor: colors.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         backgroundColor: colors.surface,
     },
     formatButtonSelected: {
@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingVertical: spacing.md,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border + '40',
+        borderBottomWidth: 0,
+        borderBottomColor: 'transparent',
     },
     categoryInfo: {
         flex: 1,

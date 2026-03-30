@@ -186,8 +186,8 @@ const styles = StyleSheet.create({
         padding: spacing.xl,
         alignItems: 'center',
         marginBottom: spacing.xl,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     protocolName: {
         ...typography.overline,
@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
     zoneCard: {
         padding: spacing.md,
         marginBottom: spacing.xl,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     streakCard: {
         flexDirection: 'row',
@@ -226,8 +226,8 @@ const styles = StyleSheet.create({
         padding: spacing.lg,
         gap: spacing.md,
         marginBottom: spacing.xl,
-        borderWidth: 1,
-        borderColor: '#f59e0b30',
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     streakNumber: {
         fontSize: 28,
@@ -258,8 +258,8 @@ const styles = StyleSheet.create({
     },
     statsCard: {
         padding: spacing.lg,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     statsRow: {
         flexDirection: 'row',

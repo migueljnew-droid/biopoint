@@ -18,7 +18,7 @@ interface AddMealModalProps {
 const MEAL_TYPES = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'] as const;
 
 export function AddMealModal({ visible, onClose, onShowAnalysis }: AddMealModalProps) {
-    const { addMeal, analyzePhoto, isAnalyzing, selectedDate } = useNutritionStore();
+    const { addMeal, analyzePhoto, analyzeText, isAnalyzing, selectedDate } = useNutritionStore();
     const [mealType, setMealType] = useState<typeof MEAL_TYPES[number]>('LUNCH');
     const [name, setName] = useState('');
     const [calories, setCalories] = useState('');
@@ -156,6 +156,21 @@ export function AddMealModal({ visible, onClose, onShowAnalysis }: AddMealModalP
                             </View>
 
                             <InputField label="Food Name" value={name} onChange={setName} placeholder="e.g. Grilled Chicken Salad" />
+                            {name.trim().length > 2 && !calories && (
+                                <Pressable
+                                    style={styles.aiEstimateButton}
+                                    onPress={() => {
+                                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                        onClose();
+                                        onShowAnalysis();
+                                        analyzeText(name.trim());
+                                    }}
+                                    accessibilityRole="button"
+                                >
+                                    <Ionicons name="sparkles" size={16} color={colors.primary} />
+                                    <Text style={styles.aiEstimateText}>AI Estimate Calories & Macros</Text>
+                                </Pressable>
+                            )}
                             <InputField label="Calories" value={calories} onChange={setCalories} placeholder="0" keyboardType="numeric" />
                             <InputField label="Protein (g)" value={proteinG} onChange={setProteinG} placeholder="0" keyboardType="numeric" />
                             <InputField label="Carbs (g)" value={carbsG} onChange={setCarbsG} placeholder="0" keyboardType="numeric" />
@@ -203,8 +218,8 @@ const styles = StyleSheet.create({
     content: {
         height: '90%',
         padding: spacing.lg,
-        borderWidth: 1,
-        borderColor: colors.glass.borderLight,
+        borderWidth: 0,
+        borderColor: 'transparent',
         backgroundColor: colors.backgroundSecondary,
     },
     handle: {
@@ -225,7 +240,7 @@ const styles = StyleSheet.create({
         paddingVertical: spacing.lg,
         backgroundColor: 'rgba(59,130,246,0.08)',
         borderRadius: borderRadius.xl,
-        borderWidth: 1, borderColor: colors.primary + '30',
+        borderWidth: 0, borderColor: 'transparent',
     },
     photoLabel: {
         fontSize: 13, color: colors.primary, fontWeight: '600', marginTop: 4,
@@ -247,7 +262,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 14, paddingVertical: 8,
         borderRadius: borderRadius.full,
         backgroundColor: 'rgba(255,255,255,0.04)',
-        borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+        borderWidth: 0, borderColor: 'transparent',
     },
     typeChipActive: {
         backgroundColor: colors.primary + '15',
@@ -259,9 +274,25 @@ const styles = StyleSheet.create({
     inputLabel: {
         ...typography.label, color: colors.textSecondary, marginBottom: spacing.xs, marginLeft: 4,
     },
-    inputWrapper: { borderWidth: 1, borderColor: colors.glass.border },
+    inputWrapper: { borderWidth: 0, borderColor: 'transparent' },
     input: {
         padding: spacing.md, color: colors.textPrimary, fontSize: 15,
+    },
+    aiEstimateButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.md,
+        borderRadius: borderRadius.lg,
+        backgroundColor: 'rgba(99,102,241,0.1)',
+        marginBottom: spacing.sm,
+    },
+    aiEstimateText: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: colors.primary,
     },
     footer: {
         paddingTop: spacing.md,

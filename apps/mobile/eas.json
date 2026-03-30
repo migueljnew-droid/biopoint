@@ -30,7 +30,10 @@
       "ios": {
         "appleId": "migueljnew@gmail.com",
         "ascAppId": "6761347601",
-        "appleTeamId": "HCF6Q3QGV2"
+        "appleTeamId": "2N5WMMZMGW",
+        "ascApiKeyPath": "/Users/GRAMMY/Downloads/AuthKey_HCF6Q3QGV2.p8",
+        "ascApiKeyId": "HCF6Q3QGV2",
+        "ascApiKeyIssuerId": "323b433a-b7ed-4d71-bdb8-0e915764b206"
       }
     }
   }

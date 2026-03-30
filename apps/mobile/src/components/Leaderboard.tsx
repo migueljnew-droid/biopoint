@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
         gap: spacing.xs,
     },
     userCard: {
-        borderColor: colors.primary,
-        borderWidth: 1,
+        borderColor: 'transparent',
+        borderWidth: 0,
     },
     avatar: {
         width: 40,
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
     },
     goldAvatar: {
         backgroundColor: 'rgba(255, 215, 0, 0.1)',
-        borderWidth: 1,
-        borderColor: '#FFD700',
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     avatarText: {
         ...typography.h4,

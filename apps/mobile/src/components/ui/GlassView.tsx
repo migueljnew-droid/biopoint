@@ -29,8 +29,8 @@ export function GlassView({
                 {
                     borderRadius: radius,
                     backgroundColor: 'transparent',
-                    borderColor: glassStyle.borderColor,
-                    borderWidth: glassStyle.borderWidth,
+                    borderColor: 'transparent',
+                    borderWidth: 0,
                 },
                 style,
             ]}

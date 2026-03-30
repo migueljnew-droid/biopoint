@@ -443,32 +443,32 @@ export const glass = {
     // -------------------------------------------------------------------------
     ultraLight: {
         backgroundColor: 'rgba(255, 255, 255, 0.4)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.04)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     } as ViewStyle,
 
     light: {
         backgroundColor: 'rgba(255, 255, 255, 0.6)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.06)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     } as ViewStyle,
 
     medium: {
         backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.08)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     } as ViewStyle,
 
     heavy: {
         backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.1)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     } as ViewStyle,
 
     solid: {
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.12)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     } as ViewStyle,
 
     // -------------------------------------------------------------------------
@@ -476,14 +476,14 @@ export const glass = {
     // -------------------------------------------------------------------------
     frosted: {
         backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.06)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     } as ViewStyle,
 
     frostedDark: {
         backgroundColor: 'rgba(248, 250, 252, 0.95)',
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.08)',
+        borderWidth: 0,
+        borderColor: 'transparent',
     } as ViewStyle,
 
     // -------------------------------------------------------------------------

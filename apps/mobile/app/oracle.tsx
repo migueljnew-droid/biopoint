@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.md,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.glass.border,
+        borderBottomWidth: 0,
+        borderBottomColor: 'transparent',
     },
     backButton: {},
     iconButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
@@ -180,8 +180,8 @@ const styles = StyleSheet.create({
     },
     botContent: {
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         borderBottomLeftRadius: 4,
     },
 
@@ -194,8 +194,8 @@ const styles = StyleSheet.create({
         padding: spacing.md,
         paddingBottom: Platform.OS === 'ios' ? 40 : spacing.md, // Manual bottom padding
         backgroundColor: colors.backgroundSecondary, // Solid background to ensure visibility
-        borderTopWidth: 1,
-        borderTopColor: colors.glass.border,
+        borderTopWidth: 0,
+        borderTopColor: 'transparent',
     },
     inputWrapper: {
         flexDirection: 'row',

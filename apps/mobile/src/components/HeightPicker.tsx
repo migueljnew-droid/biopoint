@@ -103,8 +103,8 @@ export function HeightPicker({ value, onChange }: HeightPickerProps) {
 const styles = StyleSheet.create({
     input: {
         backgroundColor: colors.backgroundCard,
-        borderWidth: 1,
-        borderColor: colors.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         borderRadius: borderRadius.md,
         padding: spacing.md,
     },
@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: spacing.md,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
+        borderBottomWidth: 0,
+        borderBottomColor: 'transparent',
     },
     modalTitle: {
         ...typography.h4,

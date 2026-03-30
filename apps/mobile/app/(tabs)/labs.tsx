@@ -1,21 +1,54 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { colors, spacing, typography, borderRadius } from '../../src/theme';
-import { api } from '../../src/services/api';
-import { labsService, AnalysisResult } from '../../src/services/labs';
 import { Ionicons } from '@expo/vector-icons';
-import { Modal, ActivityIndicator, Dimensions } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
-import { LineChart } from 'react-native-chart-kit';
 import { ScreenWrapper, GlassView } from '../../src/components';
-import Animated, { LinearTransition, SlideInDown, SlideOutDown, FadeInDown } from 'react-native-reanimated';
-import { useSubscriptionStore } from '../../src/store/subscriptionStore';
-import { router } from 'expo-router';
 
-interface LabReport { id: string; filename: string; uploadedAt: string; markers: { id: string; name: string; value: number; unit: string; refRangeLow: number | null; refRangeHigh: number | null; isInRange: boolean | null }[] }
-
+// Labs is gated as Coming Soon for v1 launch
 export default function LabsScreen() {
+    return (
+        <ScreenWrapper>
+            <View style={comingSoonStyles.container}>
+                <View style={comingSoonStyles.iconWrap}>
+                    <Ionicons name="flask" size={64} color={colors.primary} />
+                </View>
+                <Text style={comingSoonStyles.title}>AI Blood Work Analysis</Text>
+                <Text style={comingSoonStyles.subtitle}>Coming Soon</Text>
+                <Text style={comingSoonStyles.description}>
+                    Upload your lab results and get AI-powered insights, biomarker tracking, and personalized recommendations from your blood work.
+                </Text>
+                <View style={comingSoonStyles.features}>
+                    {['AI Biomarker Analysis', 'Trend Tracking Over Time', 'Personalized Recommendations', 'Practitioner Reports'].map((f, i) => (
+                        <View key={i} style={comingSoonStyles.featureRow}>
+                            <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+                            <Text style={comingSoonStyles.featureText}>{f}</Text>
+                        </View>
+                    ))}
+                </View>
+                <View style={comingSoonStyles.badge}>
+                    <Ionicons name="notifications-outline" size={16} color={colors.primary} />
+                    <Text style={comingSoonStyles.badgeText}>We'll notify you when it's ready</Text>
+                </View>
+            </View>
+        </ScreenWrapper>
+    );
+}
+
+const comingSoonStyles = StyleSheet.create({
+    container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
+    iconWrap: { width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(79, 70, 229, 0.08)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.xl },
+    title: { ...typography.h2, color: colors.textPrimary, marginBottom: spacing.xs, textAlign: 'center' },
+    subtitle: { fontSize: 18, fontWeight: '600', color: colors.primary, marginBottom: spacing.lg, letterSpacing: 1 },
+    description: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.xl, lineHeight: 22 },
+    features: { gap: spacing.md, width: '100%', marginBottom: spacing.xl },
+    featureRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+    featureText: { ...typography.body, color: colors.textPrimary },
+    badge: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderRadius: borderRadius.full, backgroundColor: 'rgba(79, 70, 229, 0.08)' },
+    badgeText: { ...typography.bodySmall, color: colors.primary, fontWeight: '500' },
+});
+
+// Keep original export name for type compatibility
+function LabsScreenOriginal() {
     const { isPremium } = useSubscriptionStore();
     const [labs, setLabs] = useState<LabReport[]>([]);
     const [isLoading, setIsLoading] = useState(false);

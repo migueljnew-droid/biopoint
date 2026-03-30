@@ -304,8 +304,8 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     avatarText: {
         fontSize: 24,
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: colors.backgroundCard,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     profileInfo: {
         flex: 1,
@@ -357,8 +357,8 @@ const styles = StyleSheet.create({
     },
     premiumContent: {
         padding: spacing.lg,
-        borderWidth: 1,
-        borderColor: 'rgba(234, 179, 8, 0.3)', // Gold-ish border
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     premiumHeader: {
         flexDirection: 'row',

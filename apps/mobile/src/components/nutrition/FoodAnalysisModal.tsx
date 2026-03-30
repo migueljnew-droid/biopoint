@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     },
     content: {
         height: '85%', padding: spacing.lg,
-        borderWidth: 1, borderColor: colors.glass.borderLight, backgroundColor: colors.backgroundSecondary,
+        borderWidth: 0, borderColor: 'transparent', backgroundColor: colors.backgroundSecondary,
     },
     handle: {
         width: 40, height: 4, backgroundColor: 'rgba(255,255,255,0.2)',
@@ -291,20 +291,20 @@ const styles = StyleSheet.create({
     },
     typeChip: {
         paddingHorizontal: 14, paddingVertical: 8, borderRadius: borderRadius.full,
-        backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+        backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 0, borderColor: 'transparent',
     },
     typeChipActive: { backgroundColor: colors.primary + '15', borderColor: colors.primary },
     typeText: { fontSize: 13, color: colors.textMuted, fontWeight: '500' },
     typeTextActive: { color: colors.primary, fontWeight: '700' },
     fieldGroup: { marginBottom: spacing.md },
     fieldLabel: { ...typography.label, color: colors.textSecondary, marginBottom: spacing.xs, marginLeft: 4 },
-    fieldWrapper: { borderWidth: 1, borderColor: colors.glass.border },
+    fieldWrapper: { borderWidth: 0, borderColor: 'transparent' },
     fieldInput: { padding: spacing.md, color: colors.textPrimary, fontSize: 15 },
     itemsSection: { marginTop: spacing.md },
     itemsTitle: { fontSize: 14, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.sm },
     itemRow: {
         flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6,
-        borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)',
+        borderBottomWidth: 0, borderBottomColor: 'transparent',
     },
     itemName: { fontSize: 13, color: colors.textSecondary },
     itemCal: { fontSize: 13, color: colors.textMuted },

@@ -119,8 +119,8 @@ function GlassField({
             ? colors.primary
             : error
                 ? colors.error
-                : colors.glass.border,
-        borderWidth: borderAnim.value === 1 ? 1.5 : 1,
+                : 'transparent',
+        borderWidth: error ? 1 : 0,
     }));
 
     return (
@@ -546,8 +546,8 @@ export default function CalculatorScreen() {
                                 </View>
 
                                 <Animated.View style={[styles.inputWrapper, {
-                                    borderColor: errors.desiredDose ? colors.error : colors.glass.border,
-                                    borderWidth: 1,
+                                    borderColor: errors.desiredDose ? colors.error : 'transparent',
+                                    borderWidth: errors.desiredDose ? 1 : 0,
                                 }]}>
                                     <TextInput
                                         style={styles.input}
@@ -792,8 +792,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: colors.glass.light,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         borderRadius: borderRadius.lg,
         overflow: 'hidden',
     },
@@ -811,8 +811,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
         backgroundColor: colors.glass.medium,
-        borderLeftWidth: 1,
-        borderLeftColor: colors.glass.border,
+        borderLeftWidth: 0,
+        borderLeftColor: 'transparent',
         minWidth: 52,
         alignItems: 'center',
     },
@@ -875,8 +875,8 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: borderRadius.full,
         backgroundColor: colors.glass.light,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         overflow: 'hidden',
         minWidth: 38,
         alignItems: 'center',
@@ -910,8 +910,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacing.sm,
         borderRadius: borderRadius.lg,
         backgroundColor: colors.glass.light,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         alignItems: 'center',
         overflow: 'hidden',
     },
@@ -975,8 +975,8 @@ const styles = StyleSheet.create({
         height: 36,
         borderRadius: borderRadius.md,
         backgroundColor: colors.glassColored.primary,
-        borderWidth: 1,
-        borderColor: colors.glassColored.primaryBorder,
+        borderWidth: 0,
+        borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -1014,8 +1014,8 @@ const styles = StyleSheet.create({
         gap: spacing.xs,
         marginTop: spacing.md,
         paddingTop: spacing.md,
-        borderTopWidth: 1,
-        borderTopColor: colors.glass.border,
+        borderTopWidth: 0,
+        borderTopColor: 'transparent',
     },
     calloutText: {
         ...typography.caption,
@@ -1081,8 +1081,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'flex-start',
         paddingVertical: spacing.sm,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.glass.border,
+        borderBottomWidth: 0,
+        borderBottomColor: 'transparent',
         gap: spacing.sm,
     },
     referenceLabel: {

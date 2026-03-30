@@ -9,6 +9,7 @@ import { RegisterSchema } from '@biopoint/shared';
 import { colors, spacing, typography, borderRadius, gradients, shadows } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { ScreenWrapper, GlassView, AnimatedButton, GradientText } from '../src/components/ui';
+import { socialAuth } from '../src/services/socialAuth';
 
 export default function RegisterScreen() {
     const [email, setEmail] = useState('');
@@ -16,7 +17,35 @@ export default function RegisterScreen() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
-    const { register, isLoading, error, clearError } = useAuthStore();
+    const { register, loginWithGoogle, loginWithApple, isLoading, error, clearError } = useAuthStore();
+
+    const handleGoogleSignUp = async () => {
+        try {
+            const userInfo = await socialAuth.google.signIn();
+            if (userInfo.idToken) {
+                await loginWithGoogle(userInfo.idToken);
+                router.replace('/(tabs)');
+            }
+        } catch (error: any) {
+            if (error.code !== 'SIGN_IN_CANCELLED') {
+                Alert.alert("Google Sign Up Error", error.message || "Unknown error");
+            }
+        }
+    };
+
+    const handleAppleSignUp = async () => {
+        try {
+            const credential = await socialAuth.apple.signIn();
+            if (credential.identityToken) {
+                await loginWithApple(credential.identityToken, credential.fullName || undefined);
+                router.replace('/(tabs)');
+            }
+        } catch (e: any) {
+            if (e.code !== 'ERR_REQUEST_CANCELED') {
+                Alert.alert("Apple Sign Up Error", e.message || "Unknown error");
+            }
+        }
+    };
 
     React.useEffect(() => {
         clearError();
@@ -41,26 +70,20 @@ export default function RegisterScreen() {
         }
     };
 
-    const InputField = ({ label, value, onChangeText, placeholder, icon, keyboardType, secureTextEntry, showToggle, field, index }: any) => {
-        const isFocused = focusedField === field;
+    const renderInputField = (label: string, value: string, onChangeText: (t: string) => void, placeholder: string, icon: string, field: string, options?: { keyboardType?: any; secureTextEntry?: boolean; showToggle?: boolean }) => {
         return (
-            <Animated.View entering={FadeInDown.delay(300 + (index * 100)).duration(400)} style={styles.inputGroup as any}>
+            <View style={styles.inputGroup as any}>
                 <Text style={styles.label}>{label}</Text>
-                <GlassView
-                    variant={isFocused ? "selected" : "light"}
-                    intensity={30}
-                    borderRadius={borderRadius.lg}
-                    style={[styles.inputContainer, isFocused && styles.inputContainerFocused]}
-                >
-                    <Ionicons name={icon} size={18} color={isFocused ? colors.primary : colors.textMuted} style={styles.inputIcon} />
+                <View style={styles.inputBox}>
+                    <Ionicons name={icon as any} size={18} color={colors.textMuted} style={styles.inputIcon} />
                     <TextInput
                         style={styles.input}
                         value={value}
                         onChangeText={onChangeText}
                         placeholder={placeholder}
                         placeholderTextColor={colors.textMuted}
-                        keyboardType={keyboardType}
-                        secureTextEntry={secureTextEntry && !showPassword}
+                        keyboardType={options?.keyboardType}
+                        secureTextEntry={options?.secureTextEntry && !showPassword}
                         autoCapitalize="none"
                         autoCorrect={false}
                         autoComplete={
@@ -73,16 +96,14 @@ export default function RegisterScreen() {
                                 field === 'password' || field === 'confirm' ? 'password' :
                                     'none'
                         }
-                        onFocus={() => setFocusedField(field)}
-                        onBlur={() => setFocusedField(null)}
                     />
-                    {showToggle && (
+                    {options?.showToggle && (
                         <Pressable style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
                             <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color={colors.textMuted} />
                         </Pressable>
                     )}
-                </GlassView>
-            </Animated.View>
+                </View>
+            </View>
         );
     };
 
@@ -120,39 +141,11 @@ export default function RegisterScreen() {
                     )}
 
                     <View style={styles.form}>
-                        <InputField
-                            index={0}
-                            label="Email"
-                            value={email}
-                            onChangeText={setEmail}
-                            placeholder="you@example.com"
-                            icon="mail-outline"
-                            keyboardType="email-address"
-                            field="email"
-                        />
-                        <InputField
-                            index={1}
-                            label="Password"
-                            value={password}
-                            onChangeText={setPassword}
-                            placeholder="Min. 6 characters"
-                            icon="lock-closed-outline"
-                            secureTextEntry
-                            showToggle
-                            field="password"
-                        />
-                        <InputField
-                            index={2}
-                            label="Confirm Password"
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
-                            placeholder="Repeat password"
-                            icon="shield-checkmark-outline"
-                            secureTextEntry
-                            field="confirm"
-                        />
+                        {renderInputField("Email", email, setEmail, "you@example.com", "mail-outline", "email", { keyboardType: "email-address" })}
+                        {renderInputField("Password", password, setPassword, "Min. 6 characters", "lock-closed-outline", "password", { secureTextEntry: true, showToggle: true })}
+                        {renderInputField("Confirm Password", confirmPassword, setConfirmPassword, "Repeat password", "shield-checkmark-outline", "confirm", { secureTextEntry: true })}
 
-                        <Animated.View entering={FadeInDown.delay(600).duration(400)}>
+                        <View>
                             <AnimatedButton
                                 title={isLoading ? "Creating Account..." : "Create Account"}
                                 onPress={handleRegister}
@@ -160,7 +153,31 @@ export default function RegisterScreen() {
                                 icon={!isLoading ? <Ionicons name="arrow-forward" size={18} color="#fff" /> : null}
                                 variant="primary"
                             />
-                        </Animated.View>
+                        </View>
+
+                        <View style={{ alignItems: 'center', gap: spacing.md, marginTop: spacing.sm }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, width: '100%' }}>
+                                <View style={{ height: 1, flex: 1, backgroundColor: colors.glass.border }} />
+                                <Text style={{ ...typography.caption, color: colors.textMuted }}>Or sign up with</Text>
+                                <View style={{ height: 1, flex: 1, backgroundColor: colors.glass.border }} />
+                            </View>
+
+                            <View style={{ flexDirection: 'row', gap: spacing.md, width: '100%' }}>
+                                <Pressable style={{ flex: 1 }} onPress={handleGoogleSignUp}>
+                                    <View style={styles.socialButton}>
+                                        <Ionicons name="logo-google" size={20} color={colors.textPrimary} />
+                                        <Text style={styles.socialButtonText}>Google</Text>
+                                    </View>
+                                </Pressable>
+
+                                <Pressable style={{ flex: 1 }} onPress={handleAppleSignUp}>
+                                    <View style={styles.socialButton}>
+                                        <Ionicons name="logo-apple" size={20} color={colors.textPrimary} />
+                                        <Text style={styles.socialButtonText}>Apple</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
+                        </View>
                     </View>
 
                     <Animated.View entering={FadeInUp.delay(700).duration(400)} style={styles.footer}>
@@ -188,8 +205,8 @@ const styles = StyleSheet.create({
         height: 44,
         borderRadius: borderRadius.full,
         backgroundColor: colors.glass.light,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.lg,
@@ -236,8 +253,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: spacing.md,
     },
+    inputBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: spacing.md,
+        borderRadius: borderRadius.lg,
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        borderWidth: 0,
+        borderColor: 'transparent',
+    },
     inputContainerFocused: {
-        backgroundColor: colors.primary, // Simplified since glassColored.primary.backgroundColor access is tricky if type mismatch
+        backgroundColor: colors.primary,
         borderColor: colors.primary,
         ...shadows.primaryGlow,
     },
@@ -267,5 +293,21 @@ const styles = StyleSheet.create({
         ...typography.body,
         color: colors.primary,
         fontWeight: '600',
+    },
+    socialButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        gap: spacing.sm,
+        borderRadius: borderRadius.lg,
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        borderWidth: 0,
+        borderColor: 'transparent',
+    },
+    socialButtonText: {
+        ...typography.bodySmall,
+        fontWeight: '600',
+        color: colors.textPrimary,
     },
 });

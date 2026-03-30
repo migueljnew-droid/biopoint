@@ -29,7 +29,7 @@ function AnimatedTabIcon({ name, color, focused }: { name: keyof typeof Ionicons
 
     return (
         <Animated.View style={[styles.iconContainer, focused && styles.activeIconContainer, animatedStyle]}>
-            <Ionicons name={name} size={24} color={color} />
+            <Ionicons name={name} size={22} color={color} />
         </Animated.View>
     );
 }
@@ -43,9 +43,9 @@ export default function TabLayout() {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    backgroundColor: 'rgba(17, 17, 24, 0.85)',
-                    borderTopWidth: 1,
-                    borderTopColor: colors.glass.border,
+                    backgroundColor: 'rgba(248, 250, 252, 0.95)',
+                    borderTopWidth: 0,
+                    borderTopColor: 'transparent',
                     paddingTop: 8,
                     height: Platform.OS === 'ios' ? 88 : 70,
                     ...Platform.select({
@@ -63,17 +63,17 @@ export default function TabLayout() {
                 tabBarActiveTintColor: colors.primary,
                 tabBarInactiveTintColor: colors.textMuted,
                 tabBarLabelStyle: {
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: '500',
                     marginBottom: Platform.OS === 'ios' ? 0 : 8,
                 },
                 tabBarIconStyle: {
-                    marginTop: 4,
+                    marginTop: 2,
                 },
                 headerStyle: {
                     backgroundColor: colors.background,
-                    borderBottomWidth: 1,
-                    borderBottomColor: colors.glass.border,
+                    borderBottomWidth: 0,
+                    borderBottomColor: 'transparent',
                     ...Platform.select({
                         ios: {
                             shadowColor: 'transparent',

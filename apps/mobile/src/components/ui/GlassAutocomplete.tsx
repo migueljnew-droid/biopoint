@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
     suggestionItem: {
         paddingVertical: spacing.sm,
         paddingHorizontal: spacing.md,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.glass.border,
+        borderBottomWidth: 0,
+        borderBottomColor: 'transparent',
     },
     suggestionPressed: {
         backgroundColor: 'rgba(255,255,255,0.1)',

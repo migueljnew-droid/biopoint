@@ -258,8 +258,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: spacing.lg,
         gap: spacing.lg,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     selectedPlan: {
         borderColor: colors.warning,
@@ -323,8 +323,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         paddingBottom: spacing.xl,
-        borderTopWidth: 1,
-        borderTopColor: colors.glass.border,
+        borderTopWidth: 0,
+        borderTopColor: 'transparent',
     },
     footerContent: {
         padding: spacing.lg,

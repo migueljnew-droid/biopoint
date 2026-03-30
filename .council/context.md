@@ -1,6 +1,6 @@
 # BioPoint - Project Context
 
-> **Generated**: 2026-03-22 06:59:13 UTC
+> **Generated**: 2026-03-30 02:59:42 UTC
 > **Council Protocol Version**: 1.0.0
 > **Connected to**: The Council (430 AI agents)
 
@@ -162,12 +162,14 @@ biopoint/
 │   │   ├── ARX_INFINITUM_BYLAWS.md
 │   │   ├── ARX_INFINITUM_INITIAL_RESOLUTIONS.md
 │   │   ├── babel.config.js
-│   │   ├── expo-env.d.ts
+│   │   ├── eas.json
 │   │   ├── jest.config.js
 │   │   ├── jest.setup.js
 │   │   ├── OKLA_DYNASTY_TRUST.md
 │   │   ├── package.json
 │   │   └── ... (4 more files)
+│   ├── web/
+│   │   ├── index.html
 ├── db/
 │   ├── prisma/
 │   │   ├── migrations/
@@ -330,7 +332,7 @@ biopoint/
 ├── DOCUMENTATION_REMEDIATION_ROADMAP.md
 ├── doppler.yaml
 ├── DOPPLER_IMPLEMENTATION_SUMMARY.md
-└── ... (41 more files)
+└── ... (42 more files)
 ```
 
 ## Project-Specific Notes
@@ -341,5 +343,5 @@ biopoint/
 
 ## Last Sync
 
-**Timestamp**: 2026-03-22 06:59:13 UTC
+**Timestamp**: 2026-03-30 02:59:42 UTC
 **Synced By**: Council Project Protocol

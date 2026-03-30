@@ -461,8 +461,8 @@ const styles = StyleSheet.create({
         marginBottom: spacing.xs,
     },
     input: {
-        borderWidth: 1,
-        borderColor: colors.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
         borderRadius: borderRadius.md,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,

@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
     segmentControl: {
         flexDirection: 'row',
         padding: 4,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
+        borderWidth: 0,
+        borderColor: 'transparent',
     },
     segmentTab: {
         flex: 1,

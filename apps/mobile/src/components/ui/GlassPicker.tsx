@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: spacing.md,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
+        borderBottomWidth: 0,
+        borderBottomColor: 'transparent',
     },
     modalTitle: {
         ...typography.h4,
