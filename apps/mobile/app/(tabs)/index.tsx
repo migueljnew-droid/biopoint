@@ -92,23 +92,16 @@ export default function DashboardScreen() {
 
     return (
         <ScreenWrapper withGradient={true}>
-            {/* Header Background Overlay - Decoupled from layout to cover massive logo */}
-            <GlassView
-                style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 80, zIndex: 50 }}
-                variant="heavy" // Heavier variant for better contrast
-                intensity={80}  // High intensity for "less translucent" request
-                tint="dark"
-                borderRadius={0}
-            />
+
 
             <View style={styles.header}>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start' }}>
                     <Image
                         source={require('../../assets/logo-new.png')}
-                        style={{ width: 500, height: 140, resizeMode: 'contain', marginTop: -60 }}
+                        style={{ width: 500, height: 140, resizeMode: 'contain' }}
                     />
                 </View>
-                <View style={{ position: 'absolute', right: 0, top: -40, flexDirection: 'row', gap: 8 }}>
+                <View style={{ position: 'absolute', right: 0, top: 0, flexDirection: 'row', gap: 8 }}>
                     <Pressable onPress={handleBioSync} style={styles.iconButton}>
                         <GlassView variant="light" borderRadius={borderRadius.full} style={styles.iconButtonInner}>
                             <Ionicons name="sync" size={20} color={colors.accent} />
