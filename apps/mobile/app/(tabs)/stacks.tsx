@@ -262,32 +262,24 @@ export default function StacksScreen() {
             timing: item.timing || ''
         });
 
-        // Populate selectedDays from item's scheduleDays if available
+        // Set days: use saved scheduleDays, or derive from frequency
         if (item.scheduleDays && item.scheduleDays.length > 0) {
             setSelectedDays(item.scheduleDays);
-        }
-
-        // Fetch existing reminders to populate selectedDays
-        try {
-            const reminders = await getReminders(item.id);
-            if (reminders && reminders.length > 0) {
-                // Flatten all days from all reminders and deduplicate
-                const allDays = new Set<number>();
-                reminders.forEach((r: any) => {
-                    if (Array.isArray(r.daysOfWeek)) {
-                        r.daysOfWeek.forEach((d: number) => allDays.add(d));
-                    }
-                });
-                if (allDays.size > 0) {
-                    setSelectedDays(Array.from(allDays).sort());
-                }
-            } else {
-                // Fallback to frequency defaults if no reminders exist
-                // logic already in useEffect, but might need manual trigger if frequency doesn't change
-                // forcing a re-evaluation or just leaving as is (defaults to all)
+        } else {
+            // No saved days — derive from frequency
+            switch (item.frequency) {
+                case 'Daily': case 'Morning': case 'Evening':
+                case 'Twice Daily': case '3x Daily':
+                    setSelectedDays([0, 1, 2, 3, 4, 5, 6]); break;
+                case 'Weekly':
+                    setSelectedDays([1]); break;
+                case 'Twice a week':
+                    setSelectedDays([2, 5]); break;
+                case 'Three times a week':
+                    setSelectedDays([2, 4, 6]); break;
+                default:
+                    setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
             }
-        } catch (e) {
-            console.log("Error fetching reminders", e);
         }
 
         setShowAddItemModal(true);
