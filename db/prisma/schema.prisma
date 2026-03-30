@@ -129,8 +129,9 @@ model StackItem {
   dose      Float
   unit      String
   route     String? // SubQ, IM, Oral, etc.
-  frequency String  // Daily, 2x/week, etc.
-  timing    String? // AM, PM, With food, etc.
+  frequency    String  // Daily, 2x/week, etc.
+  scheduleDays Int[]   // Which days: 0=Sun,1=Mon,...6=Sat. Empty = every day.
+  timing       String? // AM, PM, With food, etc.
   cycleJson Json?   // {daysOn: 5, daysOff: 2}
   notes     String?
   notes_encrypted String?

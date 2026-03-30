@@ -136,6 +136,7 @@ export default function StacksScreen() {
                     dose: doseVal,
                     unit: itemData.unit,
                     frequency: itemData.frequency,
+                    scheduleDays: selectedDays,
                     route: itemData.route as any,
                     timing: itemData.timing || undefined
                 });
@@ -147,6 +148,7 @@ export default function StacksScreen() {
                     dose: doseVal,
                     unit: itemData.unit,
                     frequency: itemData.frequency,
+                    scheduleDays: selectedDays,
                     route: itemData.route as any,
                     timing: itemData.timing || undefined,
                     cycleJson: undefined,
@@ -259,6 +261,11 @@ export default function StacksScreen() {
             route: item.route || 'Oral',
             timing: item.timing || ''
         });
+
+        // Populate selectedDays from item's scheduleDays if available
+        if (item.scheduleDays && item.scheduleDays.length > 0) {
+            setSelectedDays(item.scheduleDays);
+        }
 
         // Fetch existing reminders to populate selectedDays
         try {

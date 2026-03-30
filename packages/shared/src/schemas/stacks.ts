@@ -25,6 +25,7 @@ export const CreateStackItemSchema = z.object({
     unit: z.string().min(1).max(20),
     route: z.enum(['SubQ', 'IM', 'IV', 'Oral', 'Sublingual', 'Transdermal', 'Nasal', 'Other']).optional(),
     frequency: z.string().min(1).max(50),
+    scheduleDays: z.array(z.number().min(0).max(6)).optional(),
     timing: z.string().max(100).optional(),
     cycleJson: CycleJsonSchema,
     notes: z.string().max(1000).optional(),
@@ -55,6 +56,7 @@ export interface StackItemResponse {
     unit: string;
     route: string | null;
     frequency: string;
+    scheduleDays: number[];
     timing: string | null;
     cycleJson: { daysOn: number; daysOff: number } | null;
     notes: string | null;

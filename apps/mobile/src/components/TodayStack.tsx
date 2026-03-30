@@ -31,25 +31,32 @@ export function TodayStack() {
 
             let shouldShow = false;
             // today: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-            switch (item.frequency) {
-                case 'Daily': case 'Morning': case 'Evening':
-                case 'Twice Daily': case '3x Daily':
-                    shouldShow = true;
-                    break;
-                case 'Weekly':
-                    shouldShow = today === 1; // Monday
-                    break;
-                case 'Twice a week':
-                    shouldShow = today === 2 || today === 5; // Tue & Fri
-                    break;
-                case 'Three times a week':
-                    shouldShow = today === 2 || today === 4 || today === 6; // Tue, Thu, Sat
-                    break;
-                case 'As Needed':
-                    shouldShow = false;
-                    break;
-                default:
-                    shouldShow = false; // Unknown frequency = don't show (was true, causing everything to show)
+
+            // If user picked specific days, use those
+            if (item.scheduleDays && item.scheduleDays.length > 0) {
+                shouldShow = item.scheduleDays.includes(today);
+            } else {
+                // Fall back to frequency-based defaults
+                switch (item.frequency) {
+                    case 'Daily': case 'Morning': case 'Evening':
+                    case 'Twice Daily': case '3x Daily':
+                        shouldShow = true;
+                        break;
+                    case 'Weekly':
+                        shouldShow = today === 1;
+                        break;
+                    case 'Twice a week':
+                        shouldShow = today === 2 || today === 5;
+                        break;
+                    case 'Three times a week':
+                        shouldShow = today === 2 || today === 4 || today === 6;
+                        break;
+                    case 'As Needed':
+                        shouldShow = false;
+                        break;
+                    default:
+                        shouldShow = false;
+                }
             }
 
             if (shouldShow) {
