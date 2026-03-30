@@ -49,7 +49,7 @@ export default function OnboardingScreen() {
         setIsLoading(true);
         try {
             await api.put('/profile/onboarding', {
-                sex,
+                ...(sex ? { sex } : {}),
                 heightCm: heightCm ? parseFloat(heightCm) : undefined,
                 baselineWeightKg: weightKg ? parseFloat(weightKg) : undefined,
                 goals,

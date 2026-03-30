@@ -38,7 +38,7 @@ export default function EditProfileScreen() {
     const handleSave = async () => {
         try {
             await updateProfile({
-                sex: formData.sex as any,
+                ...(formData.sex ? { sex: formData.sex as any } : {}),
                 heightCm: formData.heightCm ? parseFloat(formData.heightCm) : null,
                 baselineWeightKg: formData.baselineWeightKg ? parseFloat(formData.baselineWeightKg) : null,
                 goals: formData.goals,
