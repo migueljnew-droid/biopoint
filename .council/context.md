@@ -1,6 +1,6 @@
 # BioPoint - Project Context
 
-> **Generated**: 2026-03-30 05:24:26 UTC
+> **Generated**: 2026-03-30 12:54:06 UTC
 > **Council Protocol Version**: 1.0.0
 > **Connected to**: The Council (430 AI agents)
 
@@ -132,6 +132,7 @@ biopoint/
 │   ├── mobile/
 │   │   ├── app/
 │   │   │   ├── (tabs)/
+│   │   │   ├── community/
 │   │   │   ├── settings/
 │   │   │   ├── _layout.tsx
 │   │   │   ├── calculator.tsx
@@ -157,6 +158,8 @@ biopoint/
 │   │   │   ├── store/
 │   │   │   ├── theme/
 │   │   │   ├── utils/
+│   │   ├── targets/
+│   │   │   ├── widget/
 │   │   ├── app.json
 │   │   ├── ARX_INFINITUM_ARTICLES_OF_ORGANIZATION.md
 │   │   ├── ARX_INFINITUM_BYLAWS.md
@@ -343,5 +346,5 @@ biopoint/
 
 ## Last Sync
 
-**Timestamp**: 2026-03-30 05:24:26 UTC
+**Timestamp**: 2026-03-30 12:54:06 UTC
 **Synced By**: Council Project Protocol

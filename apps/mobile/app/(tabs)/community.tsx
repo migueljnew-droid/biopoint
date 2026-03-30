@@ -169,7 +169,6 @@ export default function CommunityScreen() {
                                         <Text style={styles.forkButtonText}>Use This Stack</Text>
                                     </Pressable>
                                 </GlassView>
-                                </Pressable>
                             </Animated.View>
                         ))}
                     </>
