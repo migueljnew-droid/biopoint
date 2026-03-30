@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     photoButton: {
         flex: 1, alignItems: 'center', justifyContent: 'center',
         paddingVertical: spacing.lg,
-        backgroundColor: 'rgba(59,130,246,0.08)',
+        backgroundColor: 'rgba(59,130,246,0.15)',
         borderRadius: borderRadius.xl,
         borderWidth: 0, borderColor: 'transparent',
     },
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     typeChip: {
         paddingHorizontal: 14, paddingVertical: 8,
         borderRadius: borderRadius.full,
-        backgroundColor: 'rgba(255,255,255,0.04)',
+        backgroundColor: 'rgba(255,255,255,0.06)',
         borderWidth: 0, borderColor: 'transparent',
     },
     typeChipActive: {
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
         paddingVertical: spacing.sm,
         paddingHorizontal: spacing.md,
         borderRadius: borderRadius.lg,
-        backgroundColor: 'rgba(99,102,241,0.1)',
+        backgroundColor: 'rgba(99,102,241,0.15)',
         marginBottom: spacing.sm,
     },
     aiEstimateText: {
