@@ -142,8 +142,8 @@ export default function PremiumScreen() {
                                         <Text style={styles.bestValueText}>BEST VALUE</Text>
                                     </View>
                                 </View>
-                                <Text style={styles.planPrice}>$83.99<Text style={styles.perText}>/yr</Text></Text>
-                                <Text style={styles.savings}>Save 30%</Text>
+                                <Text style={styles.planPrice}>$79.99<Text style={styles.perText}>/yr</Text></Text>
+                                <Text style={styles.savings}>Save 33%</Text>
                             </View>
                         </GlassView>
                     </Pressable>
