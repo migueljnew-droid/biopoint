@@ -141,9 +141,9 @@ export default function LoginScreen() {
                     )}
 
                     <View style={styles.form}>
-                        <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.inputGroup}>
+                        <View style={styles.inputGroup}>
                             <Text style={styles.label}>Email</Text>
-                            <InputContainer>
+                            <View style={styles.inputBox}>
                                 <Ionicons name="mail-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
@@ -156,12 +156,12 @@ export default function LoginScreen() {
                                     autoComplete="email"
                                     autoCorrect={false}
                                 />
-                            </InputContainer>
-                        </Animated.View>
+                            </View>
+                        </View>
 
-                        <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.inputGroup}>
+                        <View style={styles.inputGroup}>
                             <Text style={styles.label}>Password</Text>
-                            <InputContainer>
+                            <View style={styles.inputBox}>
                                 <Ionicons name="lock-closed-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
                                 <TextInput
                                     style={styles.input}
@@ -178,8 +178,8 @@ export default function LoginScreen() {
                                 <Pressable style={styles.eyeButton} onPress={() => setShowPassword(!showPassword)}>
                                     <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color={colors.textMuted} />
                                 </Pressable>
-                            </InputContainer>
-                        </Animated.View>
+                            </View>
+                        </View>
 
                         <Animated.View entering={FadeInDown.delay(500).duration(400)}>
                             <AnimatedButton
@@ -292,7 +292,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: spacing.md,
-        // GlassView handles background and border
+    },
+    inputBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: spacing.md,
+        borderRadius: borderRadius.lg,
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
     },
     inputIcon: {
         marginRight: spacing.sm,
