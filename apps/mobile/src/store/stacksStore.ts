@@ -9,6 +9,7 @@ interface StackItem {
     unit: string;
     route: string | null;
     frequency: string;
+    scheduleDays: number[];
     timing: string | null;
     cycleJson: { daysOn: number; daysOff: number } | null;
     notes: string | null;
@@ -20,6 +21,7 @@ export interface CreateStackItemInput {
     dose: number;
     unit: string;
     frequency: string;
+    scheduleDays?: number[];
     route?: string;
     timing?: string;
     cycleJson?: any;
@@ -46,6 +48,7 @@ interface StacksState {
     createStack: (data: { name: string; goal?: string }) => Promise<Stack>;
     addItem: (stackId: string, item: CreateStackItemInput) => Promise<StackItem>;
     updateItem: (stackId: string, itemId: string, item: Partial<CreateStackItemInput>) => Promise<StackItem>;
+    removeItem: (stackId: string, itemId: string) => Promise<void>;
     logCompliance: (stackItemId: string, notes?: string) => Promise<void>;
     addReminder: (itemId: string, time: string, daysOfWeek?: number[]) => Promise<void>;
     getReminders: (itemId: string) => Promise<any[]>;
@@ -111,6 +114,20 @@ export const useStacksStore = create<StacksState>((set) => ({
             return response.data;
         } catch (error: any) {
             set({ error: error.response?.data?.message || 'Failed to update item', isLoading: false });
+            throw error;
+        }
+    },
+
+    removeItem: async (stackId, itemId) => {
+        try {
+            await api.delete(`/stacks/${stackId}/items/${itemId}`);
+            set((state) => ({
+                stacks: state.stacks.map((s) =>
+                    s.id === stackId ? { ...s, items: s.items.filter(i => i.id !== itemId) } : s
+                ),
+            }));
+        } catch (error: any) {
+            set({ error: error.response?.data?.message || 'Failed to remove item' });
             throw error;
         }
     },

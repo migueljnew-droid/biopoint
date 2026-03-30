@@ -15,7 +15,7 @@ import { useSubscriptionStore } from '../../src/store/subscriptionStore';
 import { scheduleItemReminders } from '../../src/services/notificationService';
 
 export default function StacksScreen() {
-    const { stacks, isLoading, fetchStacks, createStack, addItem, updateItem, logCompliance, addReminder, getReminders } = useStacksStore();
+    const { stacks, isLoading, fetchStacks, createStack, addItem, updateItem, removeItem, logCompliance, addReminder, getReminders } = useStacksStore();
     const { isPremium } = useSubscriptionStore();
     const params = useLocalSearchParams<{
         prefill_name?: string;
@@ -570,6 +570,31 @@ export default function StacksScreen() {
                                 </View>
                             </ScrollView>
                             <AnimatedButton title={editingItemId ? 'Save Changes' : 'Add Item'} onPress={handleSaveItem} variant="primary" style={{ marginTop: spacing.md }} />
+                            {editingItemId && selectedStackId && (
+                                <Pressable
+                                    onPress={() => {
+                                        Alert.alert('Delete Item', 'Are you sure you want to remove this item from your stack?', [
+                                            { text: 'Cancel', style: 'cancel' },
+                                            {
+                                                text: 'Delete', style: 'destructive', onPress: async () => {
+                                                    try {
+                                                        await removeItem(selectedStackId, editingItemId);
+                                                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                                                        setShowAddItemModal(false);
+                                                        setEditingItemId(null);
+                                                        setItemData({ name: '', dose: '', unit: 'mg', frequency: 'Daily', route: 'Oral', timing: '' });
+                                                        setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
+                                                        fetchStacks();
+                                                    } catch { Alert.alert('Error', 'Failed to delete item'); }
+                                                }
+                                            }
+                                        ]);
+                                    }}
+                                    style={{ marginTop: spacing.sm, paddingVertical: spacing.md, alignItems: 'center' }}
+                                >
+                                    <Text style={{ color: colors.error, fontWeight: '600', fontSize: 15 }}>Delete Item</Text>
+                                </Pressable>
+                            )}
                         </GlassView>
                     </Animated.View>
                 </View>
