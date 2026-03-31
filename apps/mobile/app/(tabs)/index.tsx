@@ -155,19 +155,19 @@ export default function DashboardScreen() {
                 {/* Today's Stack Checklist */}
                 <TodayStack />
 
-                {/* The Oracle - Coming Soon */}
+                {/* The Oracle - AI Analysis */}
                 <Animated.View entering={FadeInDown.delay(100).springify()}>
-                    <Pressable onPress={() => Alert.alert('Coming Soon', 'The Oracle AI assistant is launching soon. Stay tuned!')} style={styles.oracleCard}>
+                    <Pressable onPress={() => router.push('/(tabs)/labs' as any)} style={styles.oracleCard}>
                         <GlassView variant="heavy" borderRadius={borderRadius.lg} style={styles.oracleContent}>
                             <View style={styles.oracleIconContainer}>
                                 <Ionicons name="sparkles" size={24} color={colors.primary} />
                             </View>
                             <View style={styles.oracleTextContainer}>
                                 <Text style={styles.oracleTitle}>The Oracle</Text>
-                                <Text style={styles.oracleDesc}>AI-Powered Analysis — Coming Soon</Text>
+                                <Text style={styles.oracleDesc}>AI-Powered Lab & Food Analysis</Text>
                             </View>
-                            <View style={{ backgroundColor: 'rgba(245,158,11,0.15)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
-                                <Text style={{ color: '#FBBF24', fontSize: 11, fontWeight: '600' }}>SOON</Text>
+                            <View style={{ backgroundColor: 'rgba(13, 148, 136, 0.2)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                                <Text style={{ color: '#22D3EE', fontSize: 11, fontWeight: '600' }}>LIVE</Text>
                             </View>
                         </GlassView>
                     </Pressable>
