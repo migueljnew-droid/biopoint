@@ -265,7 +265,7 @@ export async function stacksRoutes(app: FastifyInstance) {
         }
 
         const item = await prisma.stackItem.update({
-            where: { id: itemId },
+            where: { id: itemId, stackId: id },
             data: {
                 name: body.name,
                 dose: body.dose,
@@ -313,15 +313,23 @@ export async function stacksRoutes(app: FastifyInstance) {
             });
         }
 
-        await prisma.stackItem.delete({ where: { id: itemId } });
+        await prisma.stackItem.delete({ where: { id: itemId, stackId: id } });
 
         return { success: true };
     });
 
     // Log compliance event
-    app.post('/compliance', async (request) => {
+    app.post('/compliance', async (request, reply) => {
         const userId = request.userId;
         const body = ComplianceEventSchema.parse(request.body);
+
+        // Verify the stack item belongs to the user
+        const item = await prisma.stackItem.findFirst({
+            where: { id: body.stackItemId, stack: { userId } },
+        });
+        if (!item) {
+            return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Stack item not found' });
+        }
 
         const event = await prisma.complianceEvent.create({
             data: {
@@ -350,7 +358,7 @@ export async function stacksRoutes(app: FastifyInstance) {
     app.get('/compliance', async (request) => {
         const userId = request.userId;
         const query = request.query as { days?: string };
-        const days = parseInt(query.days || '7');
+        const days = Math.min(365, Math.max(1, parseInt(query.days || '7') || 7));
 
         const since = new Date();
         since.setDate(since.getDate() - days);

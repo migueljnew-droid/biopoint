@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:3000';
-console.log('[BioPoint] API_URL:', API_URL);
+if (__DEV__) console.log('[BioPoint] API_URL:', API_URL);
 
 export const api = axios.create({
     baseURL: API_URL,

@@ -66,7 +66,7 @@ export function errorHandler(
     const response = {
         statusCode,
         error: error.name || 'Internal Server Error',
-        message: error.message,
+        message: statusCode === 500 && process.env.NODE_ENV === 'production' ? 'An unexpected error occurred' : error.message,
         requestId: requestId || 'unknown',
     };
     

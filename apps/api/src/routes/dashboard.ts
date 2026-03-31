@@ -55,8 +55,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
             weeklyTrend = last - first;
         }
 
-        // Audit log for dashboard access (contains PHI data)
-        await createAuditLog(request, {
+        // Audit log for dashboard access — fire-and-forget to not block response
+        createAuditLog(request, {
             action: 'READ',
             entityType: 'BioPointScore',
             entityId: 'dashboard',

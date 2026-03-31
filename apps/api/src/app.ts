@@ -86,7 +86,7 @@ async function registerRoutesForPrefix(app: FastifyInstance, prefix: string) {
     await app.register(dataExportRoutes, { prefix: withPrefix('/user') });
     await app.register(accountDeletionRoutes, { prefix: withPrefix('/user') });
     await app.register(peptidesRoutes, { prefix: withPrefix('/peptides') });
-    await app.register(correlationsRoutes, { prefix: withPrefix('/stacks') });
+    await app.register(correlationsRoutes, { prefix: withPrefix('/correlations') });
 
     // BioPoint history endpoint
     app.get(withPrefix('/biopoint/history'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {
