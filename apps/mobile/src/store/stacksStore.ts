@@ -60,7 +60,10 @@ export const useStacksStore = create<StacksState>((set) => ({
     error: null,
 
     fetchStacks: async () => {
-        set({ isLoading: true, error: null });
+        // Only show loading spinner on the initial fetch (no stacks yet).
+        // Subsequent refetches update data silently so the UI doesn't flash.
+        const hasStacks = useStacksStore.getState().stacks.length > 0;
+        if (!hasStacks) set({ isLoading: true, error: null });
         try {
             const response = await api.get('/stacks');
             set({ stacks: response.data, isLoading: false });

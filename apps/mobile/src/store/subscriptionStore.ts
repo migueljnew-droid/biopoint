@@ -5,7 +5,7 @@ import Purchases from 'react-native-purchases';
 import { Platform } from 'react-native';
 
 const REVENUECAT_API_KEY = Platform.select({
-    ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || 'appl_HoxHZASugCAhZqQWsvMjzGzqdZb',
+    ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '',
     android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '',
 });
 
@@ -31,7 +31,10 @@ export const useSubscriptionStore = create<SubscriptionState>()(
 
             initialize: async () => {
                 try {
-                    // Grant premium to founder/admin accounts
+                    // Grant premium to founder/admin accounts.
+                    // TODO (SEC-004): This is a client-side bypass acceptable for TestFlight/development.
+                    // Before production launch, move this check to a server-side entitlement endpoint
+                    // so the admin list cannot be inspected or spoofed by a client.
                     const authStore = require('./authStore');
                     const user = authStore?.useAuthStore?.getState?.()?.user;
                     const adminEmails = ['migueljnew@gmail.com', 'booklouisgold@gmail.com'];

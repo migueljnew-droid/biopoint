@@ -114,7 +114,6 @@ export default function StacksScreen() {
             setShowCreateModal(false);
             setStackName('');
             setStackGoal('');
-            fetchStacks();
         } catch (e: any) {
             Alert.alert('Error', e.response?.data?.message || e.message || 'Failed to create stack');
         }
@@ -249,7 +248,6 @@ export default function StacksScreen() {
             setEditingItemId(null); // Reset editing state
             setItemData({ name: '', dose: '', unit: 'mg', frequency: 'Daily', route: 'Oral', timing: '' });
             setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
-            fetchStacks();
         } catch (err: any) {
             Alert.alert('Error', err.message || 'Failed to save item');
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -300,35 +298,43 @@ export default function StacksScreen() {
     };
 
     const handleMarkTaken = async (itemId: string, itemName: string) => {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        await logCompliance(itemId);
-        Alert.alert('Logged', `${itemName} marked as taken`);
+        try {
+            await logCompliance(itemId);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            Alert.alert('Logged', `${itemName} marked as taken`);
+        } catch (e: any) {
+            Alert.alert('Error', e.response?.data?.message || e.message || 'Failed to log compliance');
+        }
     };
 
     const handleAddReminder = async () => {
         if (!selectedItemId) return;
         const timeStr = `${scheduleTime.getHours().toString().padStart(2, '0')}:${scheduleTime.getMinutes().toString().padStart(2, '0')}`;
-        await addReminder(selectedItemId, timeStr);
+        try {
+            await addReminder(selectedItemId, timeStr);
 
-        // Find item details to schedule push notification
-        for (const stack of stacks) {
-            const item = stack.items.find(i => i.id === selectedItemId);
-            if (item) {
-                await scheduleItemReminders({
-                    itemId: item.id,
-                    itemName: item.name,
-                    dose: item.dose,
-                    unit: item.unit,
-                    stackName: stack.name,
-                    time: timeStr,
-                    daysOfWeek: [0,1,2,3,4,5,6],
-                });
-                break;
+            // Find item details to schedule push notification
+            for (const stack of stacks) {
+                const item = stack.items.find(i => i.id === selectedItemId);
+                if (item) {
+                    await scheduleItemReminders({
+                        itemId: item.id,
+                        itemName: item.name,
+                        dose: item.dose,
+                        unit: item.unit,
+                        stackName: stack.name,
+                        time: timeStr,
+                        daysOfWeek: [0,1,2,3,4,5,6],
+                    });
+                    break;
+                }
             }
-        }
 
-        Alert.alert('Reminder Set', `You'll be notified at ${scheduleTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`);
-        setShowScheduleModal(false);
+            Alert.alert('Reminder Set', `You'll be notified at ${scheduleTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`);
+            setShowScheduleModal(false);
+        } catch (e: any) {
+            Alert.alert('Error', e.response?.data?.message || e.message || 'Failed to set reminder');
+        }
     };
 
     const handlePublishStack = (stack: any) => {
@@ -586,7 +592,6 @@ export default function StacksScreen() {
                                                         setEditingItemId(null);
                                                         setItemData({ name: '', dose: '', unit: 'mg', frequency: 'Daily', route: 'Oral', timing: '' });
                                                         setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
-                                                        fetchStacks();
                                                     } catch { Alert.alert('Error', 'Failed to delete item'); }
                                                 }
                                             }

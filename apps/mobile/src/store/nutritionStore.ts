@@ -116,10 +116,9 @@ export const useNutritionStore = create<NutritionState>((set, get) => ({
             const response = await api.get(`/nutrition/daily/${d}`);
             set({ dailySummary: response.data, isLoading: false });
         } catch (error: any) {
-            set({
-                error: error.response?.data?.message || 'Failed to fetch nutrition data',
-                isLoading: false,
-            });
+            const msg = error.response?.data?.message || 'Failed to fetch nutrition data';
+            set({ error: msg, isLoading: false });
+            Alert.alert('Error', msg);
         }
     },
 

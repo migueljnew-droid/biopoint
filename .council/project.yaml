@@ -15,7 +15,7 @@ skills:
 sync:
   auto_sync: true
   sync_interval_minutes: 15
-  last_sync: '2026-03-31T09:46:49.577545Z'
+  last_sync: '2026-03-31T10:07:56.607436Z'
 ide_configs:
   claude: true
   cursor: true

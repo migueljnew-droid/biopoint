@@ -253,7 +253,7 @@ export async function authRoutes(app: FastifyInstance) {
     });
 
     // Logout
-    app.post('/logout', async (request, _reply) => {
+    app.post('/logout', { preHandler: authMiddleware }, async (request, _reply) => {
         const body = RefreshTokenSchema.parse(request.body);
         await revokeRefreshToken(body.refreshToken);
         return { success: true };

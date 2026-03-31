@@ -67,17 +67,21 @@ export default function DashboardScreen() {
     useEffect(() => { fetchDashboard(); fetchStacks(); }, []);
 
     const handleLogSubmit = async () => {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        await logToday({
-            sleepHours: logData.sleepHours ? parseFloat(logData.sleepHours) : undefined,
-            sleepQuality: logData.sleepQuality ? parseInt(logData.sleepQuality) : undefined,
-            energyLevel: logData.energyLevel ? parseInt(logData.energyLevel) : undefined,
-            focusLevel: logData.focusLevel ? parseInt(logData.focusLevel) : undefined,
-            moodLevel: logData.moodLevel ? parseInt(logData.moodLevel) : undefined,
-            weightKg: logData.weightKg ? parseFloat(logData.weightKg) : undefined,
-        });
-        setShowLogModal(false);
-        setLogData({ sleepHours: '', sleepQuality: '', energyLevel: '', focusLevel: '', moodLevel: '', weightKg: '' });
+        try {
+            await logToday({
+                sleepHours: logData.sleepHours ? parseFloat(logData.sleepHours) : undefined,
+                sleepQuality: logData.sleepQuality ? parseInt(logData.sleepQuality) : undefined,
+                energyLevel: logData.energyLevel ? parseInt(logData.energyLevel) : undefined,
+                focusLevel: logData.focusLevel ? parseInt(logData.focusLevel) : undefined,
+                moodLevel: logData.moodLevel ? parseInt(logData.moodLevel) : undefined,
+                weightKg: logData.weightKg ? parseFloat(logData.weightKg) : undefined,
+            });
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            setShowLogModal(false);
+            setLogData({ sleepHours: '', sleepQuality: '', energyLevel: '', focusLevel: '', moodLevel: '', weightKg: '' });
+        } catch (e: any) {
+            Alert.alert('Error', e.response?.data?.message || e.message || 'Failed to save log entry');
+        }
     };
 
 

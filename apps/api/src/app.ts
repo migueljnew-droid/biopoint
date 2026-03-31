@@ -1,10 +1,9 @@
 import Fastify from 'fastify';
-import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
-import { prisma, setDbRequestContext, clearDbRequestContext } from '@biopoint/db';
-import { createAuditLog } from './middleware/auditLog.js';
+import { setDbRequestContext, clearDbRequestContext } from '@biopoint/db';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { createRequestLogger, logRequest, logResponse } from './utils/logger.js';
 import { registerRateLimits, redisClient } from './middleware/rateLimit.js';
@@ -30,7 +29,7 @@ import { nutritionRoutes } from './routes/nutrition.js';
 import { complianceRoutes } from './routes/compliance.js';
 import { peptidesRoutes } from './routes/peptides.js';
 import { correlationsRoutes } from './routes/correlations.js';
-import { authMiddleware } from './middleware/auth.js';
+import { biopointRoutes } from './routes/biopoint.js';
 
 const envToLogger = {
     development: {
@@ -50,17 +49,6 @@ export interface CreateServerOptions {
     logger?: boolean | object;
     disableRateLimit?: boolean;
     prefixes?: string[];
-}
-
-interface MarkerTrend {
-    markerName: string;
-    unit: string | null;
-    dataPoints: {
-        date: string;
-        value: number | null;
-        refRangeLow: number | null;
-        refRangeHigh: number | null;
-    }[];
 }
 
 async function registerRoutesForPrefix(app: FastifyInstance, prefix: string) {
@@ -87,80 +75,7 @@ async function registerRoutesForPrefix(app: FastifyInstance, prefix: string) {
     await app.register(accountDeletionRoutes, { prefix: withPrefix('/user') });
     await app.register(peptidesRoutes, { prefix: withPrefix('/peptides') });
     await app.register(correlationsRoutes, { prefix: withPrefix('/correlations') });
-
-    // BioPoint history endpoint
-    app.get(withPrefix('/biopoint/history'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {
-        const userId = request.userId;
-        const scores = await prisma.bioPointScore.findMany({
-            where: { userId },
-            orderBy: { date: 'desc' },
-            take: 30,
-        });
-
-        // SEC-04: log unconditionally, including empty results
-        await createAuditLog(request, {
-            action: 'READ',
-            entityType: 'BioPointScore',
-            entityId: 'history',
-            metadata: { resultCount: scores.length },
-        });
-
-        return scores;
-    });
-
-    // Lab marker endpoints
-    app.get(withPrefix('/markers'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {
-        const userId = request.userId;
-        const markers = await prisma.labMarker.findMany({
-            where: { userId },
-            orderBy: { recordedAt: 'desc' },
-        });
-
-        // SEC-04: log unconditionally, including empty results
-        await createAuditLog(request, {
-            action: 'READ',
-            entityType: 'LabMarker',
-            entityId: 'list',
-            metadata: { resultCount: markers.length },
-        });
-
-        return markers;
-    });
-
-    app.get(withPrefix('/markers/trends'), { preHandler: authMiddleware }, async (request: FastifyRequest, _reply: FastifyReply) => {
-        const userId = request.userId;
-        const markers = await prisma.labMarker.findMany({
-            where: { userId },
-            orderBy: { recordedAt: 'asc' },
-        });
-
-        // SEC-04: log unconditionally, including empty results
-        await createAuditLog(request, {
-            action: 'READ',
-            entityType: 'LabMarker',
-            entityId: 'trends',
-            metadata: { resultCount: markers.length },
-        });
-
-        const trends: Record<string, MarkerTrend> = {};
-        for (const marker of markers) {
-            if (!trends[marker.name]) {
-                trends[marker.name] = {
-                    markerName: marker.name,
-                    unit: marker.unit,
-                    dataPoints: [],
-                };
-            }
-            trends[marker.name]!.dataPoints.push({
-                date: marker.recordedAt.toISOString(),
-                value: marker.value,
-                refRangeLow: marker.refRangeLow,
-                refRangeHigh: marker.refRangeHigh,
-            });
-        }
-
-        return Object.values(trends);
-    });
+    await app.register(biopointRoutes, { prefix: withPrefix('/biopoint') });
 }
 
 export async function createServer(options: CreateServerOptions = {}) {
@@ -214,6 +129,11 @@ export async function createServer(options: CreateServerOptions = {}) {
         request.startTime = Date.now();
     });
 
+    // Warn if CORS_ORIGIN is not configured in production — requests from web clients will be blocked.
+    if (process.env.NODE_ENV === 'production' && !process.env.CORS_ORIGIN) {
+        app.log.warn('CORS_ORIGIN is not set in production. All cross-origin requests will be rejected.');
+    }
+
     // Register plugins
     await app.register(cors, {
         origin: (origin, callback) => {
@@ -257,27 +177,27 @@ export async function createServer(options: CreateServerOptions = {}) {
     app.addHook('onRoute', (routeOptions) => {
         const url = routeOptions.url;
 
-        if (url.includes('/auth/login')) {
+        if (url.startsWith('/auth/login') || url.startsWith('/api/auth/login')) {
             routeOptions.config = {
                 ...routeOptions.config,
                 rateLimit: { max: 20, timeWindow: '1 minute' },
             };
-        } else if (url.includes('/auth')) {
+        } else if (url.startsWith('/auth') || url.startsWith('/api/auth')) {
             routeOptions.config = {
                 ...routeOptions.config,
                 rateLimit: { max: 5, timeWindow: '15 minutes' },
             };
-        } else if (url.includes('/health')) {
+        } else if (url.startsWith('/health') || url.startsWith('/api/health')) {
             routeOptions.config = {
                 ...routeOptions.config,
                 rateLimit: { max: 1000, timeWindow: '1 hour' },
             };
-        } else if (url.includes('/labs') || url.includes('/photos') || url.includes('/profile')) {
+        } else if (url.startsWith('/labs') || url.startsWith('/api/labs') || url.startsWith('/photos') || url.startsWith('/api/photos') || url.startsWith('/profile') || url.startsWith('/api/profile')) {
             routeOptions.config = {
                 ...routeOptions.config,
                 rateLimit: { max: 200, timeWindow: '1 minute' },
             };
-        } else if (url.includes('/presign')) {
+        } else if (url.startsWith('/presign') || url.startsWith('/api/presign')) {
             routeOptions.config = {
                 ...routeOptions.config,
                 rateLimit: { max: 50, timeWindow: '1 hour' },

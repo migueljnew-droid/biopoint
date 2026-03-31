@@ -95,9 +95,14 @@ api.interceptors.response.use(
 
                 originalRequest.headers.Authorization = `Bearer ${accessToken}`;
                 return api(originalRequest);
-            } catch (refreshError) {
+            } catch (refreshError: any) {
                 processQueue(refreshError, null);
-                await clearTokens();
+                // Only clear tokens if refresh was explicitly rejected (401/403)
+                // Network errors should NOT log the user out
+                const refreshStatus = refreshError?.response?.status;
+                if (refreshStatus === 401 || refreshStatus === 403) {
+                    await clearTokens();
+                }
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
