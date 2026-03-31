@@ -30,23 +30,24 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             error: null,
 
             initialize: async () => {
-                // Grant premium to founder/admin accounts
-                const { useAuthStore } = require('./authStore');
-                const user = useAuthStore.getState().user;
-                const adminEmails = ['migueljnew@gmail.com', 'booklouisgold@gmail.com'];
-                if (user?.email && adminEmails.includes(user.email.toLowerCase())) {
-                    set({ isPremium: true, plan: 'yearly' });
-                    return;
-                }
-
-                if (!REVENUECAT_API_KEY) return;
                 try {
+                    // Grant premium to founder/admin accounts
+                    const authStore = require('./authStore');
+                    const user = authStore?.useAuthStore?.getState?.()?.user;
+                    const adminEmails = ['migueljnew@gmail.com', 'booklouisgold@gmail.com'];
+                    if (user?.email && adminEmails.includes(user.email.toLowerCase())) {
+                        set({ isPremium: true, plan: 'yearly' });
+                        return;
+                    }
+
+                    if (!REVENUECAT_API_KEY) return;
                     Purchases.configure({ apiKey: REVENUECAT_API_KEY });
                     const customerInfo = await Purchases.getCustomerInfo();
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
                     set({ isPremium });
                 } catch (e) {
-                    // RevenueCat not configured — IAP disabled gracefully
+                    // RevenueCat not configured or auth store not ready — fail silently
+                    console.log('[Subscription] Initialize error (non-fatal):', e);
                 }
             },
 
