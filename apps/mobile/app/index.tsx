@@ -11,12 +11,13 @@ export default function WelcomeScreen() {
     const { isAuthenticated, isLoading } = useAuthStore();
 
     // Auto-redirect to dashboard if already signed in
-    // Don't wait for isLoading — persisted isAuthenticated is enough to redirect
     useEffect(() => {
-        if (isAuthenticated) {
-            router.replace('/(tabs)');
+        if (isAuthenticated && !isLoading) {
+            // Small delay to ensure router is mounted
+            const timer = setTimeout(() => router.replace('/(tabs)'), 100);
+            return () => clearTimeout(timer);
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, isLoading]);
 
     // Logo rotation animation
     const rotation = useSharedValue(0);

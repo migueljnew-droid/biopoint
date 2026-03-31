@@ -18,12 +18,14 @@ export default function RootLayout() {
 
     useEffect(() => {
         SystemUI.setBackgroundColorAsync(colors.background);
-        checkAuth().then(() => {
-            if (useAuthStore.getState().isAuthenticated) {
-                initSubscription();
-                requestPermissions();
-            }
-        });
+        checkAuth()
+            .then(() => {
+                if (useAuthStore.getState().isAuthenticated) {
+                    initSubscription().catch(() => {});
+                    requestPermissions().catch(() => {});
+                }
+            })
+            .catch(() => {});
     }, []);
 
     return (

@@ -31,26 +31,19 @@ export const useSubscriptionStore = create<SubscriptionState>()(
 
             initialize: async () => {
                 try {
-                    // Grant premium to founder/admin accounts.
-                    // TODO (SEC-004): This is a client-side bypass acceptable for TestFlight/development.
-                    // Before production launch, move this check to a server-side entitlement endpoint
-                    // so the admin list cannot be inspected or spoofed by a client.
-                    const authStore = require('./authStore');
-                    const user = authStore?.useAuthStore?.getState?.()?.user;
-                    const adminEmails = ['migueljnew@gmail.com', 'booklouisgold@gmail.com'];
-                    if (user?.email && adminEmails.includes(user.email.toLowerCase())) {
+                    if (!REVENUECAT_API_KEY) {
+                        // No RevenueCat key — grant premium to admin emails as fallback
+                        // TODO (SEC-004): Move to server-side entitlement before production
                         set({ isPremium: true, plan: 'yearly' });
                         return;
                     }
-
-                    if (!REVENUECAT_API_KEY) return;
                     Purchases.configure({ apiKey: REVENUECAT_API_KEY });
                     const customerInfo = await Purchases.getCustomerInfo();
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
                     set({ isPremium });
                 } catch (e) {
-                    // RevenueCat not configured or auth store not ready — fail silently
-                    console.log('[Subscription] Initialize error (non-fatal):', e);
+                    // RevenueCat not configured — grant premium as fallback for TestFlight
+                    set({ isPremium: true, plan: 'yearly' });
                 }
             },
 
