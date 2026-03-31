@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing, typography, borderRadius } from '../theme';
 import { GlassView } from './ui/GlassView';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -27,10 +26,8 @@ export function Leaderboard() {
         }
     };
 
-    if (isLoading && leaders.length === 0) {
-        // Return null or skeleton in real app, keeping simple for now
-        return null;
-    }
+    if (isLoading && leaders.length === 0) return null;
+    if (leaders.length === 0) return null;
 
     const userRank = leaders.findIndex(l => l.isUser) + 1;
 
@@ -38,55 +35,52 @@ export function Leaderboard() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.title}>Global Elite</Text>
-                    <Text style={styles.subtitle}>Top 1% Bio-Optimizers</Text>
+                    <Text style={styles.title}>Leaderboard</Text>
+                    <Text style={styles.subtitle}>Top Bio-Optimizers</Text>
                 </View>
                 {userRank > 0 && (
-                    <GlassView variant="heavy" borderRadius={borderRadius.full} style={styles.rankBadge}>
+                    <View style={styles.rankBadge}>
                         <Text style={styles.rankText}>#{userRank}</Text>
-                    </GlassView>
+                    </View>
                 )}
             </View>
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.list}>
                 {leaders.map((user, index) => (
-                    <Animated.View
-                        key={user.id}
-                        entering={FadeInDown.delay(index * 100)}
-                    >
+                    <Animated.View key={user.id} entering={FadeInDown.delay(index * 80)}>
                         <GlassView
-                            variant={user.elite ? 'heavy' : 'light'}
-                            borderRadius={borderRadius.lg}
-                            style={[styles.card, user.isUser && styles.userCard]}
+                            variant={user.isUser ? 'primary' : 'light'}
+                            borderRadius={borderRadius.xl}
+                            style={styles.card}
                         >
-                            {user.elite && (
-                                <LinearGradient
-                                    colors={['rgba(255, 215, 0, 0.2)', 'transparent']}
-                                    style={StyleSheet.absoluteFill}
-                                />
-                            )}
+                            {/* Rank number */}
+                            <Text style={styles.rankNumber}>#{index + 1}</Text>
 
-                            <View style={[styles.avatar, user.elite && styles.goldAvatar]}>
-                                <Text style={[styles.avatarText, user.elite && styles.goldText]}>
-                                    {user.avatar}
+                            {/* Avatar */}
+                            <View style={[styles.avatar, user.isUser && styles.userAvatar]}>
+                                <Text style={[styles.avatarText, user.isUser && styles.userAvatarText]}>
+                                    {user.isUser ? 'YOU' : user.avatar}
                                 </Text>
-                                {user.elite && (
-                                    <View style={styles.crown}>
-                                        <Ionicons name="trophy" size={12} color="#FFD700" />
-                                    </View>
-                                )}
                             </View>
 
-                            <Text style={styles.name}>{user.name}</Text>
+                            {/* Name */}
+                            <Text style={[styles.name, user.isUser && styles.userName]} numberOfLines={1}>
+                                {user.isUser ? 'You' : user.name}
+                            </Text>
 
-                            <View style={styles.scoreRow}>
-                                <Text style={styles.score}>{user.score}</Text>
-                                <Text style={styles.label}>BIO</Text>
-                            </View>
+                            {/* Score */}
+                            <Text style={[styles.score, user.isUser && styles.userScore]}>{user.score}</Text>
 
+                            {/* Trend */}
                             <View style={styles.trendBadge}>
-                                <Ionicons name={user.trend.startsWith('-') ? "caret-down" : "caret-up"} size={10} color={user.trend.startsWith('-') ? colors.error : colors.success} />
-                                <Text style={[styles.trendText, user.trend.startsWith('-') && { color: colors.error }]}>{user.trend}</Text>
+                                <Ionicons
+                                    name={user.trend.startsWith('-') ? "caret-down" : "caret-up"}
+                                    size={10}
+                                    color={user.trend.startsWith('-') ? colors.error : '#22D3EE'}
+                                />
+                                <Text style={[styles.trendText, user.trend.startsWith('-') && { color: colors.error }]}>
+                                    {user.trend}
+                                </Text>
                             </View>
                         </GlassView>
                     </Animated.View>
@@ -98,7 +92,7 @@ export function Leaderboard() {
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: spacing.xl,
+        marginBottom: spacing.lg,
     },
     header: {
         flexDirection: 'row',
@@ -108,98 +102,99 @@ const styles = StyleSheet.create({
         marginBottom: spacing.md,
     },
     title: {
-        ...typography.h4,
-        color: colors.textPrimary,
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#FFFFFF',
     },
     subtitle: {
         ...typography.caption,
         color: colors.textSecondary,
     },
     rankBadge: {
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.xs,
-        backgroundColor: colors.primary,
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        borderRadius: borderRadius.full,
+        backgroundColor: 'rgba(13, 148, 136, 0.2)',
+        borderWidth: 1,
+        borderColor: 'rgba(13, 148, 136, 0.3)',
     },
     rankText: {
-        ...typography.h4,
-        color: '#fff',
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#22D3EE',
     },
     list: {
         paddingHorizontal: spacing.lg,
-        gap: spacing.md,
+        gap: spacing.sm,
     },
     card: {
-        width: 100,
-        height: 140,
+        width: 110,
+        height: 150,
         alignItems: 'center',
         justifyContent: 'center',
         padding: spacing.sm,
-        gap: spacing.xs,
+        gap: 4,
     },
-    userCard: {
-        borderColor: 'transparent',
-        borderWidth: 0,
+    rankNumber: {
+        fontSize: 10,
+        fontWeight: '600',
+        color: colors.textSecondary,
+        position: 'absolute',
+        top: 8,
+        left: 10,
     },
     avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.1)',
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: 'rgba(255,255,255,0.08)',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: spacing.xs,
     },
-    goldAvatar: {
-        backgroundColor: 'rgba(255, 215, 0, 0.1)',
-        borderWidth: 0,
-        borderColor: 'transparent',
+    userAvatar: {
+        backgroundColor: 'rgba(13, 148, 136, 0.25)',
+        borderWidth: 1,
+        borderColor: 'rgba(34, 211, 238, 0.4)',
     },
     avatarText: {
-        ...typography.h4,
+        fontSize: 14,
+        fontWeight: '700',
         color: colors.textSecondary,
     },
-    goldText: {
-        color: '#FFD700',
-    },
-    crown: {
-        position: 'absolute',
-        top: -4,
-        right: -4,
-        backgroundColor: colors.background,
-        borderRadius: 8,
-        padding: 2,
+    userAvatarText: {
+        fontSize: 10,
+        color: '#22D3EE',
     },
     name: {
-        ...typography.bodySmall,
-        color: colors.textPrimary,
+        fontSize: 12,
         fontWeight: '600',
+        color: colors.textSecondary,
+        textAlign: 'center',
+        maxWidth: 90,
     },
-    scoreRow: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        gap: 2,
+    userName: {
+        color: '#FFFFFF',
     },
     score: {
-        ...typography.h3,
+        fontSize: 28,
+        fontWeight: '800',
         color: colors.primary,
     },
-    label: {
-        fontSize: 8,
-        color: colors.textMuted,
-        fontWeight: '700',
+    userScore: {
+        color: '#22D3EE',
     },
     trendBadge: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 2,
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        paddingHorizontal: 4,
+        backgroundColor: 'rgba(34, 211, 238, 0.1)',
+        paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 4,
     },
     trendText: {
         fontSize: 10,
-        color: colors.success,
+        color: '#22D3EE',
         fontWeight: '700',
-    }
+    },
 });
