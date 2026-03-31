@@ -58,7 +58,7 @@ export function ProtocolSelector({ protocols, selectedSlug, onSelect }: Protocol
                             <Ionicons
                                 name={getProtocolIcon(item.slug) as any}
                                 size={24}
-                                color={isSelected ? colors.primary : colors.textSecondary}
+                                color={isSelected ? '#22D3EE' : colors.textPrimary}
                             />
                             <Text style={[styles.name, isSelected && styles.nameSelected]} numberOfLines={1}>
                                 {item.name}
@@ -95,15 +95,15 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 13,
         fontWeight: '700',
-        color: colors.textPrimary,
+        color: '#FFFFFF',
         textAlign: 'center',
     },
     nameSelected: {
-        color: colors.primary,
+        color: '#22D3EE',
     },
     schedule: {
         fontSize: 11,
-        color: colors.textMuted,
+        color: colors.textSecondary,
         textAlign: 'center',
     },
 });

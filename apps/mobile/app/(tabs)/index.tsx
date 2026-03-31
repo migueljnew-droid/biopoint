@@ -127,7 +127,7 @@ export default function DashboardScreen() {
             >
                 {/* BioPoint Score Hero */}
                 <Animated.View entering={FadeInDown.duration(600)}>
-                    <GlassView variant="medium" borderRadius={borderRadius.xl} style={[styles.scoreCard, { borderColor: scoreStyles.borderColor }]}>
+                    <GlassView variant="medium" borderRadius={borderRadius.xl} style={[styles.scoreCard, { shadowColor: scoreStyles.color, shadowOpacity: 0.4, shadowRadius: 20 }]}>
                         <View style={styles.scoreHeader}>
                             <Text style={styles.scoreLabel}>BIOPOINT SCORE</Text>
                             <View style={[styles.trendBadge, { backgroundColor: weeklyTrend !== null && weeklyTrend >= 0 ? colors.successMuted : colors.errorMuted }]}>
@@ -426,9 +426,9 @@ const styles = StyleSheet.create({
         alignItems: 'baseline',
     },
     scoreValue: {
-        fontSize: 64,
+        fontSize: 72,
         fontWeight: '800',
-        lineHeight: 72,
+        lineHeight: 80,
         letterSpacing: -2,
     },
     scoreTotal: {
@@ -445,7 +445,8 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         ...typography.h4,
-        color: colors.textPrimary,
+        color: '#FFFFFF',
+        fontWeight: '700',
     },
     sectionLink: {
         ...typography.caption,
@@ -466,8 +467,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: spacing.xs,
-        backgroundColor: 'rgba(255,255,255,0.04)',
+        backgroundColor: 'rgba(255,255,255,0.06)',
         borderRadius: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.08)',
         borderWidth: 0,
         borderColor: 'transparent',
     },
@@ -476,8 +479,8 @@ const styles = StyleSheet.create({
     },
     actionLabel: {
         fontSize: 11,
-        color: colors.textSecondary,
-        fontWeight: '500',
+        color: colors.textPrimary,
+        fontWeight: '600',
     },
 
     // Modal

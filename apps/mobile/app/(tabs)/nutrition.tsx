@@ -91,15 +91,15 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     segmentTabActive: {
-        backgroundColor: 'rgba(59,130,246,0.15)',
+        backgroundColor: 'rgba(27, 75, 122, 0.25)',
     },
     segmentText: {
         fontSize: 14,
         fontWeight: '500',
-        color: colors.textMuted,
+        color: colors.textSecondary,
     },
     segmentTextActive: {
-        color: colors.primary,
+        color: '#FFFFFF',
         fontWeight: '700',
     },
     content: {
