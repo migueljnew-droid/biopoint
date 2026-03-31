@@ -24,7 +24,7 @@ const SUGGESTIONS = [
     'Zinc Picolinate', 'Zinc Carnosine', 'Selenium', 'Iodine (Lugols)', 'Iron Bisglycinate', 'Copper Bisglycinate', 'Boron', 'Chromium Picolinate',
 
     // --- LONGEVITY & MITOCHONDRIA ---
-    'NMN (Nicotinamide Mononucleotide)', 'NR (Nicotinamide Riboside)', 'Resveratrol', 'Pterostilbene', 'Rapamycin', 'Metformin', 'Berberine', 'Spermidine', 'Fisetin', 'Quercetin', 'Apigenin', 'CoQ10 (Ubiquinol)', 'PQQ', 'Methylene Blue', 'Urolithin A', 'Ca-AKG',
+    'NAD+', 'NAD+ (IV)', 'NAD+ Precursor', 'NMN (Nicotinamide Mononucleotide)', 'NR (Nicotinamide Riboside)', 'Resveratrol', 'Pterostilbene', 'Rapamycin', 'Metformin', 'Berberine', 'Spermidine', 'Fisetin', 'Quercetin', 'Apigenin', 'CoQ10 (Ubiquinol)', 'PQQ', 'Methylene Blue', 'Urolithin A', 'Ca-AKG', 'Glutathione', 'Glutathione (Liposomal)', 'Alpha Lipoic Acid',
 
     // --- NOOTROPICS & ADAPTOGENS ---
     'Ashwagandha (KSM-66)', 'Rhodiola Rosea', 'Lions Mane Mushroom', 'Cordyceps', 'Reishi Mushroom', 'Bacopa Monnieri', 'Ginkgo Biloba', 'Panax Ginseng', 'Saffron Extract',
@@ -64,6 +64,7 @@ export function GlassAutocomplete({ value, onChangeText, placeholder, label }: G
     const handleSelect = (item: string) => {
         onChangeText(item);
         setShowSuggestions(false);
+        setIsFocused(false);
         Keyboard.dismiss();
     };
 
@@ -79,15 +80,17 @@ export function GlassAutocomplete({ value, onChangeText, placeholder, label }: G
                     placeholderTextColor={colors.textMuted}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => {
-                        // Small delay to allow press on suggestion to register
-                        setTimeout(() => setIsFocused(false), 400);
+                        setTimeout(() => {
+                            setIsFocused(false);
+                            setShowSuggestions(false);
+                        }, 500);
                     }}
                 />
             </GlassView>
 
             {showSuggestions && (
                 <View style={styles.suggestionsContainer}>
-                    <GlassView variant="heavy" borderRadius={borderRadius.md} style={styles.suggestionsGlass}>
+                    <View style={styles.suggestionsBox}>
                         {filteredSuggestions.map((item, index) => (
                             <Pressable
                                 key={index}
@@ -97,7 +100,7 @@ export function GlassAutocomplete({ value, onChangeText, placeholder, label }: G
                                 <Text style={styles.suggestionText}>{item}</Text>
                             </Pressable>
                         ))}
-                    </GlassView>
+                    </View>
                 </View>
             )}
         </View>
@@ -129,19 +132,29 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         marginTop: 4,
-        zIndex: 20,
+        zIndex: 999,
+        elevation: 10,
     },
-    suggestionsGlass: {
+    suggestionsBox: {
+        backgroundColor: '#1C1C26',
+        borderRadius: borderRadius.md,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.10)',
         overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 12,
+        elevation: 10,
     },
     suggestionItem: {
-        paddingVertical: spacing.sm,
+        paddingVertical: spacing.md,
         paddingHorizontal: spacing.md,
-        borderBottomWidth: 0,
-        borderBottomColor: 'transparent',
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(255,255,255,0.06)',
     },
     suggestionPressed: {
-        backgroundColor: 'rgba(255,255,255,0.1)',
+        backgroundColor: 'rgba(255,255,255,0.12)',
     },
     suggestionText: {
         ...typography.body,
