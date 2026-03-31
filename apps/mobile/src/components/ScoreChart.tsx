@@ -26,9 +26,9 @@ export const ScoreChart = ({ data, labels }: ScoreChartProps) => {
     };
 
     const chartConfig = {
-        backgroundGradientFrom: '#fff',
+        backgroundGradientFrom: 'transparent',
         backgroundGradientFromOpacity: 0,
-        backgroundGradientTo: '#fff',
+        backgroundGradientTo: 'transparent',
         backgroundGradientToOpacity: 0,
         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
         strokeWidth: 2,

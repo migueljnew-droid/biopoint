@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         marginBottom: spacing.sm,
         borderRadius: 12,
         borderWidth: 0,
-        backgroundColor: 'rgba(255,255,255,0.06)',
+        backgroundColor: 'rgba(255,255,255,0.10)',
     },
     text: {
         fontSize: 15,

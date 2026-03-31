@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     countBadgeDone: { backgroundColor: 'rgba(16, 185, 129, 0.15)' },
     countText: { fontSize: 13, fontWeight: '600', color: colors.primary },
     countTextDone: { color: colors.success },
-    itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)', gap: 12 },
+    itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)', gap: 12 },
     itemRowLast: { borderBottomWidth: 0 },
     itemPressed: { opacity: 0.7 },
     checkbox: { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },

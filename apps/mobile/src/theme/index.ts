@@ -279,16 +279,16 @@ export const colors = {
             'rgba(5, 150, 105, 0.15)',
         ],
         grid: {
-            line: 'rgba(0, 0, 0, 0.06)',
-            lineMajor: 'rgba(0, 0, 0, 0.12)',
+            line: 'rgba(255, 255, 255, 0.08)',
+            lineMajor: 'rgba(255, 255, 255, 0.12)',
             label: '#94A3B8',
-            axis: 'rgba(0, 0, 0, 0.15)',
+            axis: 'rgba(255, 255, 255, 0.15)',
         },
         reference: {
             target: '#0D9488',
             threshold: '#D97706',
             average: '#7C3AED',
-            baseline: 'rgba(0, 0, 0, 0.1)',
+            baseline: 'rgba(255, 255, 255, 0.08)',
         },
     },
 
@@ -311,14 +311,14 @@ export const colors = {
     // -------------------------------------------------------------------------
     interactive: {
         hover: {
-            light: 'rgba(0, 0, 0, 0.04)',
-            medium: 'rgba(0, 0, 0, 0.08)',
-            colored: 'rgba(27, 75, 122, 0.08)',
+            light: 'rgba(255, 255, 255, 0.06)',
+            medium: 'rgba(255, 255, 255, 0.10)',
+            colored: 'rgba(45, 107, 164, 0.15)',
         },
         pressed: {
-            light: 'rgba(0, 0, 0, 0.08)',
-            medium: 'rgba(0, 0, 0, 0.12)',
-            colored: 'rgba(27, 75, 122, 0.15)',
+            light: 'rgba(255, 255, 255, 0.10)',
+            medium: 'rgba(255, 255, 255, 0.15)',
+            colored: 'rgba(45, 107, 164, 0.25)',
         },
         focus: {
             ring: 'rgba(27, 75, 122, 0.3)',

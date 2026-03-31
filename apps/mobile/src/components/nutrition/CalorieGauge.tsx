@@ -27,7 +27,7 @@ export function CalorieGauge({ consumed, target }: CalorieGaugeProps) {
                     cx={SIZE / 2}
                     cy={SIZE / 2}
                     r={RADIUS}
-                    stroke="rgba(255,255,255,0.06)"
+                    stroke="rgba(255,255,255,0.12)"
                     strokeWidth={STROKE_WIDTH}
                     fill="none"
                 />
