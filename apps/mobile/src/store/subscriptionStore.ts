@@ -5,7 +5,7 @@ import Purchases from 'react-native-purchases';
 import { Platform } from 'react-native';
 
 const REVENUECAT_API_KEY = Platform.select({
-    ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || 'test_nzQKkmDUidIAaCKAarkngKIPDNx',
+    ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || 'appl_HoxHZASugCAhZqQWsvMjzGzqdZb',
     android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '',
 });
 
