@@ -335,12 +335,12 @@ export async function labsRoutes(app: FastifyInstance) {
             });
 
             return analysis;
-        } catch (error) {
+        } catch (error: any) {
             request.log.error(error);
             return reply.status(500).send({
                 statusCode: 500,
                 error: 'Internal Server Error',
-                message: 'Failed to analyze lab report',
+                message: error?.message || 'Failed to analyze lab report',
             });
         }
     });

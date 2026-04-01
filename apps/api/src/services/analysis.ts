@@ -56,8 +56,9 @@ Return ONLY the raw JSON object, no markdown formatting.
         const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
         return JSON.parse(jsonStr) as AnalysisResult;
-    } catch (error) {
+    } catch (error: any) {
         appLogger.error({ err: error }, 'Gemini Analysis Error');
-        throw new Error('Failed to analyze lab report');
+        const detail = error?.message || String(error);
+        throw new Error(`Failed to analyze lab report: ${detail}`);
     }
 }
