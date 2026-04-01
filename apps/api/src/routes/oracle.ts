@@ -111,7 +111,7 @@ RULES:
 USER'S HEALTH DATA:
 ${healthContext}`;
 
-            const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+            const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
             // Build conversation history for multi-turn
             const chatHistory = (history || []).map(h => ({
