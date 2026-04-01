@@ -24,7 +24,7 @@ export async function analyzeLabReport(
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const prompt = `You are an expert medical data analyst. Analyze this blood work / lab report image.
 Extract the following information in strict JSON format:
