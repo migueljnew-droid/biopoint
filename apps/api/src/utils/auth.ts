@@ -8,8 +8,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     throw new Error('JWT_SECRET environment variable is required');
 }
-const JWT_ACCESS_EXPIRES = process.env.JWT_ACCESS_EXPIRES || '15m';
-const JWT_REFRESH_EXPIRES = process.env.JWT_REFRESH_EXPIRES || '7d';
+const JWT_ACCESS_EXPIRES = process.env.JWT_ACCESS_EXPIRES || '1h';
+const JWT_REFRESH_EXPIRES = process.env.JWT_REFRESH_EXPIRES || '30d';
 const BCRYPT_ROUNDS = 12;
 
 export async function hashPassword(password: string): Promise<string> {
