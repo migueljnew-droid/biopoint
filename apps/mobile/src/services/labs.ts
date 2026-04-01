@@ -50,7 +50,7 @@ export const labsService = {
     },
 
     analyzeReport: async (id: string): Promise<AnalysisResult> => {
-        const response = await api.post(`/labs/${id}/analyze`);
+        const response = await api.post(`/labs/${id}/analyze`, {});
         return response.data;
     },
 };

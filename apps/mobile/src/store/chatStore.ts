@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// DELPHI PROTOCOL: CONVERSATIONAL MEMORY
+import { api } from '../services/api';
 
 export interface Message {
     id: string;
@@ -18,8 +17,6 @@ interface ChatState {
     addMessage: (role: Message['role'], content: string) => void;
     setTyping: (typing: boolean) => void;
     clearHistory: () => void;
-
-    // AI Integration (Mock for now, ready for API)
     generateResponse: (userMessage: string) => Promise<void>;
 }
 
@@ -56,29 +53,31 @@ export const useChatStore = create<ChatState>()(
             }),
 
             generateResponse: async (userMessage: string) => {
-                const { addMessage, setTyping } = get();
+                const { addMessage, setTyping, messages } = get();
 
                 setTyping(true);
 
-                // MOCK BRAIN - DELPHI SIMULATION
-                // In real implementation, this calls OpenAI/Anthropic via Edge Function
-                setTimeout(() => {
-                    let response = "I'm analyzing your biometrics...";
-                    const lowerMsg = userMessage.toLowerCase();
+                try {
+                    // Build conversation history (skip system/init messages, last 10 turns)
+                    const history = messages
+                        .filter(m => m.role !== 'system' && !m.id.startsWith('init'))
+                        .slice(-10)
+                        .map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', content: m.content }));
 
-                    if (lowerMsg.includes('sleep')) {
-                        response = "Your sleep efficiency has dropped **12%** this week. I recommend:\n- **Magnesium Glycinate** (400mg) before bed.\n- Adjusting your bedroom temperature to **65°F**.\n- Initiating a 'Digital Sunset' at 9:00 PM.";
-                    } else if (lowerMsg.includes('hrv') || lowerMsg.includes('stress')) {
-                        response = "Your HRV is trending **upward** (Standard Deviation: 45ms). This indicates improved autonomic balance. \n\n*Action*: Increase training intensity tomorrow by 15%.";
-                    } else if (lowerMsg.includes('supplement') || lowerMsg.includes('stack')) {
-                        response = "Based on your recent fatigue markers, I suggest adding **Rhodiola Rosea** (200mg) to your morning stack for cortisol regulation.";
-                    } else {
-                        response = "I've noted that inquiry. Based on your current BioPoint Score of **78**, optimizing your circadian rhythm is the highest leverage lever right now.";
-                    }
+                    const response = await api.post('/oracle/chat', {
+                        message: userMessage,
+                        history,
+                    });
 
-                    addMessage('assistant', response);
+                    addMessage('assistant', (response.data as { response: string }).response);
+                } catch (error: any) {
+                    const errMsg = error.response?.status === 503
+                        ? "AI service is not configured. Please contact support."
+                        : "I couldn't process that request. Please try again.";
+                    addMessage('assistant', errMsg);
+                } finally {
                     setTyping(false);
-                }, 1500);
+                }
             }
         }),
         {

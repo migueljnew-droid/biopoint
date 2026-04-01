@@ -1,39 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, RefreshControl, Alert, ActivityIndicator, ScrollView, Modal } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, RefreshControl, Alert, ActivityIndicator, ScrollView, Modal, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, SlideInDown, SlideOutDown, LinearTransition } from 'react-native-reanimated';
+import { LineChart } from 'react-native-chart-kit';
 import { colors, spacing, typography, borderRadius } from '../../src/theme';
 import { ScreenWrapper, GlassView } from '../../src/components';
 import { labsService, AnalysisResult } from '../../src/services/labs';
 import { api } from '../../src/services/api';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
+interface LabMarker {
+    id: string;
+    name: string;
+    value: number | null;
+    unit: string;
+    refRangeLow: number | null;
+    refRangeHigh: number | null;
+    isInRange: boolean | null;
+    notes: string | null;
+}
+
 interface LabReport {
     id: string;
     filename: string;
     uploadedAt: string;
-    markers: Array<{
-        id: string;
-        name: string;
-        value: number | null;
-        unit: string;
-        refRangeLow: number | null;
-        refRangeHigh: number | null;
-        isInRange: boolean | null;
-        notes: string | null;
-    }>;
+    markers: LabMarker[];
 }
+
+interface TrendHistory {
+    id: string;
+    value: number | null;
+    date: string;
+    refLow: number | null;
+    refHigh: number | null;
+}
+
+interface BiomarkerTrend {
+    name: string;
+    unit: string;
+    history: TrendHistory[];
+}
+
+type TabMode = 'reports' | 'trends';
 
 export default function LabsScreen() {
     const [labs, setLabs] = useState<LabReport[]>([]);
+    const [trends, setTrends] = useState<BiomarkerTrend[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [analyzingId, setAnalyzingId] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [activeTab, setActiveTab] = useState<TabMode>('reports');
+    const [expandedTrend, setExpandedTrend] = useState<string | null>(null);
 
-    const fetchLabs = async () => {
+    const fetchLabs = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await api.get('/labs');
@@ -43,9 +67,26 @@ export default function LabsScreen() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    useEffect(() => { fetchLabs(); }, []);
+    const fetchTrends = useCallback(async () => {
+        try {
+            const data = await labsService.getTrends();
+            setTrends(data);
+        } catch (e: any) {
+            // Trends may be empty
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchLabs();
+        fetchTrends();
+    }, []);
+
+    const handleRefresh = () => {
+        fetchLabs();
+        fetchTrends();
+    };
 
     const processUpload = async (uri: string, name: string, mimeType: string) => {
         setIsLoading(true);
@@ -55,6 +96,7 @@ export default function LabsScreen() {
             await labsService.createReport({ filename: name, s3Key, notes: 'Uploaded from mobile app' });
             Alert.alert('Success', 'Lab report uploaded successfully');
             fetchLabs();
+            fetchTrends();
         } catch (error) {
             console.error('Upload failed:', error);
             Alert.alert('Error', 'Failed to upload lab report');
@@ -107,7 +149,8 @@ export default function LabsScreen() {
             const result = await labsService.analyzeReport(id);
             setAnalysisResult(result);
             setModalVisible(true);
-            fetchLabs(); // Refresh to get saved markers
+            fetchLabs();
+            fetchTrends();
         } catch (e: any) {
             Alert.alert('Analysis Failed', e.response?.data?.message || 'Could not analyze this report. Try again.');
         } finally {
@@ -115,13 +158,243 @@ export default function LabsScreen() {
         }
     };
 
+    const formatDate = (dateStr: string) => {
+        const d = new Date(dateStr);
+        return `${d.getMonth() + 1}/${d.getDate()}`;
+    };
+
+    const formatFullDate = (dateStr: string) => {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    const getLatestValue = (trend: BiomarkerTrend) => {
+        const valid = trend.history.filter(h => h.value !== null);
+        return valid.length > 0 ? valid[valid.length - 1] : null;
+    };
+
+    const getTrendDirection = (trend: BiomarkerTrend): 'up' | 'down' | 'stable' => {
+        const valid = trend.history.filter(h => h.value !== null);
+        if (valid.length < 2) return 'stable';
+        const last = valid[valid.length - 1]!.value!;
+        const prev = valid[valid.length - 2]!.value!;
+        const change = ((last - prev) / prev) * 100;
+        if (Math.abs(change) < 2) return 'stable';
+        return change > 0 ? 'up' : 'down';
+    };
+
+    const isInRange = (value: number | null, refLow: number | null, refHigh: number | null): boolean | null => {
+        if (value === null || refLow === null || refHigh === null) return null;
+        return value >= refLow && value <= refHigh;
+    };
+
+    const renderTrendChart = (trend: BiomarkerTrend) => {
+        const validHistory = trend.history.filter(h => h.value !== null);
+        if (validHistory.length < 2) return null;
+
+        const labels = validHistory.map(h => formatDate(h.date));
+        const data = validHistory.map(h => h.value!);
+        const chartWidth = Math.max(SCREEN_WIDTH - 64, validHistory.length * 60);
+
+        // Reference range band
+        const hasRefRange = validHistory[0]?.refLow !== null && validHistory[0]?.refHigh !== null;
+
+        return (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chartScroll}>
+                <LineChart
+                    data={{
+                        labels,
+                        datasets: [
+                            { data, color: () => colors.accent, strokeWidth: 2 },
+                            ...(hasRefRange ? [
+                                { data: validHistory.map(h => h.refHigh!), color: () => 'rgba(22, 163, 74, 0.3)', strokeWidth: 1, withDots: false },
+                                { data: validHistory.map(h => h.refLow!), color: () => 'rgba(22, 163, 74, 0.3)', strokeWidth: 1, withDots: false },
+                            ] as any : []),
+                        ],
+                    }}
+                    width={chartWidth}
+                    height={180}
+                    chartConfig={{
+                        backgroundColor: 'transparent',
+                        backgroundGradientFrom: colors.backgroundCard,
+                        backgroundGradientTo: colors.backgroundCard,
+                        decimalPlaces: 1,
+                        color: (opacity = 1) => `rgba(13, 148, 136, ${opacity})`,
+                        labelColor: () => colors.textMuted,
+                        propsForDots: {
+                            r: '4',
+                            strokeWidth: '2',
+                            stroke: colors.accent,
+                            fill: colors.backgroundCard,
+                        },
+                        propsForBackgroundLines: {
+                            strokeDasharray: '4,8',
+                            stroke: 'rgba(255,255,255,0.05)',
+                        },
+                        style: { borderRadius: 12 },
+                    }}
+                    bezier
+                    style={{ borderRadius: 12, marginVertical: 4 }}
+                    withInnerLines={true}
+                    withOuterLines={false}
+                    fromZero={false}
+                />
+            </ScrollView>
+        );
+    };
+
+    const renderTrendsTab = () => {
+        if (trends.length === 0) {
+            return (
+                <View style={styles.emptyState}>
+                    <View style={styles.emptyIcon}>
+                        <Ionicons name="trending-up-outline" size={48} color={colors.textMuted} />
+                    </View>
+                    <Text style={styles.emptyText}>No biomarker history yet</Text>
+                    <Text style={styles.emptySubtext}>Upload and analyze lab reports to see trends over time</Text>
+                </View>
+            );
+        }
+
+        return (
+            <View style={styles.trendsContainer}>
+                {/* Summary Cards */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.summaryRow}>
+                    <GlassView variant="medium" borderRadius={borderRadius.md} style={styles.summaryCard}>
+                        <Ionicons name="flask" size={20} color={colors.accent} />
+                        <Text style={styles.summaryValue}>{trends.length}</Text>
+                        <Text style={styles.summaryLabel}>Biomarkers</Text>
+                    </GlassView>
+                    <GlassView variant="medium" borderRadius={borderRadius.md} style={styles.summaryCard}>
+                        <Ionicons name="checkmark-circle" size={20} color={colors.success} />
+                        <Text style={styles.summaryValue}>
+                            {trends.filter(t => {
+                                const latest = getLatestValue(t);
+                                return latest && isInRange(latest.value, latest.refLow, latest.refHigh) === true;
+                            }).length}
+                        </Text>
+                        <Text style={styles.summaryLabel}>In Range</Text>
+                    </GlassView>
+                    <GlassView variant="medium" borderRadius={borderRadius.md} style={styles.summaryCard}>
+                        <Ionicons name="alert-circle" size={20} color={colors.error} />
+                        <Text style={styles.summaryValue}>
+                            {trends.filter(t => {
+                                const latest = getLatestValue(t);
+                                return latest && isInRange(latest.value, latest.refLow, latest.refHigh) === false;
+                            }).length}
+                        </Text>
+                        <Text style={styles.summaryLabel}>Out of Range</Text>
+                    </GlassView>
+                    <GlassView variant="medium" borderRadius={borderRadius.md} style={styles.summaryCard}>
+                        <Ionicons name="document-text" size={20} color={colors.primary} />
+                        <Text style={styles.summaryValue}>{labs.length}</Text>
+                        <Text style={styles.summaryLabel}>Reports</Text>
+                    </GlassView>
+                </ScrollView>
+
+                {/* Biomarker Trend Cards */}
+                {trends.map((trend, index) => {
+                    const latest = getLatestValue(trend);
+                    const direction = getTrendDirection(trend);
+                    const inRangeStatus = latest ? isInRange(latest.value, latest.refLow, latest.refHigh) : null;
+                    const statusColor = inRangeStatus === null ? colors.textMuted : inRangeStatus ? colors.success : colors.error;
+                    const isExpanded = expandedTrend === trend.name;
+                    const validCount = trend.history.filter(h => h.value !== null).length;
+
+                    return (
+                        <Animated.View key={trend.name} entering={FadeInDown.delay(index * 60)}>
+                            <Pressable onPress={() => setExpandedTrend(isExpanded ? null : trend.name)}>
+                                <GlassView variant="medium" borderRadius={borderRadius.lg} style={styles.trendCard}>
+                                    {/* Header row */}
+                                    <View style={styles.trendHeader}>
+                                        <View style={[styles.trendIndicator, { backgroundColor: statusColor }]} />
+                                        <View style={styles.trendInfo}>
+                                            <Text style={styles.trendName}>{trend.name}</Text>
+                                            {latest?.refLow !== null && latest?.refHigh !== null && (
+                                                <Text style={styles.trendRange}>
+                                                    Ref: {latest!.refLow} - {latest!.refHigh} {trend.unit}
+                                                </Text>
+                                            )}
+                                        </View>
+
+                                        {/* Current value */}
+                                        <View style={styles.trendValueCol}>
+                                            <View style={styles.trendValueRow}>
+                                                <Text style={[styles.trendValue, { color: statusColor }]}>
+                                                    {latest?.value ?? '—'}
+                                                </Text>
+                                                <Text style={styles.trendUnit}>{trend.unit}</Text>
+                                            </View>
+                                            <View style={styles.trendDirectionRow}>
+                                                <Ionicons
+                                                    name={direction === 'up' ? 'caret-up' : direction === 'down' ? 'caret-down' : 'remove'}
+                                                    size={12}
+                                                    color={direction === 'stable' ? colors.textMuted : direction === 'up' ? colors.accent : colors.error}
+                                                />
+                                                <Text style={styles.trendCount}>{validCount} readings</Text>
+                                            </View>
+                                        </View>
+
+                                        <Ionicons
+                                            name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                                            size={18}
+                                            color={colors.textMuted}
+                                        />
+                                    </View>
+
+                                    {/* Expanded chart */}
+                                    {isExpanded && (
+                                        <Animated.View entering={FadeInDown.duration(200)}>
+                                            {renderTrendChart(trend)}
+
+                                            {/* History table */}
+                                            <View style={styles.historyTable}>
+                                                <View style={styles.historyHeader}>
+                                                    <Text style={[styles.historyHeaderText, { flex: 1 }]}>Date</Text>
+                                                    <Text style={[styles.historyHeaderText, { width: 80, textAlign: 'right' }]}>Value</Text>
+                                                    <Text style={[styles.historyHeaderText, { width: 60, textAlign: 'center' }]}>Status</Text>
+                                                </View>
+                                                {[...trend.history].reverse().filter(h => h.value !== null).map((h, i) => {
+                                                    const rowInRange = isInRange(h.value, h.refLow, h.refHigh);
+                                                    const rowColor = rowInRange === null ? colors.textMuted : rowInRange ? colors.success : colors.error;
+                                                    return (
+                                                        <View key={h.id || i} style={styles.historyRow}>
+                                                            <Text style={[styles.historyDate, { flex: 1 }]}>{formatFullDate(h.date)}</Text>
+                                                            <Text style={[styles.historyValue, { width: 80, textAlign: 'right', color: rowColor }]}>
+                                                                {h.value} {trend.unit}
+                                                            </Text>
+                                                            <View style={{ width: 60, alignItems: 'center' }}>
+                                                                {rowInRange !== null && (
+                                                                    <Ionicons
+                                                                        name={rowInRange ? 'checkmark-circle' : 'alert-circle'}
+                                                                        size={16}
+                                                                        color={rowColor}
+                                                                    />
+                                                                )}
+                                                            </View>
+                                                        </View>
+                                                    );
+                                                })}
+                                            </View>
+                                        </Animated.View>
+                                    )}
+                                </GlassView>
+                            </Pressable>
+                        </Animated.View>
+                    );
+                })}
+            </View>
+        );
+    };
+
     return (
         <ScreenWrapper>
             <Animated.ScrollView
                 style={styles.scrollView}
-                refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchLabs} tintColor={colors.primary} />}
+                refreshControl={<RefreshControl refreshing={isLoading} onRefresh={handleRefresh} tintColor={colors.primary} />}
                 showsVerticalScrollIndicator={false}
             >
+                {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.title}>Lab Reports</Text>
                     <Pressable style={styles.uploadButton} onPress={handleUpload}>
@@ -130,75 +403,113 @@ export default function LabsScreen() {
                     </Pressable>
                 </View>
 
-                {labs.length === 0 && !isLoading && (
-                    <View style={styles.emptyState}>
-                        <View style={styles.emptyIcon}>
-                            <Ionicons name="flask-outline" size={48} color={colors.textMuted} />
-                        </View>
-                        <Text style={styles.emptyText}>No lab reports yet</Text>
-                        <Text style={styles.emptySubtext}>Upload your bloodwork to track biomarkers</Text>
-                    </View>
+                {/* Tab Switcher */}
+                <View style={styles.tabRow}>
+                    <Pressable
+                        style={[styles.tab, activeTab === 'reports' && styles.tabActive]}
+                        onPress={() => setActiveTab('reports')}
+                    >
+                        <Ionicons name="document-text-outline" size={16} color={activeTab === 'reports' ? colors.accent : colors.textMuted} />
+                        <Text style={[styles.tabText, activeTab === 'reports' && styles.tabTextActive]}>Reports</Text>
+                    </Pressable>
+                    <Pressable
+                        style={[styles.tab, activeTab === 'trends' && styles.tabActive]}
+                        onPress={() => setActiveTab('trends')}
+                    >
+                        <Ionicons name="trending-up-outline" size={16} color={activeTab === 'trends' ? colors.accent : colors.textMuted} />
+                        <Text style={[styles.tabText, activeTab === 'trends' && styles.tabTextActive]}>Trends</Text>
+                        {trends.length > 0 && (
+                            <View style={styles.tabBadge}>
+                                <Text style={styles.tabBadgeText}>{trends.length}</Text>
+                            </View>
+                        )}
+                    </Pressable>
+                </View>
+
+                {/* Reports Tab */}
+                {activeTab === 'reports' && (
+                    <>
+                        {labs.length === 0 && !isLoading && (
+                            <View style={styles.emptyState}>
+                                <View style={styles.emptyIcon}>
+                                    <Ionicons name="flask-outline" size={48} color={colors.textMuted} />
+                                </View>
+                                <Text style={styles.emptyText}>No lab reports yet</Text>
+                                <Text style={styles.emptySubtext}>Upload your bloodwork to track biomarkers over time</Text>
+                                <Pressable style={styles.emptyUploadButton} onPress={handleUpload}>
+                                    <Ionicons name="add-circle" size={20} color="#fff" />
+                                    <Text style={styles.emptyUploadText}>Upload Your First Report</Text>
+                                </Pressable>
+                            </View>
+                        )}
+
+                        {labs.map((lab, index) => (
+                            <Animated.View key={lab.id} entering={FadeInDown.delay(index * 100)} layout={LinearTransition}>
+                                <GlassView style={styles.labCard} variant="medium" borderRadius={borderRadius.lg}>
+                                    <Pressable style={styles.labHeader} onPress={() => setExpandedId(expandedId === lab.id ? null : lab.id)}>
+                                        <View style={styles.labIcon}>
+                                            <Ionicons name="document-text" size={24} color={colors.primary} />
+                                        </View>
+                                        <View style={styles.labInfo}>
+                                            <Text style={styles.labFilename} numberOfLines={1}>{lab.filename}</Text>
+                                            <Text style={styles.labDate}>{new Date(lab.uploadedAt).toLocaleDateString()}</Text>
+                                        </View>
+                                        <View style={styles.markerCount}>
+                                            <Text style={styles.markerCountText}>{lab.markers.length}</Text>
+                                            <Text style={styles.markerCountLabel}>markers</Text>
+                                        </View>
+                                        <Pressable
+                                            style={styles.analyzeButton}
+                                            onPress={(e) => { e.stopPropagation?.(); handleAnalyze(lab.id); }}
+                                            disabled={analyzingId === lab.id}
+                                        >
+                                            {analyzingId === lab.id ? (
+                                                <ActivityIndicator size="small" color={colors.primary} />
+                                            ) : (
+                                                <>
+                                                    <Ionicons name="sparkles" size={16} color={colors.accent} />
+                                                    <Text style={styles.analyzeButtonText}>Analyze</Text>
+                                                </>
+                                            )}
+                                        </Pressable>
+                                        <Ionicons name={expandedId === lab.id ? 'chevron-up' : 'chevron-down'} size={20} color={colors.textMuted} />
+                                    </Pressable>
+
+                                    {expandedId === lab.id && lab.markers.length > 0 && (
+                                        <Animated.View entering={FadeInDown} style={styles.markersList}>
+                                            {lab.markers.map((marker) => {
+                                                const statusColor = marker.isInRange === null ? colors.textMuted : marker.isInRange ? colors.success : colors.error;
+                                                return (
+                                                    <View key={marker.id} style={styles.markerRow}>
+                                                        <View style={styles.markerInfo}>
+                                                            <Text style={styles.markerName}>{marker.name}</Text>
+                                                            {marker.refRangeLow !== null && marker.refRangeHigh !== null && (
+                                                                <Text style={styles.markerRange}>Ref: {marker.refRangeLow} - {marker.refRangeHigh} {marker.unit}</Text>
+                                                            )}
+                                                        </View>
+                                                        <View style={styles.markerValue}>
+                                                            <Text style={[styles.markerValueText, { color: statusColor }]}>{marker.value}</Text>
+                                                            <Text style={styles.markerUnit}>{marker.unit}</Text>
+                                                        </View>
+                                                        {marker.isInRange !== null && (
+                                                            <Ionicons name={marker.isInRange ? 'checkmark-circle' : 'alert-circle'} size={20} color={statusColor} />
+                                                        )}
+                                                    </View>
+                                                );
+                                            })}
+                                        </Animated.View>
+                                    )}
+                                </GlassView>
+                            </Animated.View>
+                        ))}
+                    </>
                 )}
 
-                {labs.map((lab, index) => (
-                    <Animated.View key={lab.id} entering={FadeInDown.delay(index * 100)} layout={LinearTransition}>
-                        <GlassView style={styles.labCard} variant="medium" borderRadius={borderRadius.lg}>
-                            <Pressable style={styles.labHeader} onPress={() => setExpandedId(expandedId === lab.id ? null : lab.id)}>
-                                <View style={styles.labIcon}>
-                                    <Ionicons name="document-text" size={24} color={colors.primary} />
-                                </View>
-                                <View style={styles.labInfo}>
-                                    <Text style={styles.labFilename} numberOfLines={1}>{lab.filename}</Text>
-                                    <Text style={styles.labDate}>{new Date(lab.uploadedAt).toLocaleDateString()}</Text>
-                                </View>
-                                <View style={styles.markerCount}>
-                                    <Text style={styles.markerCountText}>{lab.markers.length}</Text>
-                                    <Text style={styles.markerCountLabel}>markers</Text>
-                                </View>
-                                <Pressable
-                                    style={styles.analyzeButton}
-                                    onPress={(e) => { e.stopPropagation?.(); handleAnalyze(lab.id); }}
-                                    disabled={analyzingId === lab.id}
-                                >
-                                    {analyzingId === lab.id ? (
-                                        <ActivityIndicator size="small" color={colors.primary} />
-                                    ) : (
-                                        <>
-                                            <Ionicons name="sparkles" size={16} color={colors.accent} />
-                                            <Text style={styles.analyzeButtonText}>Analyze</Text>
-                                        </>
-                                    )}
-                                </Pressable>
-                                <Ionicons name={expandedId === lab.id ? 'chevron-up' : 'chevron-down'} size={20} color={colors.textMuted} />
-                            </Pressable>
+                {/* Trends Tab */}
+                {activeTab === 'trends' && renderTrendsTab()}
 
-                            {expandedId === lab.id && lab.markers.length > 0 && (
-                                <Animated.View entering={FadeInDown} style={styles.markersList}>
-                                    {lab.markers.map((marker) => {
-                                        const statusColor = marker.isInRange === null ? colors.textMuted : marker.isInRange ? colors.success : colors.error;
-                                        return (
-                                            <View key={marker.id} style={styles.markerRow}>
-                                                <View style={styles.markerInfo}>
-                                                    <Text style={styles.markerName}>{marker.name}</Text>
-                                                    {marker.refRangeLow !== null && marker.refRangeHigh !== null && (
-                                                        <Text style={styles.markerRange}>Ref: {marker.refRangeLow} - {marker.refRangeHigh} {marker.unit}</Text>
-                                                    )}
-                                                </View>
-                                                <View style={styles.markerValue}>
-                                                    <Text style={[styles.markerValueText, { color: statusColor }]}>{marker.value}</Text>
-                                                    <Text style={styles.markerUnit}>{marker.unit}</Text>
-                                                </View>
-                                                {marker.isInRange !== null && (
-                                                    <Ionicons name={marker.isInRange ? 'checkmark-circle' : 'alert-circle'} size={20} color={statusColor} />
-                                                )}
-                                            </View>
-                                        );
-                                    })}
-                                </Animated.View>
-                            )}
-                        </GlassView>
-                    </Animated.View>
-                ))}
+                {/* Bottom spacer for tab bar */}
+                <View style={{ height: 100 }} />
             </Animated.ScrollView>
 
             {/* Analysis Result Modal */}
@@ -215,9 +526,9 @@ export default function LabsScreen() {
                             <ScrollView style={styles.modalBody}>
                                 {analysisResult && (
                                     <>
-                                        <View style={styles.summaryCard}>
-                                            <Text style={styles.summaryTitle}>Summary</Text>
-                                            <Text style={styles.summaryText}>{analysisResult.summary}</Text>
+                                        <View style={styles.summaryCardModal}>
+                                            <Text style={styles.summaryTitleModal}>Summary</Text>
+                                            <Text style={styles.summaryTextModal}>{analysisResult.summary}</Text>
                                         </View>
                                         <Text style={styles.sectionTitle}>Detected Markers</Text>
                                         {analysisResult.markers.map((marker, i) => (
@@ -250,14 +561,66 @@ export default function LabsScreen() {
 
 const styles = StyleSheet.create({
     scrollView: { flex: 1, padding: spacing.lg },
-    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
+    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
     title: { ...typography.h2, color: colors.textPrimary },
     uploadButton: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.primary, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.md },
     uploadText: { ...typography.label, color: '#fff' },
+
+    // Tab switcher
+    tabRow: {
+        flexDirection: 'row',
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: borderRadius.md,
+        padding: 3,
+        marginBottom: spacing.lg,
+    },
+    tab: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        paddingVertical: 10,
+        borderRadius: borderRadius.sm,
+    },
+    tabActive: {
+        backgroundColor: 'rgba(13, 148, 136, 0.15)',
+    },
+    tabText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: colors.textMuted,
+    },
+    tabTextActive: {
+        color: colors.accent,
+    },
+    tabBadge: {
+        backgroundColor: colors.accent,
+        borderRadius: 8,
+        paddingHorizontal: 5,
+        paddingVertical: 1,
+        minWidth: 18,
+        alignItems: 'center',
+    },
+    tabBadgeText: {
+        fontSize: 10,
+        fontWeight: '700',
+        color: '#fff',
+    },
+
+    // Empty state
     emptyState: { alignItems: 'center', paddingVertical: spacing.xxl },
     emptyIcon: { width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(99,102,241,0.08)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
     emptyText: { ...typography.h4, color: colors.textSecondary, marginTop: spacing.sm },
-    emptySubtext: { ...typography.body, color: colors.textMuted },
+    emptySubtext: { ...typography.body, color: colors.textMuted, textAlign: 'center', paddingHorizontal: spacing.xl },
+    emptyUploadButton: {
+        flexDirection: 'row', alignItems: 'center', gap: 8,
+        backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 12,
+        borderRadius: borderRadius.md, marginTop: spacing.lg,
+    },
+    emptyUploadText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+
+    // Lab report cards
     labCard: { padding: 0, marginBottom: spacing.md, overflow: 'hidden' },
     labHeader: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, gap: spacing.sm },
     labIcon: { width: 44, height: 44, borderRadius: borderRadius.md, backgroundColor: 'rgba(99, 102, 241, 0.1)', justifyContent: 'center', alignItems: 'center' },
@@ -277,14 +640,52 @@ const styles = StyleSheet.create({
     markerValue: { alignItems: 'flex-end' },
     markerValueText: { ...typography.h4 },
     markerUnit: { ...typography.caption, color: colors.textMuted },
+
+    // Trends tab
+    trendsContainer: { gap: spacing.md },
+    summaryRow: { gap: spacing.sm, paddingBottom: spacing.sm },
+    summaryCard: {
+        width: 90, height: 90,
+        alignItems: 'center', justifyContent: 'center',
+        gap: 4, padding: spacing.sm,
+    },
+    summaryValue: { fontSize: 24, fontWeight: '800', color: colors.textPrimary },
+    summaryLabel: { fontSize: 10, color: colors.textMuted, fontWeight: '600' },
+
+    // Trend cards
+    trendCard: { padding: spacing.md },
+    trendHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+    trendIndicator: { width: 4, height: 32, borderRadius: 2 },
+    trendInfo: { flex: 1 },
+    trendName: { fontSize: 15, fontWeight: '700', color: colors.textPrimary },
+    trendRange: { fontSize: 11, color: colors.textMuted, marginTop: 1 },
+    trendValueCol: { alignItems: 'flex-end', marginRight: 4 },
+    trendValueRow: { flexDirection: 'row', alignItems: 'baseline', gap: 3 },
+    trendValue: { fontSize: 20, fontWeight: '800' },
+    trendUnit: { fontSize: 11, color: colors.textMuted },
+    trendDirectionRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 2 },
+    trendCount: { fontSize: 10, color: colors.textMuted },
+
+    // Chart
+    chartScroll: { marginTop: spacing.md },
+
+    // History table
+    historyTable: { marginTop: spacing.md, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)', paddingTop: spacing.sm },
+    historyHeader: { flexDirection: 'row', paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
+    historyHeaderText: { fontSize: 10, fontWeight: '700', color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5 },
+    historyRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.03)' },
+    historyDate: { fontSize: 13, color: colors.textSecondary },
+    historyValue: { fontSize: 13, fontWeight: '600' },
+
+    // Modal
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' },
     modalContent: { height: '80%', padding: spacing.lg },
     modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
     modalTitle: { ...typography.h2, color: colors.textPrimary },
     modalBody: { flex: 1 },
-    summaryCard: { backgroundColor: 'rgba(99,102,241,0.08)', padding: spacing.md, borderRadius: borderRadius.md, marginBottom: spacing.lg },
-    summaryTitle: { ...typography.h4, color: colors.primary, marginBottom: spacing.xs },
-    summaryText: { ...typography.body, color: colors.textPrimary },
+    summaryCardModal: { backgroundColor: 'rgba(99,102,241,0.08)', padding: spacing.md, borderRadius: borderRadius.md, marginBottom: spacing.lg },
+    summaryTitleModal: { ...typography.h4, color: colors.primary, marginBottom: spacing.xs },
+    summaryTextModal: { ...typography.body, color: colors.textPrimary },
     sectionTitle: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.md },
     analysisRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
     analysisInfo: { flex: 1, paddingRight: spacing.md },

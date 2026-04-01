@@ -34,6 +34,10 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
+      - key: FEATURE_GEMINI_LAB_ANALYSIS
+        value: "true"
+      - key: FEATURE_AI_SUGGESTIONS
+        value: "true"
       - key: CORS_ORIGIN
         value: "biopoint://*,https://biopoint-api.onrender.com"
       - key: PORT

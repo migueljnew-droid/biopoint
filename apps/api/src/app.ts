@@ -30,6 +30,7 @@ import { complianceRoutes } from './routes/compliance.js';
 import { peptidesRoutes } from './routes/peptides.js';
 import { correlationsRoutes } from './routes/correlations.js';
 import { biopointRoutes } from './routes/biopoint.js';
+import { oracleRoutes } from './routes/oracle.js';
 
 const envToLogger = {
     development: {
@@ -76,6 +77,7 @@ async function registerRoutesForPrefix(app: FastifyInstance, prefix: string) {
     await app.register(peptidesRoutes, { prefix: withPrefix('/peptides') });
     await app.register(correlationsRoutes, { prefix: withPrefix('/correlations') });
     await app.register(biopointRoutes, { prefix: withPrefix('/biopoint') });
+    await app.register(oracleRoutes, { prefix: withPrefix('/oracle') });
 }
 
 export async function createServer(options: CreateServerOptions = {}) {

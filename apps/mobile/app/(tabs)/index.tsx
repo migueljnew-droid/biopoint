@@ -157,7 +157,7 @@ export default function DashboardScreen() {
 
                 {/* The Oracle - AI Analysis */}
                 <Animated.View entering={FadeInDown.delay(100).springify()}>
-                    <Pressable onPress={() => router.push('/(tabs)/labs' as any)} style={styles.oracleCard}>
+                    <Pressable onPress={() => router.push('/oracle' as any)} style={styles.oracleCard}>
                         <GlassView variant="heavy" borderRadius={borderRadius.lg} style={styles.oracleContent}>
                             <View style={styles.oracleIconContainer}>
                                 <Ionicons name="sparkles" size={24} color={colors.primary} />
@@ -469,8 +469,6 @@ const styles = StyleSheet.create({
         gap: spacing.xs,
         backgroundColor: 'rgba(255,255,255,0.06)',
         borderRadius: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.08)',
         borderWidth: 0,
         borderColor: 'transparent',
     },
