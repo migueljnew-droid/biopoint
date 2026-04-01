@@ -23,8 +23,7 @@ export const labsService = {
         try {
             const response = await FileSystem.uploadAsync(uploadUrl, uri, {
                 httpMethod: 'PUT',
-                // @ts-ignore
-                uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+                uploadType: 1, // BINARY_CONTENT
                 headers: {
                     'Content-Type': contentType,
                 },
