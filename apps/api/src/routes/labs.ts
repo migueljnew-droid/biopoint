@@ -331,11 +331,12 @@ export async function labsRoutes(app: FastifyInstance) {
                     low = parseFloat(rangeMatch[1] ?? '0');
                     high = parseFloat(rangeMatch[2] ?? '0');
                 }
+                const numValue = typeof m.value === 'string' ? parseFloat(m.value) : m.value;
                 return {
                     labReportId: report.id,
                     userId,
                     name: m.name,
-                    value: m.value,
+                    value: isNaN(numValue) ? null : numValue,
                     unit: m.unit,
                     refRangeLow: low,
                     refRangeHigh: high,
