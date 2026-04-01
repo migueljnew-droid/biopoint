@@ -10,7 +10,6 @@ import { encryptToString, decryptFromString, isEncryptedString } from './crypto.
 // Define which fields should be encrypted for each model
 const ENCRYPTED_FIELDS: Record<string, string[]> = {
   Profile: ['dateOfBirth'],
-  LabMarker: ['value'],
   LabReport: ['notes'],
   DailyLog: ['notes'],
   StackItem: ['notes'],
@@ -21,7 +20,6 @@ const ENCRYPTED_FIELDS: Record<string, string[]> = {
 // LabMarker.value is now Float? (nullable) after schema migration, so it can be added here.
 const CLEAR_PLAINTEXT_FIELDS: Record<string, Set<string>> = {
   Profile: new Set(['dateOfBirth']),
-  LabMarker: new Set(['value']),
   LabReport: new Set(['notes']),
   DailyLog: new Set(['notes']),
   StackItem: new Set(['notes']),
