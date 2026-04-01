@@ -290,9 +290,24 @@ export async function labsRoutes(app: FastifyInstance) {
             // Get file from S3
             const buffer = await getFileBuffer(report.s3Key);
 
-            // Determine mime type (simple check based on extension)
-            const isPdf = report.filename.toLowerCase().endsWith('.pdf');
-            const mimeType = isPdf ? 'application/pdf' : 'image/jpeg';
+            // Detect mime type from file magic bytes (more reliable than extension)
+            let mimeType = 'image/jpeg';
+            if (buffer[0] === 0x25 && buffer[1] === 0x50) mimeType = 'application/pdf';
+            else if (buffer[0] === 0x89 && buffer[1] === 0x50) mimeType = 'image/png';
+            else if (buffer[0] === 0xFF && buffer[1] === 0xD8) mimeType = 'image/jpeg';
+            else if (buffer[0] === 0x52 && buffer[1] === 0x49) mimeType = 'image/webp';
+            else if (buffer[0] === 0x47 && buffer[1] === 0x49) mimeType = 'image/gif';
+
+            request.log.info({ mimeType, fileSize: buffer.length, filename: report.filename }, 'Analyzing lab report');
+
+            // Gemini doesn't support HEIC — if we detect it, reject with clear message
+            if (mimeType === 'image/heic') {
+                return reply.status(400).send({
+                    statusCode: 400,
+                    error: 'Bad Request',
+                    message: 'HEIC images are not supported. Please upload a JPEG or PNG.',
+                });
+            }
 
             // Analyze
             const analysis = await analyzeLabReport(buffer, mimeType);

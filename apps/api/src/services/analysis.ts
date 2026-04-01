@@ -57,8 +57,8 @@ Return ONLY the raw JSON object, no markdown formatting.
 
         return JSON.parse(jsonStr) as AnalysisResult;
     } catch (error: any) {
-        appLogger.error({ err: error }, 'Gemini Analysis Error');
+        appLogger.error({ err: error, mimeType, bufferSize: fileBuffer.length }, 'Gemini Analysis Error');
         const detail = error?.message || String(error);
-        throw new Error(`Failed to analyze lab report: ${detail}`);
+        throw new Error(`Failed to analyze (${mimeType}, ${Math.round(fileBuffer.length / 1024)}KB): ${detail}`);
     }
 }
