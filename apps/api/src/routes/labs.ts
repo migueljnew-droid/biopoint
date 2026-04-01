@@ -290,24 +290,34 @@ export async function labsRoutes(app: FastifyInstance) {
             // Get file from S3
             const buffer = await getFileBuffer(report.s3Key);
 
-            // Detect mime type from file magic bytes (more reliable than extension)
+            // Reject empty/corrupt files
+            if (!buffer || buffer.length < 100) {
+                return reply.status(400).send({
+                    statusCode: 400,
+                    error: 'Bad Request',
+                    message: `File appears empty or corrupted (${buffer?.length || 0} bytes). Please re-upload.`,
+                });
+            }
+
+            // Detect mime type from file magic bytes
             let mimeType = 'image/jpeg';
             if (buffer[0] === 0x25 && buffer[1] === 0x50) mimeType = 'application/pdf';
             else if (buffer[0] === 0x89 && buffer[1] === 0x50) mimeType = 'image/png';
             else if (buffer[0] === 0xFF && buffer[1] === 0xD8) mimeType = 'image/jpeg';
             else if (buffer[0] === 0x52 && buffer[1] === 0x49) mimeType = 'image/webp';
             else if (buffer[0] === 0x47 && buffer[1] === 0x49) mimeType = 'image/gif';
-
-            request.log.info({ mimeType, fileSize: buffer.length, filename: report.filename }, 'Analyzing lab report');
-
-            // Gemini doesn't support HEIC — if we detect it, reject with clear message
-            if (mimeType === 'image/heic') {
-                return reply.status(400).send({
-                    statusCode: 400,
-                    error: 'Bad Request',
-                    message: 'HEIC images are not supported. Please upload a JPEG or PNG.',
-                });
+            // HEIF/HEIC: bytes 4-7 = "ftyp"
+            else if (buffer.length > 11 && buffer[4] === 0x66 && buffer[5] === 0x74 && buffer[6] === 0x79 && buffer[7] === 0x70) {
+                // Convert HEIC to something Gemini accepts — send as jpeg and let Gemini try
+                mimeType = 'image/jpeg';
             }
+
+            request.log.info({
+                mimeType,
+                fileSize: buffer.length,
+                filename: report.filename,
+                firstBytes: buffer.slice(0, 12).toString('hex'),
+            }, 'Analyzing lab report');
 
             // Analyze
             const analysis = await analyzeLabReport(buffer, mimeType);
