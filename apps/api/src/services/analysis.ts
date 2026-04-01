@@ -1,7 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { appLogger } from '../utils/appLogger.js';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export interface AnalysisResult {
     summary: string;
@@ -19,14 +16,12 @@ export async function analyzeLabReport(
     fileBuffer: Buffer,
     mimeType: string
 ): Promise<AnalysisResult> {
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
         throw new Error('GEMINI_API_KEY is not set');
     }
 
-    try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-
-        const prompt = `You are an expert medical data analyst. Analyze this blood work / lab report image.
+    const prompt = `You are an expert medical data analyst. Analyze this blood work / lab report image.
 Extract the following information in strict JSON format:
 1. A brief "summary" of the overall health status based on the results.
 2. A list of "markers" found in the report. For each marker, include:
@@ -39,17 +34,32 @@ Extract the following information in strict JSON format:
 
 Return ONLY the raw JSON object, no markdown formatting.`;
 
-        const result = await model.generateContent([
-            prompt,
+    try {
+        const b64 = fileBuffer.toString('base64');
+
+        const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
             {
-                inlineData: {
-                    data: fileBuffer.toString('base64'),
-                    mimeType,
-                },
-            },
-        ]);
-        const response = await result.response;
-        const text = response.text();
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inline_data: { mime_type: mimeType, data: b64 } },
+                        ],
+                    }],
+                }),
+            }
+        );
+
+        if (!res.ok) {
+            const errBody = await res.text();
+            throw new Error(`Gemini API ${res.status}: ${errBody.slice(0, 300)}`);
+        }
+
+        const data = await res.json() as any;
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
         const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(jsonStr) as AnalysisResult;
