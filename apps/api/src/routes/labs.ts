@@ -287,8 +287,23 @@ export async function labsRoutes(app: FastifyInstance) {
         }
 
         try {
-            // Get file from S3
-            const buffer = await getFileBuffer(report.s3Key);
+            const body = request.body as { imageBase64?: string; imageMimeType?: string } | undefined;
+            let buffer: Buffer;
+            let mimeType: string;
+
+            if (body?.imageBase64) {
+                // Use image sent directly from mobile (bypasses R2)
+                buffer = Buffer.from(body.imageBase64, 'base64');
+                mimeType = body.imageMimeType || 'image/jpeg';
+            } else {
+                // Fallback: get file from S3
+                buffer = await getFileBuffer(report.s3Key);
+                // Detect mime type from file magic bytes
+                mimeType = 'image/jpeg';
+                if (buffer[0] === 0x25 && buffer[1] === 0x50) mimeType = 'application/pdf';
+                else if (buffer[0] === 0x89 && buffer[1] === 0x50) mimeType = 'image/png';
+                else if (buffer[0] === 0xFF && buffer[1] === 0xD8) mimeType = 'image/jpeg';
+            }
 
             // Reject empty/corrupt files
             if (!buffer || buffer.length < 100) {
@@ -299,25 +314,7 @@ export async function labsRoutes(app: FastifyInstance) {
                 });
             }
 
-            // Detect mime type from file magic bytes
-            let mimeType = 'image/jpeg';
-            if (buffer[0] === 0x25 && buffer[1] === 0x50) mimeType = 'application/pdf';
-            else if (buffer[0] === 0x89 && buffer[1] === 0x50) mimeType = 'image/png';
-            else if (buffer[0] === 0xFF && buffer[1] === 0xD8) mimeType = 'image/jpeg';
-            else if (buffer[0] === 0x52 && buffer[1] === 0x49) mimeType = 'image/webp';
-            else if (buffer[0] === 0x47 && buffer[1] === 0x49) mimeType = 'image/gif';
-            // HEIF/HEIC: bytes 4-7 = "ftyp"
-            else if (buffer.length > 11 && buffer[4] === 0x66 && buffer[5] === 0x74 && buffer[6] === 0x79 && buffer[7] === 0x70) {
-                // Convert HEIC to something Gemini accepts — send as jpeg and let Gemini try
-                mimeType = 'image/jpeg';
-            }
-
-            request.log.info({
-                mimeType,
-                fileSize: buffer.length,
-                filename: report.filename,
-                firstBytes: buffer.slice(0, 12).toString('hex'),
-            }, 'Analyzing lab report');
+            request.log.info({ mimeType, fileSize: buffer.length, filename: report.filename }, 'Analyzing lab report');
 
             // Analyze
             const analysis = await analyzeLabReport(buffer, mimeType);

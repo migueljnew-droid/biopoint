@@ -48,8 +48,13 @@ export const labsService = {
         return response.data;
     },
 
-    analyzeReport: async (id: string): Promise<AnalysisResult> => {
-        const response = await api.post(`/labs/${id}/analyze`, {});
+    analyzeReport: async (id: string, imageUri?: string, imageMimeType?: string): Promise<AnalysisResult> => {
+        let body: any = {};
+        if (imageUri) {
+            const b64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 });
+            body = { imageBase64: b64, imageMimeType: imageMimeType || 'image/jpeg' };
+        }
+        const response = await api.post(`/labs/${id}/analyze`, body);
         return response.data;
     },
 };

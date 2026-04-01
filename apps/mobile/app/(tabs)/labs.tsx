@@ -56,6 +56,7 @@ export default function LabsScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [activeTab, setActiveTab] = useState<TabMode>('reports');
     const [expandedTrend, setExpandedTrend] = useState<string | null>(null);
+    const [lastUpload, setLastUpload] = useState<{ reportId: string; uri: string; mimeType: string } | null>(null);
 
     const fetchLabs = useCallback(async () => {
         setIsLoading(true);
@@ -93,8 +94,9 @@ export default function LabsScreen() {
         try {
             const { uploadUrl, s3Key } = await labsService.getPresignedUrl(name, mimeType);
             await labsService.uploadFile(uri, uploadUrl, mimeType);
-            await labsService.createReport({ filename: name, s3Key, notes: 'Uploaded from mobile app' });
-            Alert.alert('Success', 'Lab report uploaded successfully');
+            const report = await labsService.createReport({ filename: name, s3Key, notes: 'Uploaded from mobile app' });
+            setLastUpload({ reportId: report.id, uri, mimeType });
+            Alert.alert('Success', 'Lab report uploaded! Tap Analyze to extract biomarkers.');
             fetchLabs();
             fetchTrends();
         } catch (error) {
@@ -163,7 +165,9 @@ export default function LabsScreen() {
     const handleAnalyze = async (id: string) => {
         setAnalyzingId(id);
         try {
-            const result = await labsService.analyzeReport(id);
+            // Send image directly from device if we have it (bypasses R2 download)
+            const upload = lastUpload?.reportId === id ? lastUpload : null;
+            const result = await labsService.analyzeReport(id, upload?.uri, upload?.mimeType);
             setAnalysisResult(result);
             setModalVisible(true);
             fetchLabs();
