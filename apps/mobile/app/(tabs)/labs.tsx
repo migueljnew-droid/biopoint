@@ -143,6 +143,23 @@ export default function LabsScreen() {
         ]);
     };
 
+    const handleDelete = (id: string) => {
+        Alert.alert('Delete Report', 'Are you sure you want to delete this lab report?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', style: 'destructive', onPress: async () => {
+                    try {
+                        await api.delete(`/labs/${id}`);
+                        fetchLabs();
+                        fetchTrends();
+                    } catch {
+                        Alert.alert('Error', 'Failed to delete report');
+                    }
+                }
+            },
+        ]);
+    };
+
     const handleAnalyze = async (id: string) => {
         setAnalyzingId(id);
         try {
@@ -475,9 +492,9 @@ export default function LabsScreen() {
                                         <Ionicons name={expandedId === lab.id ? 'chevron-up' : 'chevron-down'} size={20} color={colors.textMuted} />
                                     </Pressable>
 
-                                    {expandedId === lab.id && lab.markers.length > 0 && (
+                                    {expandedId === lab.id && (
                                         <Animated.View entering={FadeInDown} style={styles.markersList}>
-                                            {lab.markers.map((marker) => {
+                                            {lab.markers.length > 0 ? lab.markers.map((marker) => {
                                                 const statusColor = marker.isInRange === null ? colors.textMuted : marker.isInRange ? colors.success : colors.error;
                                                 return (
                                                     <View key={marker.id} style={styles.markerRow}>
@@ -496,7 +513,16 @@ export default function LabsScreen() {
                                                         )}
                                                     </View>
                                                 );
-                                            })}
+                                            }) : (
+                                                <Text style={{ color: colors.textMuted, ...typography.caption, textAlign: 'center', paddingVertical: spacing.sm }}>No markers yet — tap Analyze to extract biomarkers</Text>
+                                            )}
+                                            <Pressable
+                                                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: spacing.sm, marginTop: spacing.xs }}
+                                                onPress={() => handleDelete(lab.id)}
+                                            >
+                                                <Ionicons name="trash-outline" size={16} color={colors.error} />
+                                                <Text style={{ color: colors.error, ...typography.caption, fontWeight: '600' }}>Delete Report</Text>
+                                            </Pressable>
                                         </Animated.View>
                                     )}
                                 </GlassView>
