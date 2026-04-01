@@ -323,41 +323,53 @@ export async function labsRoutes(app: FastifyInstance) {
             const reportDate = report.reportDate || report.uploadedAt || new Date();
 
             // Parse markers and batch insert atomically
-            const markerData = analysis.markers.map((m: { name: string; value: number; unit: string; range: string; flag: string; insight: string }) => {
+            const markerData = analysis.markers.map((m: any) => {
                 let low: number | null = null;
                 let high: number | null = null;
-                const rangeMatch = m.range.match(/([\d.]+)\s*-\s*([\d.]+)/);
+                const rangeMatch = String(m.range || '').match(/([\d.]+)\s*-\s*([\d.]+)/);
                 if (rangeMatch) {
                     low = parseFloat(rangeMatch[1] ?? '0');
                     high = parseFloat(rangeMatch[2] ?? '0');
                 }
-                const numValue = typeof m.value === 'string' ? parseFloat(m.value) : m.value;
+                // Force value to number — Gemini may return number, string, or null
+                let val: number | null = null;
+                if (m.value !== null && m.value !== undefined && m.value !== '') {
+                    const parsed = Number(m.value);
+                    if (!isNaN(parsed)) val = parsed;
+                }
                 return {
                     labReportId: report.id,
                     userId,
-                    name: m.name,
-                    value: isNaN(numValue) ? null : numValue,
-                    unit: m.unit,
+                    name: String(m.name || 'Unknown'),
+                    value: val,
+                    unit: String(m.unit || ''),
                     refRangeLow: low,
                     refRangeHigh: high,
                     recordedAt: reportDate,
-                    notes: `${m.flag}: ${m.insight}`,
+                    notes: `${m.flag || 'NORMAL'}: ${m.insight || ''}`,
                 };
             });
+
+            // Log first 3 markers for debugging
+            request.log.info({ sampleMarkers: markerData.slice(0, 3).map(m => ({ name: m.name, value: m.value, type: typeof m.value })) }, 'Saving markers');
 
             await prisma.$transaction([
                 prisma.labMarker.deleteMany({ where: { labReportId: report.id } }),
                 prisma.labMarker.createMany({ data: markerData }),
             ]);
 
+            // Verify save worked
+            const savedCount = await prisma.labMarker.count({ where: { labReportId: report.id, value: { not: null } } });
+            request.log.info({ savedWithValues: savedCount, total: markerData.length }, 'Markers saved');
+
             await createAuditLog(request, {
                 action: 'UPDATE',
                 entityType: 'LabReport',
                 entityId: report.id,
-                metadata: { action: 'analyze', markerCount: analysis.markers.length },
+                metadata: { action: 'analyze', markerCount: analysis.markers.length, savedWithValues: savedCount },
             });
 
-            return analysis;
+            return { ...analysis, _debug: { savedMarkers: markerData.length, savedWithValues: savedCount } };
         } catch (error: any) {
             request.log.error(error);
             return reply.status(500).send({
