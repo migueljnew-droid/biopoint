@@ -331,9 +331,9 @@ export default function LabsScreen() {
                                         <View style={[styles.trendIndicator, { backgroundColor: statusColor }]} />
                                         <View style={styles.trendInfo}>
                                             <Text style={styles.trendName}>{trend.name}</Text>
-                                            {latest?.refLow !== null && latest?.refHigh !== null && (
+                                            {latest && latest.refLow !== null && latest.refHigh !== null && (
                                                 <Text style={styles.trendRange}>
-                                                    Ref: {latest!.refLow} - {latest!.refHigh} {trend.unit}
+                                                    Ref: {latest.refLow} - {latest.refHigh} {trend.unit}
                                                 </Text>
                                             )}
                                         </View>
@@ -500,21 +500,31 @@ export default function LabsScreen() {
                                         <Animated.View entering={FadeInDown} style={styles.markersList}>
                                             {lab.markers.length > 0 ? lab.markers.map((marker) => {
                                                 const statusColor = marker.isInRange === null ? colors.textMuted : marker.isInRange ? colors.success : colors.error;
+                                                const statusLabel = marker.isInRange === null ? '' : marker.isInRange ? 'IN RANGE' : 'OUT OF RANGE';
                                                 return (
-                                                    <View key={marker.id} style={styles.markerRow}>
-                                                        <View style={styles.markerInfo}>
-                                                            <Text style={styles.markerName}>{marker.name}</Text>
-                                                            {marker.refRangeLow !== null && marker.refRangeHigh !== null && (
-                                                                <Text style={styles.markerRange}>Ref: {marker.refRangeLow} - {marker.refRangeHigh} {marker.unit}</Text>
-                                                            )}
+                                                    <View key={marker.id} style={{ paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' }}>
+                                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <Text style={styles.markerName} numberOfLines={1}>{marker.name}</Text>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
+                                                                <Text style={{ fontSize: 18, fontWeight: '700', color: statusColor }}>
+                                                                    {marker.value ?? '—'}
+                                                                </Text>
+                                                                <Text style={{ fontSize: 12, color: colors.textMuted }}>{marker.unit}</Text>
+                                                            </View>
                                                         </View>
-                                                        <View style={styles.markerValue}>
-                                                            <Text style={[styles.markerValueText, { color: statusColor }]}>{marker.value}</Text>
-                                                            <Text style={styles.markerUnit}>{marker.unit}</Text>
+                                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+                                                            {marker.refRangeLow !== null && marker.refRangeHigh !== null ? (
+                                                                <Text style={{ ...typography.caption, color: colors.textMuted }}>
+                                                                    Ref: {marker.refRangeLow} - {marker.refRangeHigh} {marker.unit}
+                                                                </Text>
+                                                            ) : <View />}
+                                                            {statusLabel ? (
+                                                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                                                                    <Ionicons name={marker.isInRange ? 'checkmark-circle' : 'alert-circle'} size={14} color={statusColor} />
+                                                                    <Text style={{ fontSize: 11, fontWeight: '700', color: statusColor }}>{statusLabel}</Text>
+                                                                </View>
+                                                            ) : null}
                                                         </View>
-                                                        {marker.isInRange !== null && (
-                                                            <Ionicons name={marker.isInRange ? 'checkmark-circle' : 'alert-circle'} size={20} color={statusColor} />
-                                                        )}
                                                     </View>
                                                 );
                                             }) : (
@@ -561,23 +571,25 @@ export default function LabsScreen() {
                                             <Text style={styles.summaryTextModal}>{analysisResult.summary}</Text>
                                         </View>
                                         <Text style={styles.sectionTitle}>Detected Markers</Text>
-                                        {analysisResult.markers.map((marker, i) => (
-                                            <View key={i} style={styles.analysisRow}>
-                                                <View style={styles.analysisInfo}>
-                                                    <Text style={styles.markerName}>{marker.name}</Text>
-                                                    <Text style={styles.markerRange}>Range: {marker.range}</Text>
+                                        {analysisResult.markers.map((marker, i) => {
+                                            const flagColor = marker.flag === 'NORMAL' ? colors.success : marker.flag === 'HIGH' ? colors.error : '#F59E0B';
+                                            return (
+                                                <View key={i} style={styles.analysisRow}>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <Text style={styles.markerName} numberOfLines={1}>{marker.name}</Text>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
+                                                            <Text style={{ fontSize: 18, fontWeight: '700', color: flagColor }}>{marker.value}</Text>
+                                                            <Text style={{ fontSize: 12, color: colors.textMuted }}>{marker.unit}</Text>
+                                                            <View style={{ backgroundColor: flagColor + '20', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginLeft: 4 }}>
+                                                                <Text style={{ fontSize: 10, fontWeight: '700', color: flagColor }}>{marker.flag}</Text>
+                                                            </View>
+                                                        </View>
+                                                    </View>
+                                                    <Text style={{ ...typography.caption, color: colors.textMuted, marginTop: 2 }}>Ref: {marker.range}</Text>
                                                     <Text style={styles.insightText}>{marker.insight}</Text>
                                                 </View>
-                                                <View style={{ alignItems: 'flex-end', minWidth: 80 }}>
-                                                    <Text style={[styles.markerValueText, { color: marker.flag === 'NORMAL' ? colors.success : colors.error }]}>
-                                                        {marker.value} {marker.unit}
-                                                    </Text>
-                                                    <Text style={[styles.flagText, { color: marker.flag === 'NORMAL' ? colors.success : colors.error }]}>
-                                                        {marker.flag}
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        ))}
+                                            );
+                                        })}
                                     </>
                                 )}
                             </ScrollView>
@@ -717,7 +729,7 @@ const styles = StyleSheet.create({
     summaryTitleModal: { ...typography.h4, color: colors.primary, marginBottom: spacing.xs },
     summaryTextModal: { ...typography.body, color: colors.textPrimary },
     sectionTitle: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.md },
-    analysisRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
+    analysisRow: { paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)' },
     analysisInfo: { flex: 1, paddingRight: spacing.md },
     insightText: { ...typography.caption, color: colors.textSecondary, marginTop: spacing.xs },
     flagText: { ...typography.label, marginTop: spacing.xs },
