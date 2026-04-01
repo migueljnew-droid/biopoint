@@ -59,7 +59,20 @@ Return ONLY the raw JSON object, no markdown formatting.`;
         }
 
         const data = await res.json() as any;
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const parts = data.candidates?.[0]?.content?.parts || [];
+
+        // Gemini 2.5 Flash is a thinking model — parts[0] may be thinking text.
+        // Find the LAST non-thinking part which contains the actual response.
+        let text = '';
+        for (const part of parts) {
+            if (!part.thought && part.text) {
+                text = part.text;
+            }
+        }
+        if (!text) {
+            // Fallback: just grab any text from any part
+            text = parts.map((p: any) => p.text || '').join('');
+        }
 
         const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(jsonStr) as AnalysisResult;
