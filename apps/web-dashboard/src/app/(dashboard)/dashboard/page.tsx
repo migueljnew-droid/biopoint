@@ -113,7 +113,6 @@ export default function DashboardPage() {
             <MetricCard label="Energy" value={data?.todayLog?.energyLevel ?? 0} unit="/10" icon={FlaskConical} color="#A78BFA" />
           </motion.div>
         </div>
-      </div>
 
       {/* Today's Stack + Oracle */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
