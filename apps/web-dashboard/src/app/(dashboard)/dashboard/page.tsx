@@ -27,13 +27,19 @@ export default function DashboardPage() {
   const [takenIds, setTakenIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // Calculate score first, then fetch dashboard
-    api.post("/dashboard/calculate", {}).catch(() => {});
+    // Fetch dashboard data (auto-calculates score if missing)
     api.get("/dashboard").then((res) => setData(res.data)).catch(console.error);
-    api.get("/stacks").then((res) => {
-      const stacks = res.data;
+
+    // Fetch stacks + today's compliance events in parallel
+    Promise.all([
+      api.get("/stacks"),
+      api.get("/stacks/compliance").catch(() => ({ data: [] })),
+    ]).then(([stacksRes, complianceRes]) => {
+      const stacks = stacksRes.data;
       const today = new Date().getDay();
+      const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
       const items: typeof todayItems = [];
+
       for (const stack of stacks) {
         if (!stack.isActive) continue;
         for (const item of stack.items ?? []) {
@@ -52,6 +58,11 @@ export default function DashboardPage() {
         }
       }
       setTodayItems(items);
+
+      // Restore check state from today's compliance events
+      const todayEvents = (complianceRes.data || []).filter((e: { takenAt: string }) => new Date(e.takenAt) >= todayStart);
+      const taken = new Set(todayEvents.map((e: { stackItemId: string }) => e.stackItemId));
+      setTakenIds(taken);
     }).catch(console.error);
   }, []);
 
@@ -139,7 +150,11 @@ export default function DashboardPage() {
                       onClick={async () => {
                         if (taken) return;
                         setTakenIds(prev => new Set([...prev, item.id]));
-                        try { await api.post(`/stacks/compliance/${item.id}`, {}); } catch {}
+                        try {
+                          await api.post(`/stacks/compliance/${item.id}`, {});
+                          // Refresh score after compliance
+                          api.get("/dashboard").then((res) => setData(res.data)).catch(() => {});
+                        } catch {}
                       }}
                       className="w-full flex items-center gap-3 py-2.5 px-3 rounded-xl bg-[var(--glass)] border border-[var(--glass-border)] text-left transition-all hover:bg-[var(--glass-hover)] cursor-pointer"
                     >
