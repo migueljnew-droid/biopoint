@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BioPoint Privacy Policy - How we protect your health data and personal information">
+    <title>Privacy Policy | BioPoint</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0A0A0F 0%, #0F1419 100%);
+            color: #E8EAED;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .header {
+            background: linear-gradient(180deg, rgba(13, 148, 136, 0.1) 0%, rgba(27, 75, 122, 0.05) 100%);
+            border-bottom: 1px solid rgba(13, 148, 136, 0.2);
+            padding: 3rem 2rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header .container {
+            max-width: 900px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #0D9488;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #0D9488 0%, #0FA5A8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #FFF;
+            letter-spacing: -0.5px;
+        }
+
+        .last-updated {
+            color: #9CA3AF;
+            font-size: 14px;
+            margin-top: 1rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, #0D9488 0%, #0FA5A8 100%);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #E8EAED;
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+            color: #D1D5DB;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1.25rem;
+            color: #D1D5DB;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            line-height: 1.8;
+        }
+
+        strong {
+            color: #FFF;
+            font-weight: 600;
+        }
+
+        a {
+            color: #0D9488;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        a:hover {
+            color: #0FA5A8;
+            border-bottom-color: #0FA5A8;
+        }
+
+        .highlight-box {
+            background: rgba(13, 148, 136, 0.08);
+            border-left: 4px solid #0D9488;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+        }
+
+        .section-content {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(13, 148, 136, 0.1);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: rgba(13, 148, 136, 0.03);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: rgba(13, 148, 136, 0.1);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #0D9488;
+            border-bottom: 1px solid rgba(13, 148, 136, 0.2);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(13, 148, 136, 0.1);
+            color: #D1D5DB;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(13, 148, 136, 0.15);
+            color: #0FA5A8;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .toc {
+            background: rgba(13, 148, 136, 0.05);
+            border: 1px solid rgba(13, 148, 136, 0.15);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ol {
+            margin-left: 1.5rem;
+        }
+
+        .toc a {
+            color: #0D9488;
+            display: block;
+            padding: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background: rgba(13, 148, 136, 0.05);
+            border-top: 1px solid rgba(13, 148, 136, 0.15);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .contact-box {
+            background: rgba(27, 75, 122, 0.1);
+            border: 1px solid rgba(27, 75, 122, 0.2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .contact-box p {
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-label {
+            color: #9CA3AF;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-value {
+            color: #0D9488;
+            font-weight: 500;
+        }
+
+        .effective-date {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(13, 148, 136, 0.1);
+        }
+
+        .indent-section {
+            margin-left: 1.5rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid rgba(13, 148, 136, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.875rem;
+            }
+
+            h2 {
+                font-size: 1.375rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .section-content {
+                padding: 1.5rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-dot"></div>
+                <span class="logo-text">BioPoint</span>
+            </div>
+            <h1>Privacy Policy</h1>
+            <p class="last-updated">Your health data, your control</p>
+        </div>
+    </div>
+
+    <main class="container">
+        <div class="effective-date">
+            <strong>Effective Date:</strong> March 30, 2026 | Last Updated: March 30, 2026
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>At BioPoint, your privacy is not negotiable.</strong> We believe health data is deeply personal. This policy explains exactly what we collect, how we use it, who we share it with, and what rights you have. We don't sell your data. We don't advertise. We're transparent about every integration.</p>
+        </div>
+
+        <div class="toc">
+            <h3>Quick Navigation</h3>
+            <ol>
+                <li><a href="#information-we-collect">Information We Collect</a></li>
+                <li><a href="#how-we-use">How We Use Your Data</a></li>
+                <li><a href="#data-storage">Data Storage & Security</a></li>
+                <li><a href="#third-party">Third-Party Services</a></li>
+                <li><a href="#healthkit">HealthKit Data</a></li>
+                <li><a href="#your-rights">Your Rights (CCPA)</a></li>
+                <li><a href="#data-deletion">Data Deletion & Account Closure</a></li>
+                <li><a href="#childrens-privacy">Children's Privacy</a></li>
+                <li><a href="#policy-changes">Policy Changes</a></li>
+                <li><a href="#contact">Contact & Support</a></li>
+            </ol>
+        </div>
+
+        <section id="information-we-collect">
+            <h2>Information We Collect</h2>
+
+            <div class="section-content">
+                <h3>Account & Identity</h3>
+                <ul>
+                    <li><strong>Email address</strong> — used for account recovery and login</li>
+                    <li><strong>Password</strong> — hashed with bcrypt, never stored in plaintext</li>
+                    <li><strong>Display name</strong> — optional, set by you</li>
+                </ul>
+
+                <h3>Health & Biometric Data</h3>
+                <p>You voluntarily enter this data. We never force collection:</p>
+                <ul>
+                    <li>Sleep logs (duration, quality, bedtime, wake time)</li>
+                    <li>Energy levels (subjective 1–10 scale)</li>
+                    <li>Mood tracking (subjective ratings)</li>
+                    <li>Weight & body measurements</li>
+                    <li>Supplement intake (brands, dosages, frequency)</li>
+                    <li>Fasting windows and duration</li>
+                    <li>Nutrition logs (meals, macros, ingredients)</li>
+                    <li>Lab reports (blood work, genetic tests, biomarkers)</li>
+                    <li>Food photos (analyzed by AI for nutrition estimation)</li>
+                </ul>
+
+                <h3>Apple HealthKit Integration</h3>
+                <ul>
+                    <li>Sleep data (read-only from HealthKit)</li>
+                    <li>Step count (read-only from HealthKit)</li>
+                    <li>These are synced to your BioPoint account for analysis; never shared with third parties</li>
+                </ul>
+
+                <h3>Device & Technical Information</h3>
+                <ul>
+                    <li>Device model, OS version, app version</li>
+                    <li>IP address (for security & fraud detection)</li>
+                    <li>Push notification tokens (for reminders & alerts)</li>
+                    <li>Crash logs & error reports (Sentry)</li>
+                    <li>Analytics events (feature usage, session duration)</li>
+                </ul>
+
+                <h3>What We Don't Collect</h3>
+                <ul>
+                    <li>Location data (we don't ask for it)</li>
+                    <li>Contacts or call logs</li>
+                    <li>Biometric authentication data (Face ID / Touch ID stays on device)</li>
+                    <li>Precise location via GPS</li>
+                    <li>Photos or media except those you explicitly upload for AI analysis</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="how-we-use">
+            <h2>How We Use Your Data</h2>
+
+            <div class="section-content">
+                <h3>Core Functionality</h3>
+                <ul>
+                    <li>Storing and organizing your health entries</li>
+                    <li>Generating insights, trends, and recommendations</li>
+                    <li>Syncing with Apple HealthKit</li>
+                    <li>Enabling cross-device access to your data</li>
+                </ul>
+
+                <h3>AI Features</h3>
+                <p>BioPoint uses <strong>Google Gemini AI</strong> to:</p>
+                <ul>
+                    <li><strong>Analyze lab reports</strong> — Gemini reads your PDFs/images to extract biomarkers and generate insights</li>
+                    <li><strong>Identify foods in photos</strong> — Gemini analyzes images you upload for nutritional content</li>
+                </ul>
+                <div class="highlight-box">
+                    <strong>Important:</strong> Data sent to Google's API is processed in real-time but <strong>not retained for model training</strong>. Google may use this data to improve their API performance and safety, but your health data is not used to train their general models. <a href="https://cloud.google.com/docs/privacy" target="_blank">Read Google's AI privacy policy</a>.
+                </div>
+
+                <h3>Account Management</h3>
+                <ul>
+                    <li>Sending account verification emails</li>
+                    <li>Password resets and security alerts</li>
+                    <li>Subscription management via RevenueCat</li>
+                    <li>Push notifications for reminders (Expo)</li>
+                </ul>
+
+                <h3>Security & Legal</h3>
+                <ul>
+                    <li>Detecting fraud, abuse, and unauthorized access</li>
+                    <li>Complying with law enforcement requests (with proper legal process)</li>
+                    <li>Protecting against spam and malicious activity</li>
+                </ul>
+
+                <h3>What We Don't Do</h3>
+                <ul>
+                    <li>We do not sell your data to advertisers, brokers, or third parties</li>
+                    <li>We do not use your health data for targeted advertising</li>
+                    <li>We do not share your data with health insurance companies</li>
+                    <li>We do not allow employers or workplace wellness programs to access your data</li>
+                    <li>We do not train our own ML models on your health data</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="data-storage">
+            <h2>Data Storage & Security</h2>
+
+            <div class="section-content">
+                <h3>Where Your Data Lives</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data Type</th>
+                            <th>Storage Location</th>
+                            <th>Encryption</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Accounts, health logs, settings</td>
+                            <td>Supabase (PostgreSQL, AWS)</td>
+                            <td>AES-256 at rest; TLS 1.3 in transit</td>
+                        </tr>
+                        <tr>
+                            <td>Lab reports, food photos, uploads</td>
+                            <td>Cloudflare R2 (object storage)</td>
+                            <td>AES-256 at rest; TLS 1.3 in transit</td>
+                        </tr>
+                        <tr>
+                            <td>Error logs & crash reports</td>
+                            <td>Sentry (US-based servers)</td>
+                            <td>TLS encrypted; retention 30 days</td>
+                        </tr>
+                        <tr>
+                            <td>Subscription records</td>
+                            <td>RevenueCat</td>
+                            <td>RevenueCat's security standards</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Security Practices</h3>
+                <ul>
+                    <li><strong>Password hashing:</strong> bcrypt with salt cost 12</li>
+                    <li><strong>API authentication:</strong> JWT tokens with 1-hour expiry</li>
+                    <li><strong>Database access:</strong> Row-level security; users can only access their own data</li>
+                    <li><strong>File uploads:</strong> Virus scanned; private/signed URLs only accessible by account owner</li>
+                    <li><strong>Two-factor authentication (2FA):</strong> Available via authenticator apps</li>
+                    <li><strong>Regular security audits:</strong> Penetration testing quarterly</li>
+                    <li><strong>Incident response plan:</strong> Data breach notification within 72 hours per GDPR</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>No Unencrypted Backups:</strong> All backups of your data are encrypted. We do not store plaintext copies of your password or health data offline.
+                </div>
+
+                <h3>Data Retention</h3>
+                <ul>
+                    <li>Health logs: stored indefinitely (your property) unless you delete</li>
+                    <li>Error logs: 30 days max</li>
+                    <li>Analytics events: 90 days, then aggregated</li>
+                    <li>Login session tokens: 1 hour, then expire</li>
+                    <li>Account deletion: all personal data erased within 30 days</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="third-party">
+            <h2>Third-Party Services & Integrations</h2>
+
+            <div class="section-content">
+                <p>BioPoint integrates with the following third-party services. We've selected each carefully to minimize data exposure:</p>
+
+                <h3>Google Gemini AI</h3>
+                <ul>
+                    <li><strong>What data is sent:</strong> Lab report PDFs/images and food photos (only when you ask us to analyze them)</li>
+                    <li><strong>Retention:</strong> Not retained for model training (Google's policy)</li>
+                    <li><strong>Your control:</strong> You choose whether to use AI features; they're optional</li>
+                    <li><strong>Privacy link:</strong> <a href="https://cloud.google.com/docs/privacy" target="_blank">Google Cloud Privacy</a></li>
+                </ul>
+
+                <h3>Supabase (PostgreSQL)</h3>
+                <ul>
+                    <li><strong>What data is stored:</strong> All account and health log data</li>
+                    <li><strong>Infrastructure:</strong> AWS (us-east-1 region)</li>
+                    <li><strong>Privacy link:</strong> <a href="https://supabase.com/privacy" target="_blank">Supabase Privacy</a></li>
+                </ul>
+
+                <h3>Cloudflare R2</h3>
+                <ul>
+                    <li><strong>What data is stored:</strong> Files you upload (lab reports, photos)</li>
+                    <li><strong>Infrastructure:</strong> Global CDN with redundancy</li>
+                    <li><strong>Access control:</strong> Signed URLs; only you can download your files</li>
+                    <li><strong>Privacy link:</strong> <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Cloudflare Privacy</a></li>
+                </ul>
+
+                <h3>RevenueCat</h3>
+                <ul>
+                    <li><strong>What data is shared:</strong> Email, subscription status, purchase history</li>
+                    <li><strong>Purpose:</strong> Managing in-app subscriptions & refunds</li>
+                    <li><strong>Your control:</strong> Manage subscriptions directly in App Store Settings</li>
+                    <li><strong>Privacy link:</strong> <a href="https://www.revenuecat.com/privacy" target="_blank">RevenueCat Privacy</a></li>
+                </ul>
+
+                <h3>Expo (Push Notifications)</h3>
+                <ul>
+                    <li><strong>What data is shared:</strong> Device push token</li>
+                    <li><strong>Purpose:</strong> Sending reminders and alerts</li>
+                    <li><strong>Your control:</strong> Disable in iOS Settings > Notifications > BioPoint</li>
+                    <li><strong>Privacy link:</strong> <a href="https://expo.dev/privacy" target="_blank">Expo Privacy</a></li>
+                </ul>
+
+                <h3>Sentry (Error Tracking)</h3>
+                <ul>
+                    <li><strong>What data is collected:</strong> Crash logs, error messages, device info</li>
+                    <li><strong>Retention:</strong> 30 days; then deleted</li>
+                    <li><strong>Health data in logs:</strong> We scrub sensitive data before sending</li>
+                    <li><strong>Privacy link:</strong> <a href="https://sentry.io/privacy/" target="_blank">Sentry Privacy</a></li>
+                </ul>
+
+                <h3>Apple HealthKit</h3>
+                <ul>
+                    <li><strong>We read:</strong> Sleep, step count (with your permission)</li>
+                    <li><strong>We write:</strong> None; BioPoint only reads from HealthKit</li>
+                    <li><strong>Data flow:</strong> Stays on your device & in BioPoint; not shared with Apple or others</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>Important:</strong> Each third-party service has its own privacy policy. We recommend reviewing them. We are not responsible for their practices, but we've chosen providers with strong privacy records.
+                </div>
+            </div>
+        </section>
+
+        <section id="healthkit">
+            <h2>Apple HealthKit Data</h2>
+
+            <div class="section-content">
+                <h3>What We Access</h3>
+                <p>BioPoint reads the following from HealthKit (with your explicit permission):</p>
+                <ul>
+                    <li><strong>Sleep samples:</strong> Bedtime, wake time, total duration</li>
+                    <li><strong>Steps:</strong> Daily step count</li>
+                </ul>
+
+                <h3>How We Use It</h3>
+                <ul>
+                    <li>Displaying your HealthKit data in BioPoint</li>
+                    <li>Correlating with your manual health logs for trend analysis</li>
+                    <li>Generating personalized insights</li>
+                </ul>
+
+                <h3>How We Protect It</h3>
+                <ul>
+                    <li>Data synced from HealthKit is encrypted at rest in Supabase</li>
+                    <li>We never write to HealthKit; only read</li>
+                    <li>We never share HealthKit data with third parties (including Apple, Google, or advertisers)</li>
+                    <li>You can revoke HealthKit access at any time in Health > Data Access & Devices > BioPoint</li>
+                </ul>
+
+                <h3>Revoking Access</h3>
+                <p>To stop sharing HealthKit data with BioPoint:</p>
+                <ol>
+                    <li>Open the Health app on your iPhone</li>
+                    <li>Tap your profile picture (top right)</li>
+                    <li>Tap Data Access & Devices</li>
+                    <li>Tap BioPoint</li>
+                    <li>Toggle off Sleep, Steps, or disable entirely</li>
+                </ol>
+                <p>Revoking access does not delete data already synced to BioPoint; you must delete that separately in the app.</p>
+            </div>
+        </section>
+
+        <section id="your-rights">
+            <h2>Your Rights (CCPA & General Privacy)</h2>
+
+            <div class="section-content">
+                <p>If you're a California resident or in any jurisdiction with privacy laws, you have rights:</p>
+
+                <h3>Right to Know</h3>
+                <p>You have the right to request what personal data we hold about you. Email <a href="mailto:support@goldenmindenterprize.com">support@goldenmindenterprize.com</a> with "Data Request" in the subject line. We'll provide a copy within 45 days.</p>
+
+                <h3>Right to Delete</h3>
+                <p>You have the right to request deletion of your data. You can:</p>
+                <ul>
+                    <li><strong>Delete your account in-app:</strong> Settings > Account > Delete Account (instant)</li>
+                    <li><strong>Request deletion by email:</strong> Email support@goldenmindenterprize.com with "Delete My Data"</li>
+                </ul>
+                <p>All personal data is deleted within 30 days, except where we're legally required to retain it (tax records, legal holds).</p>
+
+                <h3>Right to Correct</h3>
+                <p>You can update or correct your information directly in the app. If you need help, email support@goldenmindenterprize.com.</p>
+
+                <h3>Right to Opt-Out</h3>
+                <p>We don't sell your data, but you can opt out of:</p>
+                <ul>
+                    <li>Analytics: Settings > Privacy > Disable Analytics</li>
+                    <li>Push notifications: iOS Settings > Notifications > BioPoint</li>
+                    <li>Email notifications: Email settings in your account</li>
+                </ul>
+
+                <h3>Right to Data Portability</h3>
+                <p>You have the right to download your data in a portable format. Email <a href="mailto:support@goldenmindenterprize.com">support@goldenmindenterprize.com</a> with "Data Export" and we'll provide a JSON export of your health logs and account info within 45 days.</p>
+
+                <h3>Right to Non-Discrimination</h3>
+                <p>We will not discriminate against you for exercising your privacy rights. Exercising these rights will not affect your ability to use BioPoint.</p>
+
+                <h3>California Residents (CCPA)</h3>
+                <p>Under the California Consumer Privacy Act, you also have the right to:</p>
+                <ul>
+                    <li>Know what categories of personal data we collect and how we use them</li>
+                    <li>Know whether we sell or disclose your personal data (we don't)</li>
+                    <li>Opt-out of the "sale" of personal data (not applicable; we don't sell)</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>CCPA Shine-the-Light Disclosure:</strong> We do not sell, rent, or share personal information with third parties for their marketing purposes. Period.
+                </div>
+            </div>
+        </section>
+
+        <section id="data-deletion">
+            <h2>Data Deletion & Account Closure</h2>
+
+            <div class="section-content">
+                <h3>Delete Your Account</h3>
+                <p>To delete your BioPoint account and all associated data:</p>
+                <ol>
+                    <li>Open BioPoint</li>
+                    <li>Go to Settings</li>
+                    <li>Tap Account</li>
+                    <li>Scroll to bottom and tap "Delete Account"</li>
+                    <li>Confirm your password</li>
+                    <li>Confirm deletion (you'll get a warning this is permanent)</li>
+                </ol>
+
+                <h3>What Gets Deleted</h3>
+                <ul>
+                    <li>Your email and password hash</li>
+                    <li>All health logs (sleep, mood, weight, supplements, fasting, nutrition)</li>
+                    <li>All uploaded files (lab reports, photos)</li>
+                    <li>All analytics & settings</li>
+                    <li>Your subscription (if active, RevenueCat handles cancellation separately)</li>
+                </ul>
+
+                <h3>Deletion Timeline</h3>
+                <ul>
+                    <li><strong>Immediate:</strong> Your account is deactivated; you cannot log back in</li>
+                    <li><strong>24 hours:</strong> Data is soft-deleted (hidden but recoverable)</li>
+                    <li><strong>30 days:</strong> Data is permanently erased from all backups</li>
+                </ul>
+
+                <h3>Canceling Your Subscription</h3>
+                <p>Deleting your account does not automatically cancel your subscription. To stop charges:</p>
+                <ol>
+                    <li>Open App Store > Tap your profile > Subscriptions</li>
+                    <li>Select BioPoint Premium</li>
+                    <li>Tap "Cancel Subscription"</li>
+                </ol>
+                <p>You can also email <a href="mailto:support@goldenmindenterprize.com">support@goldenmindenterprize.com</a> for help.</p>
+
+                <h3>Data You Cannot Delete</h3>
+                <p>We may retain:</p>
+                <ul>
+                    <li>Anonymous, aggregated analytics (no PII)</li>
+                    <li>Tax records (for 7 years, legally required)</li>
+                    <li>Legal holds (if involved in a dispute)</li>
+                    <li>Backups (encrypted, separate from active systems)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="childrens-privacy">
+            <h2>Children's Privacy</h2>
+
+            <div class="section-content">
+                <p><strong>BioPoint is not intended for children under 13.</strong> We do not knowingly collect personal data from children under 13. If we discover that a child under 13 has provided us with personal data, we will delete that data immediately.</p>
+
+                <h3>If Your Child Created an Account</h3>
+                <p>If a child under 13 created a BioPoint account, please:</p>
+                <ol>
+                    <li>Email <a href="mailto:support@goldenmindenterprize.com">support@goldenmindenterprize.com</a> with the account email</li>
+                    <li>Provide proof that you are the parent/guardian</li>
+                    <li>We will delete the account and all associated data</li>
+                </ol>
+
+                <h3>Ages 13–18</h3>
+                <p>BioPoint can be used by teenagers 13–18. We recommend:</p>
+                <ul>
+                    <li>Parents review the privacy policy with their teen</li>
+                    <li>Parents understand that BioPoint collects health data (with the teen's input)</li>
+                    <li>Open conversations about data privacy and health tracking</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="policy-changes">
+            <h2>Changes to This Privacy Policy</h2>
+
+            <div class="section-content">
+                <p>We may update this policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make material changes, we will:</p>
+                <ul>
+                    <li>Notify you via email (if registered)</li>
+                    <li>Update the "Last Updated" date at the top of this page</li>
+                    <li>Post a notice in the app</li>
+                </ul>
+
+                <p>Your continued use of BioPoint after changes become effective means you accept the updated policy. If you don't agree, you have the right to delete your account.</p>
+
+                <h3>Material Changes vs. Minor Updates</h3>
+                <div class="indent-section">
+                    <p><strong>Material Changes</strong> (we'll notify you):</p>
+                    <ul>
+                        <li>New third-party data sharing</li>
+                        <li>New ways we use your health data</li>
+                        <li>Changes to data retention or deletion policies</li>
+                    </ul>
+                    <p><strong>Minor Updates</strong> (no email notification):</p>
+                    <ul>
+                        <li>Clarifications or grammar fixes</li>
+                        <li>Updates to contact information</li>
+                        <li>Changes to service links</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Contact & Support</h2>
+
+            <div class="section-content">
+                <p>Questions about this privacy policy or how we handle your data? We're here to help.</p>
+
+                <div class="contact-box">
+                    <p class="contact-label">Email</p>
+                    <p class="contact-value"><a href="mailto:support@goldenmindenterprize.com">support@goldenmindenterprize.com</a></p>
+                </div>
+
+                <div class="contact-box">
+                    <p class="contact-label">Company</p>
+                    <p class="contact-value">GoldenMind Enterprize LLC</p>
+                </div>
+
+                <div class="contact-box">
+                    <p class="contact-label">Location</p>
+                    <p class="contact-value">Atlanta, Georgia, USA</p>
+                </div>
+
+                <h3>Response Times</h3>
+                <ul>
+                    <li>Data requests: 45 days (legally required)</li>
+                    <li>Deletion requests: 30 days</li>
+                    <li>Data export requests: 45 days</li>
+                    <li>Support inquiries: 24–48 hours</li>
+                </ul>
+
+                <h3>Privacy Requests</h3>
+                <p>For formal privacy requests (data access, deletion, export), please include:</p>
+                <ul>
+                    <li>Your email address on file</li>
+                    <li>The type of request (Data Access / Delete / Export / Other)</li>
+                    <li>Any relevant details</li>
+                </ul>
+
+                <h3>Regulatory Complaints</h3>
+                <p>If you believe we've violated your privacy rights, you have the right to file a complaint with your state's attorney general or data protection authority. In California, you can file a complaint with the <a href="https://oag.ca.gov/" target="_blank">California Attorney General</a>.</p>
+
+                <div class="highlight-box">
+                    We take privacy violations seriously. If you file a complaint, we will cooperate fully with investigators.
+                </div>
+            </div>
+        </section>
+
+        <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(13, 148, 136, 0.1); color: #9CA3AF; font-size: 14px;">
+            <p><strong>Summary:</strong> We collect only what you give us. We encrypt it. We don't sell it. We don't spy on you. You own your health data. You can delete it anytime. We respect your privacy like it's our own—because it is.</p>
+        </div>
+    </main>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div style="margin-bottom: 2rem;">
+                <div class="logo" style="margin-bottom: 1rem;">
+                    <div class="logo-dot"></div>
+                    <span class="logo-text">BioPoint</span>
+                </div>
+                <p style="color: #9CA3AF; margin-bottom: 0.5rem;">Privacy. Data security. Health autonomy.</p>
+            </div>
+
+            <div style="border-top: 1px solid rgba(13, 148, 136, 0.1); padding-top: 1.5rem; color: #9CA3AF; font-size: 14px;">
+                <p style="margin-bottom: 0.5rem;"><strong style="color: #0D9488;">GoldenMind Enterprize LLC</strong></p>
+                <p style="margin-bottom: 0.5rem;">Atlanta, Georgia, USA</p>
+                <p style="margin-bottom: 0;"><a href="mailto:support@goldenmindenterprize.com" style="color: #0D9488;">support@goldenmindenterprize.com</a></p>
+            </div>
+
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(13, 148, 136, 0.1); font-size: 12px; color: #6B7280;">
+                <p style="margin-bottom: 0;">© 2026 GoldenMind Enterprize LLC. All rights reserved. | Effective: March 30, 2026</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

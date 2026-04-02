@@ -1,0 +1,74 @@
+BIOPOINT — PRODUCT HUNT LAUNCH DAY PLAN
+========================================
+
+PRE-LAUNCH (1 Week Before)
+--------------------------
+[ ] Create Product Hunt maker account (if not already done)
+[ ] Upload product: logo (240x240), gallery images (1270x760), GIF or video demo
+[ ] Draft and finalize tagline, description, and first comment (this kit)
+[ ] Prepare 5+ gallery images: hero shot, blood work analysis screenshot, BioPoint Score, Oracle chat, fasting timer, supplement tracker
+[ ] Record a 1-2 min product demo video (Loom or screen recording)
+[ ] Line up 10-15 supporters to upvote and leave genuine comments in the first 2 hours
+[ ] Schedule social media posts (Twitter, LinkedIn, Instagram) for launch morning
+[ ] Notify your email list / community 3 days before: "We're launching on PH Tuesday"
+[ ] Prepare answers to expected questions (pricing, data privacy, peptide legality, AI accuracy)
+[ ] Test the web app (app.biopointapp.com) — make sure onboarding is smooth for new signups
+
+PRE-LAUNCH (Night Before)
+--------------------------
+[ ] Schedule the Product Hunt post for 12:01 AM PT (posts go live at midnight Pacific)
+[ ] Set alarms for 5:00 AM, 8:00 AM, 12:00 PM, 5:00 PM ET check-ins
+[ ] Pre-write thank-you replies for common comment types (praise, feature requests, comparisons)
+[ ] Charge your phone — you'll be on it all day
+
+LAUNCH DAY (Hour by Hour)
+--------------------------
+
+12:01 AM PT — PRODUCT GOES LIVE
+[ ] Verify post is live and displaying correctly
+[ ] Post your maker's first comment immediately
+[ ] Share PH link on Twitter with personal story angle
+
+5:00 AM ET — FIRST WAVE
+[ ] Text/DM your 10-15 core supporters: "We're live! Link: [PH URL]"
+[ ] Post on LinkedIn (professional angle — founder journey, building in public)
+[ ] Post on Instagram Stories with swipe-up link
+
+8:00 AM ET — MORNING PUSH
+[ ] Tweet again with a different angle (feature highlight: AI blood work analysis)
+[ ] Reply to every single comment on Product Hunt — be personal, not templated
+[ ] Share in relevant communities: biohacking subreddits, peptide forums, longevity Discords
+[ ] Post in any Slack/Discord groups you're part of (founder communities, indie hackers)
+
+12:00 PM ET — MIDDAY CHECK
+[ ] Post a "halftime update" tweet with current rank and a thank-you
+[ ] Reply to all new PH comments
+[ ] Share on Instagram feed (carousel post with app screenshots)
+[ ] Send email blast to your list: "We're live on Product Hunt — here's the link"
+
+3:00 PM ET — AFTERNOON PUSH
+[ ] Tweet a feature spotlight (The Oracle AI chat or BioPoint Score)
+[ ] Engage with anyone who tweeted about you — retweet, reply, thank them
+[ ] Reply to ALL Product Hunt comments — response rate matters for ranking
+
+5:00 PM ET — FINAL PUSH
+[ ] Post final social push: "Last few hours to support us on Product Hunt"
+[ ] Thank your supporters publicly on Twitter
+[ ] Reply to any remaining PH comments
+
+POST-LAUNCH (Next Day)
+-----------------------
+[ ] Post results on Twitter/LinkedIn: "We hit #X on Product Hunt! Here's what I learned..."
+[ ] Send thank-you email to your list with results
+[ ] Compile all feedback from PH comments into a feature request list
+[ ] Follow up with anyone who left detailed feedback — potential power users
+[ ] Add "Featured on Product Hunt" badge to website and App Store description
+[ ] Write a short post-mortem: what worked, what you'd do differently
+
+KEY RULES
+---------
+- NEVER ask for upvotes directly — say "check us out" or "would love your feedback"
+- Respond to EVERY comment — PH rewards engagement
+- Be authentic — your story (Grammy nominee turned biohacker) is your edge
+- Best launch days: Tuesday, Wednesday, or Thursday
+- Avoid launching on days with major tech events or Apple keynotes

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Sparkles, ChevronDown, ChevronUp, CheckCircle, AlertCircle, TrendingUp, FlaskConical, X } from "lucide-react";
 import { GlassCard } from "@/components/GlassCard";
 import { api } from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
 
 interface Marker {
   id: string;
@@ -67,9 +68,15 @@ export default function LabsPage() {
   };
 
   const handleAnalyze = async (id: string) => {
+    const adminEmails = ["migueljnew@gmail.com", "booklouisgold@gmail.com"];
+    const userEmail = useAuthStore.getState().user?.email?.toLowerCase();
+    if (!adminEmails.includes(userEmail || "")) {
+      if (!confirm("AI Lab Analysis requires BioPoint+. Would you like to upgrade?")) return;
+      window.location.href = "/premium";
+      return;
+    }
     setAnalyzingId(id);
     try {
-      // Find the lab to get filename for the analysis
       const res = await api.post(`/labs/${id}/analyze`, {});
       setAnalysisResult(res.data);
       setShowModal(true);
@@ -94,18 +101,20 @@ export default function LabsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mesh-bg-labs">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-4xl font-bold tracking-tight" style={{ fontFamily: "'Satoshi', sans-serif" }}>Labs</h1>
+        <h1 className="text-4xl font-bold tracking-tight text-gradient-teal" style={{ fontFamily: "'Satoshi', sans-serif" }}>Labs</h1>
         <p className="text-[var(--text-muted)] mt-1">Upload and analyze your blood work</p>
       </motion.div>
 
       {/* Upload Zone */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
         <label
-          className={`block border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-200 cursor-pointer ${
-            dragOver ? "border-[var(--accent)] bg-[var(--accent-muted)]" : "border-[var(--glass-border)] hover:border-[var(--accent)] hover:bg-[var(--glass)]"
+          className={`block border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300 cursor-pointer ${
+            dragOver
+              ? "border-[var(--accent)] bg-[var(--accent-muted)] accent-glow"
+              : "border-[var(--glass-border)] hover:border-[var(--accent)] hover:bg-[var(--glass)] hover:accent-glow"
           }`}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -116,8 +125,10 @@ export default function LabsPage() {
             <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto" />
           ) : (
             <>
-              <Upload size={32} className="mx-auto mb-3 text-[var(--text-muted)]" />
-              <p className="text-sm font-medium text-[var(--text-secondary)]">Drop your lab report here or click to browse</p>
+              <div className="w-14 h-14 rounded-2xl bg-[var(--accent-muted)] flex items-center justify-center mx-auto mb-4">
+                <Upload size={28} className="text-[var(--accent)]" />
+              </div>
+              <p className="text-sm font-semibold text-[var(--text-secondary)]">Drop your lab report here or click to browse</p>
               <p className="text-xs text-[var(--text-muted)] mt-1">Supports JPEG, PNG, PDF</p>
             </>
           )}
@@ -128,13 +139,13 @@ export default function LabsPage() {
       {labs.length > 0 && (
         <div className="grid grid-cols-4 gap-4">
           {[
-            { label: "Reports", value: labs.length, color: "var(--accent)" },
-            { label: "Biomarkers", value: labs.reduce((sum, l) => sum + l.markers.length, 0), color: "var(--accent)" },
-            { label: "In Range", value: labs.reduce((sum, l) => sum + l.markers.filter(m => m.isInRange === true).length, 0), color: "var(--success)" },
-            { label: "Out of Range", value: labs.reduce((sum, l) => sum + l.markers.filter(m => m.isInRange === false).length, 0), color: "var(--error)" },
+            { label: "Reports", value: labs.length, color: "var(--accent)", glow: "accent" as const },
+            { label: "Biomarkers", value: labs.reduce((sum, l) => sum + l.markers.length, 0), color: "var(--accent)", glow: "accent" as const },
+            { label: "In Range", value: labs.reduce((sum, l) => sum + l.markers.filter(m => m.isInRange === true).length, 0), color: "var(--success)", glow: "success" as const },
+            { label: "Out of Range", value: labs.reduce((sum, l) => sum + l.markers.filter(m => m.isInRange === false).length, 0), color: "var(--error)", glow: "none" as const },
           ].map((stat, i) => (
             <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.05 }}>
-              <GlassCard className="p-4 text-center">
+              <GlassCard className="p-4 text-center" glow={stat.glow}>
                 <p className="text-2xl font-bold font-mono" style={{ color: stat.color }}>{stat.value}</p>
                 <p className="text-xs text-[var(--text-muted)]">{stat.label}</p>
               </GlassCard>

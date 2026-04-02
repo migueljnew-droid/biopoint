@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BioPoint Support - Get help with your biohacking companion app">
+    <title>Support | BioPoint</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&f[]=general-sans@500,400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'General Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #05050A;
+            color: #E8E8ED;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .top-bar {
+            height: 2px;
+            background: linear-gradient(90deg, #14B8A6, #10B981, #F59E0B, #14B8A6);
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .container { max-width: 800px; margin: 0 auto; padding: 60px 24px; }
+        .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 48px; }
+        .logo-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, #14B8A6, #10B981);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 18px; color: #05050A;
+        }
+        .logo-text { font-family: 'Satoshi', sans-serif; font-weight: 700; font-size: 20px; color: #E8E8ED; }
+        h1 {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 42px; font-weight: 700; letter-spacing: -0.5px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #14B8A6, #10B981);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #8B8B9E; font-size: 18px; margin-bottom: 48px; }
+        .section { margin-bottom: 40px; }
+        h2 {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 22px; font-weight: 700; color: #E8E8ED;
+            margin-bottom: 16px; padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .faq-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px; padding: 20px; margin-bottom: 12px;
+            transition: border-color 0.3s;
+        }
+        .faq-item:hover { border-color: rgba(20,184,166,0.2); }
+        .faq-q { font-weight: 600; color: #E8E8ED; margin-bottom: 8px; font-size: 16px; }
+        .faq-a { color: #8B8B9E; font-size: 15px; }
+        .contact-card {
+            background: rgba(20,184,166,0.06);
+            border: 1px solid rgba(20,184,166,0.15);
+            border-radius: 16px; padding: 32px; text-align: center;
+        }
+        .contact-card h3 { font-family: 'Satoshi', sans-serif; font-size: 20px; margin-bottom: 8px; color: #14B8A6; }
+        .contact-card p { color: #8B8B9E; margin-bottom: 20px; }
+        .contact-email {
+            display: inline-block; padding: 12px 32px; border-radius: 12px;
+            background: linear-gradient(135deg, #14B8A6, #10B981);
+            color: #05050A; font-weight: 600; text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .contact-email:hover { opacity: 0.9; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+        .info-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px; padding: 20px;
+            transition: border-color 0.3s;
+        }
+        .info-card:hover { border-color: rgba(20,184,166,0.2); }
+        .info-card h4 { font-size: 15px; font-weight: 600; color: #E8E8ED; margin-bottom: 6px; }
+        .info-card p { font-size: 14px; color: #8B8B9E; }
+        .footer {
+            margin-top: 60px; padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            text-align: center; color: #555; font-size: 14px;
+        }
+        .footer a { color: #14B8A6; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="top-bar"></div>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">B</div>
+            <span class="logo-text">BioPoint</span>
+        </div>
+
+        <h1>Support</h1>
+        <p class="subtitle">Get help with BioPoint, your biohacking command center.</p>
+
+        <div class="section">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-q">How do I upload my lab results?</div>
+                <div class="faq-a">Go to the Labs tab, tap the upload button, and either take a photo of your lab report or select a PDF/image from your files. BioPoint's AI will automatically extract and analyze your biomarkers.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">What is the BioPoint Score?</div>
+                <div class="faq-a">Your BioPoint Score is a single number that quantifies your overall health. It combines your daily logs (sleep, energy, mood, focus, weight), lab results, supplement compliance, and fasting data into one unified score from 0-100.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">How do I create a supplement stack?</div>
+                <div class="faq-a">Go to the Stacks tab, tap "Add Stack", name it, then add items with dosage, timing, and schedule. You can search from our database of 87+ peptides and compounds, or add custom supplements.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">What fasting protocols are available?</div>
+                <div class="faq-a">BioPoint supports Circadian, 14:10, 16:8, 18:6, 20:4, OMAD, and 36-hour fasting protocols. Each includes a live timer, zone tracking (anabolic, catabolic, fat burning, autophagy), and streak monitoring.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">How does Apple Health integration work?</div>
+                <div class="faq-a">BioPoint reads health data from Apple Health including heart rate, steps, sleep analysis, HRV, and more. This data feeds into your BioPoint Score calculation. Grant permissions when prompted, or enable them in Settings > Health Profile.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">What's included in BioPoint+ (Premium)?</div>
+                <div class="faq-a">BioPoint+ includes unlimited supplement stacks, AI-powered lab analysis, advanced bio-analytics, cloud backup, and priority support. Plans start at $9.99/month or $79.99/year (save 33%).</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">How do I cancel my subscription?</div>
+                <div class="faq-a">Subscriptions are managed through your Apple ID or Google Play account. On iOS: Settings > Apple ID > Subscriptions > BioPoint. On Android: Google Play Store > Subscriptions > BioPoint.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-q">Is my health data secure?</div>
+                <div class="faq-a">Yes. BioPoint uses field-level encryption for sensitive biomarker data and follows HIPAA-aligned security practices. Your data is never sold to third parties. See our <a href="/privacy" style="color:#14B8A6">Privacy Policy</a> for details.</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Troubleshooting</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>App won't load</h4>
+                    <p>Force close the app and reopen. If the issue persists, ensure you have the latest version from the App Store or Google Play.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Login issues</h4>
+                    <p>Check your email and password. Use "Forgot Password" to reset. If using Apple/Google sign-in, ensure you're signed into the correct account on your device.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Lab analysis not working</h4>
+                    <p>Ensure your photo is clear and well-lit. The AI works best with standard lab report formats (CBC, metabolic panels, hormone panels). PDF uploads are also supported.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Apple Health not syncing</h4>
+                    <p>Go to iOS Settings > Health > Data Access > BioPoint and ensure all permissions are enabled. Then restart the app.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Account Management</h2>
+            <div class="faq-item">
+                <div class="faq-q">How do I delete my account?</div>
+                <div class="faq-a">You can delete your account from Settings > Delete Account within the app. This will permanently remove all your data including lab reports, stacks, daily logs, and progress photos. This action cannot be undone. You can also request deletion by emailing us.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">How do I export my data?</div>
+                <div class="faq-a">Go to Settings > Export Data to download a copy of all your health data, lab results, and supplement logs in a standard format.</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="contact-card">
+                <h3>Still need help?</h3>
+                <p>Our support team typically responds within 24 hours.</p>
+                <a href="mailto:migueljnew@gmail.com?subject=BioPoint%20Support%20Request" class="contact-email">Email Support</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 GoldenMind Enterprize LLC. All rights reserved.</p>
+            <p style="margin-top:8px"><a href="/">Home</a> &middot; <a href="/privacy">Privacy Policy</a> &middot; <a href="/support">Support</a></p>
+        </div>
+    </div>
+</body>
+</html>

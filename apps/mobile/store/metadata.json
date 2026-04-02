@@ -1,0 +1,24 @@
+{
+  "apple": {
+    "info": {
+      "en-US": {
+        "title": "BioPoint — Health Intelligence",
+        "subtitle": "AI Lab Analysis & Biohacking",
+        "privacyPolicyUrl": "https://biopoint-api.onrender.com/privacy",
+        "privacyChoicesUrl": "",
+        "privacyManifestUrl": ""
+      }
+    },
+    "review": {
+      "firstName": "Miguel",
+      "lastName": "Jiminez",
+      "email": "migueljnew@gmail.com",
+      "phone": "",
+      "notes": "Test account credentials:\nEmail: review@biopoint.app\nPassword: ReviewBioPoint2026!\n\nThe app requires an account to access features. All health data shown is user-generated test data."
+    },
+    "copyright": "2026 GoldenMind Enterprize LLC",
+    "primaryCategory": "HEALTH_AND_FITNESS",
+    "secondaryCategory": "MEDICAL",
+    "ageRating": "FOUR_PLUS"
+  }
+}

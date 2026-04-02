@@ -8,23 +8,28 @@ export const api = axios.create({
   withCredentials: false,
 });
 
-// Token management (web uses localStorage + memory)
-let accessToken: string | null = null;
+// Token management — access in sessionStorage (survives refresh), refresh in localStorage (survives tab close)
+let accessToken: string | null = typeof window !== "undefined" ? sessionStorage.getItem("bp_access") : null;
 
 export function setTokens(access: string, refresh: string) {
   accessToken = access;
   if (typeof window !== "undefined") {
+    sessionStorage.setItem("bp_access", access);
     localStorage.setItem("bp_refresh", refresh);
   }
 }
 
 export function getAccessToken() {
+  if (!accessToken && typeof window !== "undefined") {
+    accessToken = sessionStorage.getItem("bp_access");
+  }
   return accessToken;
 }
 
 export function clearTokens() {
   accessToken = null;
   if (typeof window !== "undefined") {
+    sessionStorage.removeItem("bp_access");
     localStorage.removeItem("bp_refresh");
   }
 }

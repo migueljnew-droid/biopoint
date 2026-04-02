@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import * as SecureStore from 'expo-secure-store';
 import { api, setTokens, clearTokens, getAccessToken } from '../services/api';
+import { supabase } from '../lib/supabase';
 import type { UserResponse } from '@biopoint/shared';
 
 interface User extends UserResponse {
@@ -69,11 +70,16 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            loginWithGoogle: async (idToken: string) => {
+            loginWithGoogle: async (_idToken: string) => {
+                // Google token already verified by Supabase in socialAuth.ts
+                // Now sync user with our custom API using the Supabase session token
                 set({ isLoading: true, error: null });
                 try {
                     await clearTokens();
-                    const response = await api.post('/auth/google', { idToken });
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const response = await api.post('/auth/social', { provider: 'google' }, {
+                        headers: { Authorization: `Bearer ${session?.access_token}` },
+                    });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);
                     set({
@@ -90,11 +96,19 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            loginWithApple: async (identityToken: string, fullName?: { givenName?: string | null, familyName?: string | null }) => {
+            loginWithApple: async (_identityToken: string, fullName?: { givenName?: string | null, familyName?: string | null }) => {
+                // Apple token already verified by Supabase in socialAuth.ts
+                // Now sync user with our custom API using the Supabase session token
                 set({ isLoading: true, error: null });
                 try {
                     await clearTokens();
-                    const response = await api.post('/auth/apple', { identityToken, fullName });
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const response = await api.post('/auth/social', {
+                        provider: 'apple',
+                        fullName: fullName ? `${fullName.givenName || ''} ${fullName.familyName || ''}`.trim() : undefined,
+                    }, {
+                        headers: { Authorization: `Bearer ${session?.access_token}` },
+                    });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);
                     set({

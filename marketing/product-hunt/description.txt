@@ -1,0 +1,37 @@
+## BioPoint — The Biohacking Command Center
+
+**Stop guessing. Start optimizing.**
+
+BioPoint turns your body into a data-driven system. Track supplements, analyze blood work with AI, and get a daily optimization score — all in one app built by someone who actually lives this lifestyle.
+
+### What You Get
+
+**Supplement Stack Tracker**
+Log and manage your daily protocol with access to an 87-compound peptide database. BPC-157, TB-500, GHK-Cu, NAD+ — if serious biohackers use it, it's in here. Set schedules, track dosages, and never miss a stack.
+
+**AI Blood Work Analysis**
+Upload a lab report PDF and our AI extracts every biomarker automatically. No manual data entry. Get instant insights on what's optimal, what's flagged, and what to discuss with your doctor.
+
+**BioPoint Score (0-100)**
+A single daily number that reflects your optimization state. Pulled from your supplement adherence, biomarker trends, fasting data, and activity. Watch it climb as your protocols dial in.
+
+**The Oracle — AI Health Chat**
+Your personal biohacking advisor powered by Gemini. Ask it anything — peptide interactions, stack timing, what your labs mean. It knows your data and gives contextualized answers, not generic wellness fluff.
+
+**Fasting Timer with Zone Tracking**
+Built-in intermittent fasting timer that tracks your metabolic zones — fed, early fasted, ketosis, deep autophagy. Know exactly where you are in your fast.
+
+**Community Leaderboards**
+Compare BioPoint Scores, share stacks, and learn from other optimizers. See what protocols top performers are running.
+
+### Who It's For
+
+Anyone serious about biological optimization — biohackers, peptide users, longevity enthusiasts, athletes, and quantified-self practitioners who want one place to manage everything.
+
+### The Story
+
+Built by Miguel Jiminez, a 3x Grammy-nominated artist who went deep into biohacking and couldn't find a single app that handled supplements, blood work, and AI analysis together. So he built one.
+
+**Web:** app.biopointapp.com
+**iOS:** Available on the App Store
+**Company:** GoldenMind Enterprize LLC

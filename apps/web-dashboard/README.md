@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="public/icon.png" alt="BioPoint" width="80" />
+</p>
 
-## Getting Started
+<h1 align="center">BioPoint Web Dashboard</h1>
 
-First, run the development server:
+<p align="center">
+  <strong>Your Biohacking Command Center — Web Edition</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js 16" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react" alt="React 19" />
+  <img src="https://img.shields.io/badge/Tailwind-4-38BDF8?logo=tailwindcss" alt="Tailwind 4" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Zustand-4-443E38" alt="Zustand" />
+  <img src="https://img.shields.io/badge/Deploy-Vercel-000?logo=vercel" alt="Vercel" />
+</p>
+
+---
+
+Web companion to the **BioPoint iOS app**. Track supplement stacks, analyze lab reports with AI, chat with The Oracle, and monitor your BioPoint Score.
+
+<details>
+<summary><strong>Stack</strong></summary>
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19 + Framer Motion |
+| State | Zustand |
+| Styling | Tailwind CSS 4 + Gold Standard Design System |
+| API Client | Axios with JWT auto-refresh interceptor |
+| Charts | Recharts |
+| Icons | Lucide React |
+| Fonts | Satoshi + General Sans + JetBrains Mono |
+
+</details>
+
+## Setup
 
 ```bash
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | Yes | BioPoint API base URL (e.g. `https://biopoint-api.onrender.com/api`) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<details>
+<summary><strong>Auth Flow</strong></summary>
 
-## Learn More
+- **Access token**: in-memory only (not persisted — cleared on page refresh)
+- **Refresh token**: `localStorage` key `bp_refresh`
+- 401 responses trigger silent token refresh with request queue
+- Failed refresh redirects to `/login`
 
-To learn more about Next.js, take a look at the following resources:
+</details>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Path | Description |
+|------|-------------|
+| `/login` | Login / Register |
+| `/dashboard` | BioPoint Score, metrics, today's stack |
+| `/stacks` | Supplement & peptide protocol management |
+| `/labs` | Upload & analyze lab reports (AI-powered) |
+| `/oracle` | AI health chat (Gemini-powered) |
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Live at **[app.biopointapp.com](https://app.biopointapp.com)**. Deployed on Vercel.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+```
+
+---
+
+<p align="center">
+  <sub>Built by <strong>GoldenMind Enterprize LLC</strong></sub>
+</p>

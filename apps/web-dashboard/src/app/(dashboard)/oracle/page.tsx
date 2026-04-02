@@ -70,16 +70,16 @@ export default function OraclePage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-var(--topbar-height)-64px)] max-h-[calc(100vh-128px)]">
+    <div className="flex flex-col h-[calc(100vh-var(--topbar-height)-64px)] max-h-[calc(100vh-128px)] mesh-bg-oracle">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[var(--accent-muted)] flex items-center justify-center">
-            <Sparkles size={20} className="text-[var(--accent)]" />
+          <div className="w-12 h-12 rounded-2xl bg-[var(--accent-muted)] flex items-center justify-center gold-glow">
+            <Sparkles size={22} className="text-[var(--accent)]" style={{ filter: "drop-shadow(0 0 8px var(--accent))" }} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold" style={{ fontFamily: "'Satoshi', sans-serif" }}>The Oracle</h1>
-            <p className="text-xs text-[var(--text-muted)]">BIO-INTELLIGENCE V1.0</p>
+            <h1 className="text-2xl font-bold text-gradient-gold" style={{ fontFamily: "'Satoshi', sans-serif" }}>The Oracle</h1>
+            <p className="text-xs text-[var(--text-muted)] tracking-widest uppercase">Bio-Intelligence V1.0</p>
           </div>
         </div>
         <button
@@ -103,9 +103,13 @@ export default function OraclePage() {
             <div
               className={`max-w-[75%] px-5 py-3.5 rounded-2xl text-sm leading-relaxed ${
                 msg.role === "user"
-                  ? "bg-[var(--accent)] text-[var(--bg-primary)] rounded-br-md"
-                  : "glass-card rounded-bl-md"
+                  ? "rounded-br-md text-[var(--bg-primary)]"
+                  : "glass-card card-glow-gold rounded-bl-md"
               }`}
+              style={msg.role === "user" ? {
+                background: "linear-gradient(135deg, var(--accent) 0%, #0ea5e9 100%)",
+                boxShadow: "0 4px 20px var(--accent-glow)"
+              } : undefined}
             >
               <div className="whitespace-pre-wrap">{msg.content}</div>
             </div>
@@ -135,7 +139,7 @@ export default function OraclePage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about your health..."
-            className="flex-1 px-5 py-3.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--glass-border)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-all text-sm"
+            className="flex-1 input-field py-3.5 text-sm"
           />
           <button
             type="submit"

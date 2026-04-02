@@ -1,0 +1,10 @@
+Welcome to BioPoint — your AI-powered biohacking companion.
+
+• BioPoint Score — One number that quantifies your health
+• AI Lab Analysis — Upload bloodwork, get instant biomarker insights
+• The Oracle — AI health advisor with your real data
+• Peptide & Supplement Stacks — Build protocols with dosing & timing
+• Fasting Protocols — Track streaks across multiple protocols
+• Biomarker Trends — Chart your health over time
+• Daily Logging — Sleep, energy, mood, focus, weight
+• Progress Photos — Visual body composition tracking

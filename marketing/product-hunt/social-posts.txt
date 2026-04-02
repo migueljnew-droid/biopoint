@@ -1,0 +1,111 @@
+BIOPOINT — SOCIAL MEDIA POSTS FOR PRODUCT HUNT LAUNCH
+=======================================================
+
+------------------------------------------------------
+POST 1 — TWITTER (Launch Announcement)
+------------------------------------------------------
+
+I'm a 3x Grammy-nominated producer who fell down the biohacking rabbit hole.
+
+Peptides. Quarterly blood work. A supplement stack that looks like a chemistry set.
+
+The results changed my life. But the tools were garbage.
+
+So I built @BioPointApp — the biohacking command center I wished existed.
+
+We're live on Product Hunt today.
+
+Upload a lab report -> AI extracts every biomarker
+87-compound peptide database
+Daily optimization score (0-100)
+AI health chat that knows YOUR data
+
+Not another wellness app. Built for people who actually know what BPC-157 is.
+
+[Product Hunt link]
+
+------------------------------------------------------
+POST 2 — LINKEDIN (Founder Journey)
+------------------------------------------------------
+
+Two years ago I started taking my health seriously — peptides, blood panels, fasting protocols, a daily supplement stack.
+
+The results were incredible. But I was tracking everything across 4 different apps, a spreadsheet, and a Notes file.
+
+I kept thinking: why doesn't one app handle all of this?
+
+Today we're launching BioPoint on Product Hunt.
+
+It's a biohacking command center that combines:
+- Supplement stack tracking with an 87-compound peptide database
+- AI-powered blood work analysis (upload a PDF, get every biomarker extracted)
+- A daily BioPoint Score (0-100) that tells you how optimized you are
+- An AI health chat that gives answers based on YOUR actual data
+
+I built this because I needed it. Turns out a lot of other people do too.
+
+The biohacking market is exploding but the software hasn't caught up. Most "health apps" think optimization means counting steps. BioPoint is for people running real protocols.
+
+We're live now — would genuinely love your feedback.
+
+Built by GoldenMind Enterprize LLC.
+
+[Product Hunt link]
+
+#biohacking #healthtech #producthunt #longevity #startups
+
+------------------------------------------------------
+POST 3 — TWITTER (Feature Spotlight)
+------------------------------------------------------
+
+The feature that saves me the most time in @BioPointApp:
+
+Upload a blood work PDF.
+AI reads the entire report.
+Every biomarker extracted automatically.
+Flagged values highlighted.
+Trends tracked over time.
+
+No more manually typing lab results into spreadsheets.
+
+We're live on Product Hunt today — link in bio.
+
+------------------------------------------------------
+POST 4 — INSTAGRAM (Carousel/Story)
+------------------------------------------------------
+
+Caption:
+Built an app because the biohacking tools out there weren't cutting it.
+
+BioPoint is live on Product Hunt today.
+
+What it does:
+1. Track your supplement stack (87-compound peptide database)
+2. Upload blood work -> AI extracts all biomarkers
+3. Get a daily BioPoint Score (0-100)
+4. Chat with an AI that actually knows your health data
+5. Fasting timer with metabolic zone tracking
+
+This isn't a step counter. This is for people running real optimization protocols.
+
+Link in bio to support us on Product Hunt.
+
+#biohacking #peptides #longevity #healthtech #producthunt #quantifiedself #biohack #optimization #supplementstack
+
+------------------------------------------------------
+POST 5 — TWITTER (Evening / Social Proof)
+------------------------------------------------------
+
+We launched @BioPointApp on Product Hunt this morning.
+
+The response from the biohacking community has been wild.
+
+Most requested feature so far: integration with Oura and Whoop to feed recovery data into the BioPoint Score.
+
+It's on the roadmap.
+
+If you're running a serious supplement protocol and tired of tracking it in Notes — check us out before the day ends.
+
+[Product Hunt link]
+
+Thank you to everyone who showed up today. This is just the beginning.

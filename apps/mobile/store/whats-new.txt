@@ -1,0 +1,8 @@
+NEW: Web Dashboard -- access your BioPoint data from any browser at app.biopoint.health
+
+IMPROVED:
+- AI Lab Analysis now extracts more biomarkers with higher accuracy
+- Faster Oracle responses with deeper health context
+- Smoother supplement stack editing and protocol management
+- Performance improvements across the board
+- Bug fixes and stability enhancements

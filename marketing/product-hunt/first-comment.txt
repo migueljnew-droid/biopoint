@@ -1,0 +1,25 @@
+Hey Product Hunt!
+
+I'm Miguel — 3x Grammy-nominated music producer turned tech founder. This is BioPoint, and I want to tell you why I built it.
+
+About two years ago I went deep into biohacking. Peptides, blood work every quarter, fasting protocols, a supplement stack that would make most pharmacists raise an eyebrow. The results were life-changing. More energy, sharper focus, better recovery.
+
+But the tools were terrible.
+
+I had supplements tracked in a Notes app. Blood work results in PDF purgatory. Peptide research scattered across Reddit threads and Telegram groups. Fasting tracked in one app, supplements in another, blood work in a spreadsheet. Nothing talked to each other.
+
+I kept thinking: there has to be ONE app that handles all of this. An app built for people who actually take BPC-157 and know what their hs-CRP should be. Not a generic wellness app that thinks "biohacking" means drinking more water.
+
+It didn't exist. So I built it.
+
+BioPoint is the app I wished I had when I started this journey. The AI blood work analysis alone would have saved me dozens of hours — you upload a lab PDF and it pulls every biomarker automatically. The Oracle (our AI chat) knows your actual data, so when you ask "should I adjust my NAD+ timing?" it gives you a real answer based on YOUR labs and YOUR stack.
+
+The BioPoint Score was born from a simple idea: I wanted a single number each morning that told me "you're dialed in" or "something needs attention." Now I check it like I check the weather.
+
+This is a solo founder launch — built with a small team, funded independently through GoldenMind Enterprize. No VC playbook. Just a product built by someone who uses it every single day.
+
+I'm here all day to answer questions. Would love your honest feedback — what's working, what's missing, what would make you switch from your current setup.
+
+Let's go.
+
+— Miguel

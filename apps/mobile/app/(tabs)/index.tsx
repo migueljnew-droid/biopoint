@@ -17,6 +17,7 @@ export default function DashboardScreen() {
     const [showLogModal, setShowLogModal] = useState(false);
     const [showTwinModal, setShowTwinModal] = useState(false);
     const [showBreathing, setShowBreathing] = useState(false);
+    const [healthData, setHealthData] = useState<{ steps: number; sleep: number; synced: boolean }>({ steps: 0, sleep: 0, synced: false });
 
     const chartData = scoreHistory?.map(s => s.score) || [];
     const chartLabels = scoreHistory?.map(s => new Date(s.date).toLocaleDateString('en-US', { weekday: 'short' })) || [];
@@ -64,7 +65,27 @@ export default function DashboardScreen() {
         );
     };
 
-    useEffect(() => { fetchDashboard(); fetchStacks(); }, []);
+    useEffect(() => {
+        fetchDashboard();
+        fetchStacks();
+        // Auto-sync HealthKit data on mount (iOS only)
+        if (Platform.OS === 'ios') {
+            (async () => {
+                try {
+                    const authorized = await healthKitService.init();
+                    if (authorized) {
+                        const [sleep, steps] = await Promise.all([
+                            healthKitService.getSleep(),
+                            healthKitService.getSteps(),
+                        ]);
+                        setHealthData({ steps, sleep, synced: true });
+                    }
+                } catch (e) {
+                    console.log('HealthKit auto-sync failed:', e);
+                }
+            })();
+        }
+    }, []);
 
     const handleLogSubmit = async () => {
         try {
@@ -151,6 +172,58 @@ export default function DashboardScreen() {
                         </View>
                     </GlassView>
                 </Animated.View>
+
+                {/* Apple Health Data */}
+                {Platform.OS === 'ios' && (
+                    <Animated.View entering={FadeInDown.delay(50).springify()}>
+                        <GlassView variant="medium" borderRadius={borderRadius.lg} style={styles.healthCard}>
+                            <View style={styles.healthHeader}>
+                                <View style={styles.healthTitleRow}>
+                                    <Ionicons name="heart" size={18} color="#FF2D55" />
+                                    <Text style={styles.healthTitle}>Apple Health</Text>
+                                </View>
+                                <Pressable onPress={handleBioSync}>
+                                    <View style={{ backgroundColor: 'rgba(13, 148, 136, 0.15)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
+                                        <Text style={{ color: colors.accent, fontSize: 11, fontWeight: '600' }}>SYNC</Text>
+                                    </View>
+                                </Pressable>
+                            </View>
+                            <View style={styles.healthMetrics}>
+                                <View style={styles.healthMetric}>
+                                    <View style={[styles.healthMetricIcon, { backgroundColor: 'rgba(74, 222, 128, 0.1)' }]}>
+                                        <Ionicons name="footsteps" size={20} color={colors.accent} />
+                                    </View>
+                                    <Text style={styles.healthMetricValue}>
+                                        {healthData.synced ? healthData.steps.toLocaleString() : '--'}
+                                    </Text>
+                                    <Text style={styles.healthMetricLabel}>Steps</Text>
+                                </View>
+                                <View style={styles.healthMetric}>
+                                    <View style={[styles.healthMetricIcon, { backgroundColor: 'rgba(99, 102, 241, 0.1)' }]}>
+                                        <Ionicons name="moon" size={20} color="#818CF8" />
+                                    </View>
+                                    <Text style={styles.healthMetricValue}>
+                                        {healthData.synced ? `${healthData.sleep.toFixed(1)}h` : '--'}
+                                    </Text>
+                                    <Text style={styles.healthMetricLabel}>Sleep</Text>
+                                </View>
+                                <View style={styles.healthMetric}>
+                                    <View style={[styles.healthMetricIcon, { backgroundColor: 'rgba(255, 45, 85, 0.1)' }]}>
+                                        <Ionicons name="pulse" size={20} color="#FF2D55" />
+                                    </View>
+                                    <Text style={styles.healthMetricValue}>--</Text>
+                                    <Text style={styles.healthMetricLabel}>Heart Rate</Text>
+                                </View>
+                            </View>
+                            {!healthData.synced && (
+                                <Pressable onPress={handleBioSync} style={styles.healthConnect}>
+                                    <Ionicons name="link" size={14} color={colors.accent} />
+                                    <Text style={{ color: colors.accent, fontSize: 13, fontWeight: '500' }}>Connect Apple Health to track vitals</Text>
+                                </Pressable>
+                            )}
+                        </GlassView>
+                    </Animated.View>
+                )}
 
                 {/* Today's Stack Checklist */}
                 <TodayStack />
@@ -349,6 +422,62 @@ function ActionButton({ icon, label, onPress }: { icon: string; label: string; o
 
 
 const styles = StyleSheet.create({
+    healthCard: {
+        padding: spacing.md,
+        marginBottom: spacing.md,
+    },
+    healthHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: spacing.md,
+    },
+    healthTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.xs,
+    },
+    healthTitle: {
+        ...typography.bodySmall,
+        fontWeight: '600',
+        color: colors.textPrimary,
+    },
+    healthMetrics: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    healthMetric: {
+        alignItems: 'center',
+        gap: 4,
+    },
+    healthMetricIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 4,
+    },
+    healthMetricValue: {
+        ...typography.body,
+        fontWeight: '700',
+        color: colors.textPrimary,
+        fontSize: 18,
+    },
+    healthMetricLabel: {
+        ...typography.caption,
+        color: colors.textMuted,
+    },
+    healthConnect: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: spacing.xs,
+        marginTop: spacing.md,
+        paddingTop: spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(255,255,255,0.06)',
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',

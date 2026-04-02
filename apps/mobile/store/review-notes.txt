@@ -1,0 +1,26 @@
+Login Credentials:
+Email: review@biopointapp.com
+Password: BioPoint-Review-2026!
+
+Demo Lab Report:
+A sample lab report image (CBC + Metabolic Panel + Lipid Panel) has been included with this submission. To test the AI Lab Analysis feature:
+1. Log in with the credentials above
+2. Tap the "Labs" tab at the bottom
+3. Tap the upload button (camera icon)
+4. Select "Choose from Library" and select the attached sample lab report image
+5. Wait for the upload to complete
+6. Tap "Analyze" to run the AI biomarker extraction
+
+The AI will extract biomarkers including Glucose (105 mg/dL - flagged high), Total Cholesterol (218 mg/dL - flagged high), LDL Cholesterol (142 mg/dL - flagged high), and Vitamin D (28 ng/mL - flagged low), along with all normal-range values.
+
+Apple Health Integration:
+The app reads health data from Apple Health (steps, sleep, heart rate) and displays it on the main dashboard under the "Apple Health" section. Grant HealthKit permissions when prompted to see live data.
+
+BioPoint+ Subscription:
+The app references BioPoint+ premium features. In-App Purchase products have been submitted for review alongside this binary.
+
+Google Sign-In:
+Google Sign-In requires a native development build with the Google Sign-In SDK. On devices where the native module is not available, the button will show an "Unavailable" message instead of crashing.
+
+Support URL: https://biopointapp.com/support
+Privacy Policy: https://biopointapp.com/privacy

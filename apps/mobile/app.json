@@ -42,7 +42,7 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#0a0a0f"
       },
-      "package": "com.biopoint.app"
+      "package": "com.louisgold.biopoint"
     },
     "web": {
       "bundler": "metro",
@@ -59,7 +59,8 @@
           "sounds": []
         }
       ],
-      "@bacons/apple-targets"
+      "@bacons/apple-targets",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true

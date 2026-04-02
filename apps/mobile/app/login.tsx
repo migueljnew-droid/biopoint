@@ -45,47 +45,45 @@ export default function LoginScreen() {
     };
 
     const handleGoogleLogin = async () => {
+        if (!socialAuth.google.isAvailable()) {
+            Alert.alert("Unavailable", "Google Sign-In is not configured on this device.");
+            return;
+        }
         try {
-            const userInfo = await socialAuth.google.signIn();
-            if (userInfo.idToken) {
-                await loginWithGoogle(userInfo.idToken);
+            const sessionData = await socialAuth.google.signIn();
+            if (sessionData?.user) {
+                await loginWithGoogle(sessionData.user.id);
                 router.replace('/(tabs)');
-            } else if (userInfo.idToken === null) {
-                // Mock flow or cancelled
-            } else {
-                throw new Error('No ID token present!');
             }
         } catch (error: any) {
             const statusCodes = socialAuth.google.statusCodes;
-            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                // user cancelled the login flow
-            } else if (error.code === statusCodes.IN_PROGRESS) {
-                // operation (e.g. sign in) is in progress already
+            if (error.code === statusCodes.SIGN_IN_CANCELLED || error.code === 'ERR_REQUEST_CANCELED') {
+                // user cancelled
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                // play services not available or outdated
                 Alert.alert("Error", "Google Play Services not available");
             } else {
-                // some other error happened
-                console.log(error);
+                console.log('Google login error:', error);
                 Alert.alert("Google Login Error", error.message || "Unknown error");
             }
         }
     };
 
     const handleAppleLogin = async () => {
+        if (!socialAuth.apple.isAvailable()) {
+            Alert.alert("Unavailable", "Apple Sign-In is not available on this device.");
+            return;
+        }
         try {
-            const credential = await socialAuth.apple.signIn();
-            // IdentifyToken is always string, but let's be safe
-            if (credential.identityToken) {
-                // fullName is only available on first sign in, so backend should handle partial updates if missing
-                await loginWithApple(credential.identityToken, credential.fullName || undefined);
+            const sessionData = await socialAuth.apple.signIn();
+            if (sessionData?.user) {
+                await loginWithApple(sessionData.user.id, sessionData.fullName || undefined);
                 router.replace('/(tabs)');
             }
         } catch (e: any) {
             if (e.code === 'ERR_REQUEST_CANCELED') {
-                // handle that the user canceled the sign-in flow
+                // user cancelled
             } else {
-                console.log(e);
+                console.log('Apple login error:', e);
                 Alert.alert("Apple Login Error", e.message || "Unknown error");
             }
         }

@@ -1,0 +1,36 @@
+BioPoint is the AI-powered health intelligence platform for biohackers, optimizers, and anyone serious about understanding their biology.
+
+ONE SCORE. TOTAL CLARITY.
+Your BioPoint Score distills sleep, energy, mood, focus, weight, bloodwork, and supplement compliance into a single number. Watch it trend over time and know exactly where you stand.
+
+AI-POWERED LAB ANALYSIS
+Upload your bloodwork — CBC, metabolic panel, hormones, thyroid — and BioPoint's AI extracts every biomarker, flags out-of-range values, and explains what each result means. No more Googling lab results.
+
+THE ORACLE — YOUR HEALTH AI
+Ask The Oracle anything about your health. It analyzes your actual data — biomarkers, daily logs, supplement stacks, fasting sessions — and delivers personalized, evidence-based insights. Not generic advice. YOUR data. YOUR answers.
+
+PEPTIDE & SUPPLEMENT STACKS
+Build and manage complex supplement and peptide protocols. Set dosing, timing (morning/evening/with food), and track compliance. From basic vitamin stacks to advanced peptide cycles — BioPoint handles it all.
+
+FASTING PROTOCOLS
+Choose from Circadian, 14:10, 16:8, 18:6, 20:4, OMAD, or 36-hour protocols. Track active fasts with a live timer, build streaks, and see your completion rate over time.
+
+BIOMARKER TRENDS
+Every lab upload builds your biomarker history. Track Hemoglobin, Testosterone, Vitamin D, Cholesterol — any marker — with trend charts and reference range indicators. See whether you're improving or need to adjust.
+
+DAILY HEALTH LOGGING
+Log sleep quality, energy, mood, focus, and weight daily. BioPoint correlates these with your supplements and fasting to surface what's actually working.
+
+PROGRESS PHOTOS
+Document your physical transformation with timestamped progress photos. Compare side-by-side to see real results.
+
+NUTRITION TRACKING
+Log meals with AI-powered food recognition. Snap a photo and get instant macro and calorie estimates.
+
+BUILT FOR BIOHACKERS
+BioPoint isn't a calorie counter or a step tracker. It's built for people who run bloodwork, take peptides, practice intermittent fasting, and want data-driven health optimization. If you're serious about performance, this is your app.
+
+PRIVACY FIRST
+Your health data is encrypted and never sold. BioPoint uses field-level encryption for sensitive data and HIPAA-aligned security practices.
+
+Download BioPoint and start optimizing your biology today.

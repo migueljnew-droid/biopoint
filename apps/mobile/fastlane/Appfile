@@ -1,0 +1,7 @@
+app_identifier("com.biopoint.app")
+apple_id("migueljnew@gmail.com")
+team_id("2N5WMMZMGW")
+
+for_lane :upload_metadata do
+  app_identifier("com.biopoint.app")
+end

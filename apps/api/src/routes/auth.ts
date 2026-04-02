@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify';
+import crypto from 'crypto';
 import { prisma } from '@biopoint/db';
 import { RegisterSchema, LoginSchema, RefreshTokenSchema } from '@biopoint/shared';
 import {
@@ -20,6 +21,93 @@ export async function authRoutes(app: FastifyInstance) {
     const notificationService = createNotificationService();
     // Apply input sanitization to all auth routes
     app.addHook('preHandler', sanitizationMiddleware);
+
+    // Social auth (Google/Apple) — user already verified by Supabase
+    // Mobile app calls supabase.auth.signInWithIdToken() first, then hits this endpoint
+    // to sync user into our Prisma users table and get our custom JWT tokens
+    app.post('/social', async (request, reply) => {
+        const { provider, fullName } = request.body as { provider: string; fullName?: string };
+
+        // Get the Supabase access token from the Authorization header
+        // The mobile app sends the Supabase session token
+        const authHeader = request.headers.authorization;
+        if (!authHeader) {
+            return reply.status(401).send({ message: 'No authorization token provided' });
+        }
+
+        // Verify the Supabase token by calling Supabase's user endpoint
+        const supabaseUrl = process.env.SUPABASE_URL || 'https://iygpnvihbhjkwbkkkwvq.supabase.co';
+        const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Z3BudmloYmhqa3dia2trd3ZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY3NzQsImV4cCI6MjA5MDQwMjc3NH0.pSG9_QJsqR9afv8efmHcqBhUkg_QgfPH0_QmICyDnvo';
+
+        try {
+            const supabaseResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+                headers: {
+                    'Authorization': authHeader,
+                    'apikey': supabaseKey,
+                },
+            });
+
+            if (!supabaseResponse.ok) {
+                return reply.status(401).send({ message: 'Invalid social auth token' });
+            }
+
+            const supabaseUser = await supabaseResponse.json();
+            const email = supabaseUser.email;
+
+            if (!email) {
+                return reply.status(400).send({ message: 'No email from social auth provider' });
+            }
+
+            // Find or create user in our Prisma database
+            let user = await prisma.user.findUnique({
+                where: { email },
+                select: { id: true, email: true, role: true, createdAt: true },
+            });
+
+            if (!user) {
+                // Create new user — no password needed for social auth
+                const randomHash = await hashPassword(crypto.randomUUID());
+                user = await prisma.user.create({
+                    data: {
+                        email,
+                        passwordHash: randomHash,
+                        profile: {
+                            create: {
+                                ...(fullName ? { displayName: fullName } : {}),
+                            },
+                        },
+                    },
+                    select: { id: true, email: true, role: true, createdAt: true },
+                });
+            }
+
+            // Generate our custom tokens
+            const accessToken = generateAccessToken({
+                userId: user.id,
+                email: user.email,
+                role: user.role,
+            });
+            const refreshToken = await createRefreshToken(user.id);
+
+            return {
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    role: user.role,
+                    createdAt: user.createdAt.toISOString(),
+                    onboardingComplete: false,
+                },
+                tokens: {
+                    accessToken,
+                    refreshToken,
+                    expiresIn: parseAccessTokenExpiry(),
+                },
+            };
+        } catch (error: any) {
+            console.error('Social auth error:', error);
+            return reply.status(500).send({ message: 'Social authentication failed' });
+        }
+    });
 
     // Register
     app.post('/register', async (request, reply) => {
