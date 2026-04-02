@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { api, setTokens } from "@/lib/api";
@@ -8,39 +8,53 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const [status, setStatus] = useState("Completing sign in...");
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Supabase handles the OAuth code exchange automatically from the URL hash
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (event === "SIGNED_IN" && session) {
+              setStatus("Syncing account...");
+              try {
+                const response = await api.post("/auth/social", {
+                  provider: "oauth",
+                }, {
+                  headers: { Authorization: `Bearer ${session.access_token}` },
+                });
 
-        if (error || !session) {
-          console.error("OAuth callback error:", error);
-          router.push("/login");
-          return;
-        }
+                const { user, tokens } = response.data;
+                await setTokens(tokens.accessToken, tokens.refreshToken);
 
-        // Sync Supabase user with our API — get our custom JWT tokens
-        const response = await api.post("/auth/social", {
-          provider: "oauth",
-        }, {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
+                useAuthStore.setState({
+                  user: { ...user, onboardingComplete: user.onboardingComplete ?? false },
+                  isAuthenticated: true,
+                  isLoading: false,
+                });
 
-        const { user, tokens } = response.data;
-        await setTokens(tokens.accessToken, tokens.refreshToken);
+                subscription.unsubscribe();
+                router.push("/dashboard");
+              } catch (err) {
+                console.error("API sync failed:", err);
+                setStatus("Sign in failed. Redirecting...");
+                subscription.unsubscribe();
+                setTimeout(() => router.push("/login"), 1500);
+              }
+            }
+          }
+        );
 
-        // Update auth store
-        useAuthStore.setState({
-          user: { ...user, onboardingComplete: user.onboardingComplete ?? false },
-          isAuthenticated: true,
-          isLoading: false,
-        });
+        setTimeout(() => {
+          subscription.unsubscribe();
+          if (window.location.pathname === "/auth/callback") {
+            setStatus("Timed out. Redirecting...");
+            router.push("/login");
+          }
+        }, 10000);
 
-        router.push("/dashboard");
       } catch (err) {
-        console.error("OAuth callback failed:", err);
+        console.error("OAuth callback error:", err);
         router.push("/login");
       }
     };
@@ -58,7 +72,7 @@ export default function AuthCallbackPage() {
             <img src="/icon.png" alt="BioPoint" className="w-7 h-7 rounded-lg opacity-80" />
           </div>
         </div>
-        <span className="text-sm text-[var(--text-muted)]">Completing sign in...</span>
+        <span className="text-sm text-[var(--text-muted)]">{status}</span>
       </div>
     </div>
   );
