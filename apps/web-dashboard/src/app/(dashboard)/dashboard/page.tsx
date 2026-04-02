@@ -61,7 +61,7 @@ export default function DashboardPage() {
 
       // Restore check state from today's compliance events
       const todayEvents = (complianceRes.data || []).filter((e: { takenAt: string }) => new Date(e.takenAt) >= todayStart);
-      const taken = new Set(todayEvents.map((e: { stackItemId: string }) => e.stackItemId));
+      const taken = new Set<string>(todayEvents.map((e: { stackItemId: string }) => e.stackItemId));
       setTakenIds(taken);
     }).catch(console.error);
   }, []);
