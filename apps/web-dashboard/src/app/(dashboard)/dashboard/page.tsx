@@ -65,7 +65,7 @@ export default function DashboardPage() {
         transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
       >
         <h1
-          className="text-4xl font-bold tracking-tight mb-1 text-gradient-teal"
+          className="text-2xl sm:text-4xl font-bold tracking-tight mb-1 text-gradient-teal"
           style={{ fontFamily: "'Satoshi', sans-serif" }}
         >
           Dashboard
@@ -73,36 +73,33 @@ export default function DashboardPage() {
         <p className="text-[var(--text-muted)]">Your health intelligence at a glance</p>
       </motion.div>
 
-      {/* Score + Stats Row */}
-      <div className="grid grid-cols-12 gap-6">
-        {/* Score Card */}
-        <motion.div
-          className="col-span-4"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <GlassCard className="p-8 flex flex-col items-center justify-center text-center" glow>
-            <p className="text-xs font-semibold tracking-widest uppercase text-[var(--text-muted)] mb-4">
-              BioPoint Score
-            </p>
-            <div className="flex justify-center w-full">
-              <ScoreRing score={score} size={160} />
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              <TrendingUp size={14} className={change >= 0 ? "text-[var(--success)]" : "text-[var(--error)]"} />
-              <span
-                className="text-sm font-mono font-semibold"
-                style={{ color: change >= 0 ? "var(--success)" : "var(--error)" }}
-              >
-                {change >= 0 ? "+" : ""}{change} this week
-              </span>
-            </div>
-          </GlassCard>
-        </motion.div>
+      {/* Score Hero — Full Width, Biggest Tile */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <GlassCard className="p-6 sm:p-10 flex flex-col items-center justify-center text-center" glow>
+          <p className="text-xs font-semibold tracking-widest uppercase text-[var(--text-muted)] mb-6">
+            BioPoint Score
+          </p>
+          <div className="flex justify-center w-full">
+            <ScoreRing score={score} size={220} />
+          </div>
+          <div className="mt-6 flex items-center gap-2">
+            <TrendingUp size={14} className={change >= 0 ? "text-[var(--success)]" : "text-[var(--error)]"} />
+            <span
+              className="text-sm font-mono font-semibold"
+              style={{ color: change >= 0 ? "var(--success)" : "var(--error)" }}
+            >
+              {change >= 0 ? "+" : ""}{change} this week
+            </span>
+          </div>
+        </GlassCard>
+      </motion.div>
 
-        {/* Metric Cards */}
-        <div className="col-span-8 grid grid-cols-2 gap-6">
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <MetricCard label="Active Stacks" value={data?.activeStacks ?? 0} icon={Layers} color="var(--accent)" glowVariant="accent" />
           </motion.div>
@@ -119,7 +116,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Today's Stack + Oracle */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Today's Stack */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <GlassCard className="p-6">
