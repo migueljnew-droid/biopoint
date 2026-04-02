@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '@biopoint/db';
 import { authMiddleware } from '../middleware/auth.js';
 import { createAuditLog } from '../middleware/auditLog.js';
+import { recalculateBioPointScore } from '../services/scoreCalculator.js';
 
 export async function dashboardRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
@@ -15,11 +16,21 @@ export async function dashboardRoutes(app: FastifyInstance) {
         const weekAgo = new Date(today);
         weekAgo.setDate(weekAgo.getDate() - 7);
 
-        // Parallel fetch — all 8 queries are independent
-        const [bioPointScore, todayLog, recentLogs, scoreHistoryData, activeStacks, complianceEvents, activeFasting, todayFoodLog] = await Promise.all([
-            prisma.bioPointScore.findUnique({
-                where: { userId_date: { userId, date: today } },
-            }),
+        // Auto-calculate score if missing for today
+        let bioPointScore = await prisma.bioPointScore.findUnique({
+            where: { userId_date: { userId, date: today } },
+        });
+        if (!bioPointScore) {
+            try {
+                const result = await recalculateBioPointScore(userId);
+                bioPointScore = await prisma.bioPointScore.findUnique({
+                    where: { userId_date: { userId, date: today } },
+                });
+            } catch {}
+        }
+
+        // Parallel fetch — all 7 remaining queries are independent
+        const [todayLog, recentLogs, scoreHistoryData, activeStacks, complianceEvents, activeFasting, todayFoodLog] = await Promise.all([
             prisma.dailyLog.findUnique({
                 where: { userId_date: { userId, date: today } },
             }),

@@ -27,6 +27,8 @@ export default function DashboardPage() {
   const [takenIds, setTakenIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    // Calculate score first, then fetch dashboard
+    api.post("/dashboard/calculate", {}).catch(() => {});
     api.get("/dashboard").then((res) => setData(res.data)).catch(console.error);
     api.get("/stacks").then((res) => {
       const stacks = res.data;

@@ -3,6 +3,7 @@ import { prisma } from '@biopoint/db';
 import { DailyLogSchema } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
 import { createAuditLog } from '../middleware/auditLog.js';
+import { recalculateBioPointScore } from '../services/scoreCalculator.js';
 
 export async function logsRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
@@ -43,9 +44,8 @@ export async function logsRoutes(app: FastifyInstance) {
             },
         });
 
-        // NOTE: BioPoint score is calculated via POST /dashboard/calculate
-        // which includes compliance, fasting, and nutrition factors.
-        // Do NOT auto-calculate here — the old formula was divergent.
+        // Auto-recalculate BioPoint score after every log save
+        await recalculateBioPointScore(userId).catch(console.error);
 
         return {
             id: log.id,

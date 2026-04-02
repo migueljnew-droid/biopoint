@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { prisma } from '@biopoint/db';
+import { recalculateBioPointScore } from '../services/scoreCalculator.js';
 import {
     CreateStackSchema,
     UpdateStackSchema,
@@ -344,6 +345,9 @@ export async function stacksRoutes(app: FastifyInstance) {
                 },
             },
         });
+
+        // Auto-recalculate BioPoint score after compliance event
+        await recalculateBioPointScore(userId).catch(console.error);
 
         return {
             id: event.id,
