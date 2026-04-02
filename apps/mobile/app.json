@@ -59,8 +59,7 @@
           "sounds": []
         }
       ],
-      "@bacons/apple-targets",
-      "@react-native-google-signin/google-signin"
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true

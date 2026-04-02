@@ -1,6 +1,6 @@
 # BioPoint - Project Context
 
-> **Generated**: 2026-04-01 15:32:43 UTC
+> **Generated**: 2026-04-02 12:29:56 UTC
 > **Council Protocol Version**: 1.0.0
 > **Connected to**: The Council (430 AI agents)
 
@@ -161,6 +161,7 @@ biopoint/
 │   │   │   ├── components/
 │   │   │   ├── constants/
 │   │   │   ├── data/
+│   │   │   ├── lib/
 │   │   │   ├── services/
 │   │   │   ├── store/
 │   │   │   ├── theme/
@@ -171,6 +172,7 @@ biopoint/
 │   │   │   ├── keywords.txt
 │   │   │   ├── metadata.json
 │   │   │   ├── promotional-text.txt
+│   │   │   ├── review-notes.txt
 │   │   │   ├── whats-new.txt
 │   │   ├── targets/
 │   │   │   ├── widget/
@@ -186,10 +188,18 @@ biopoint/
 │   │   ├── metro.config.js
 │   │   └── ... (6 more files)
 │   ├── web/
+│   │   ├── privacy/
+│   │   │   ├── index.html
+│   │   ├── support/
+│   │   │   ├── index.html
 │   │   ├── apple-touch-icon.png
 │   │   ├── favicon.png
 │   │   ├── icon.png
+│   │   ├── index.html
 │   │   ├── landing.html.bak
+│   │   ├── privacy.html
+│   │   ├── support.html
+│   │   ├── vercel.json
 │   ├── web-dashboard/
 │   │   ├── public/
 │   │   │   ├── apple-touch-icon.png
@@ -198,6 +208,7 @@ biopoint/
 │   │   │   ├── globe.svg
 │   │   │   ├── icon.png
 │   │   │   ├── next.svg
+│   │   │   ├── peptideDatabase.json
 │   │   │   ├── vercel.svg
 │   │   │   ├── window.svg
 │   │   ├── src/
@@ -214,6 +225,10 @@ biopoint/
 │   │   ├── postcss.config.mjs
 │   │   ├── README.md
 │   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+├── assets/
+│   ├── iap_screenshot.png
+│   ├── sample_lab_report.png
 ├── db/
 │   ├── prisma/
 │   │   ├── migrations/
@@ -344,24 +359,19 @@ biopoint/
 │   ├── datadog-values.yaml
 ├── logs/
 │   ├── hipaa-compliance.log
+├── marketing/
+│   ├── product-hunt/
+│   │   ├── description.txt
+│   │   ├── first-comment.txt
+│   │   ├── launch-checklist.txt
+│   │   ├── social-posts.txt
+│   │   ├── tagline.txt
+│   │   ├── topics.txt
 ├── monitoring/
 │   ├── datadog/
 │   ├── health-checks/
 │   ├── sentry/
-├── packages/
-│   ├── shared/
-│   │   ├── src/
-│   │   │   ├── schemas/
-│   │   │   ├── index.d.ts
-│   │   │   ├── index.d.ts.map
-│   │   │   ├── index.js
-│   │   │   ├── index.js.map
-│   │   │   ├── index.ts
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-├── privacy-policy/
-│   ├── index.html
-├── ... (6 more directories)
+├── ... (8 more directories)
 ├── app.json
 ├── CHANGELOG.md
 ├── COMPLIANCE_COMPLETION_SUMMARY.md
@@ -383,5 +393,5 @@ biopoint/
 
 ## Last Sync
 
-**Timestamp**: 2026-04-01 15:32:43 UTC
+**Timestamp**: 2026-04-02 12:29:56 UTC
 **Synced By**: Council Project Protocol
