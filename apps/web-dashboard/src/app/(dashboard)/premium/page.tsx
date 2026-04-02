@@ -19,7 +19,7 @@ const PLANS = [
 ];
 
 export default function PremiumPage() {
-  const [selectedPlan, setSelectedPlan] = useState("annual");
+  const [selectedPlan, setSelectedPlan] = useState("yearly");
   const [purchasing, setPurchasing] = useState(false);
 
   const handlePurchase = async () => {

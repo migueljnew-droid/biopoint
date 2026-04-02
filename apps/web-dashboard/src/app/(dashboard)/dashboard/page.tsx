@@ -154,7 +154,14 @@ export default function DashboardPage() {
                           await api.post(`/stacks/compliance/${item.id}`, {});
                           // Refresh score after compliance
                           api.get("/dashboard").then((res) => setData(res.data)).catch(() => {});
-                        } catch {}
+                        } catch {
+                          // Roll back optimistic update on failure
+                          setTakenIds(prev => {
+                            const next = new Set(prev);
+                            next.delete(item.id);
+                            return next;
+                          });
+                        }
                       }}
                       className="w-full flex items-center gap-3 py-2.5 px-3 rounded-xl bg-[var(--glass)] border border-[var(--glass-border)] text-left transition-all hover:bg-[var(--glass-hover)] cursor-pointer"
                     >

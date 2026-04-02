@@ -161,9 +161,8 @@ export default function StacksPage() {
         </div>
         <button
           onClick={() => {
-            const adminEmails = ["migueljnew@gmail.com", "booklouisgold@gmail.com"];
-            const userEmail = useAuthStore.getState().user?.email?.toLowerCase();
-            const hasAccess = adminEmails.includes(userEmail || "");
+            const user = useAuthStore.getState().user;
+            const hasAccess = user?.role === "ADMIN";
             if (!hasAccess && stacks.length >= 1) {
               if (!confirm("Free users can only create 1 stack. Upgrade to BioPoint+ for unlimited stacks.\n\nWould you like to upgrade?")) return;
               router.push("/premium");

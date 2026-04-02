@@ -65,9 +65,10 @@ export function ScoreRing({
   const radius = (size - strokeWidth * 2) / 2;
   const circumference = 2 * Math.PI * radius;
   const center = size / 2;
-  const gradientId = useRef(`score-gradient-${Math.random().toString(36).slice(2)}`).current;
-  const glowId = useRef(`score-glow-${Math.random().toString(36).slice(2)}`).current;
-  const trackGlowId = useRef(`track-glow-${Math.random().toString(36).slice(2)}`).current;
+  const instanceId = useRef(Math.random().toString(36).slice(2)).current;
+  const gradientId = `score-gradient-${instanceId}`;
+  const glowId = `score-glow-${instanceId}`;
+  const trackGlowId = `track-glow-${instanceId}`;
 
   const tier = getTierConfig(score);
 

@@ -68,9 +68,9 @@ export default function LabsPage() {
   };
 
   const handleAnalyze = async (id: string) => {
-    const adminEmails = ["migueljnew@gmail.com", "booklouisgold@gmail.com"];
-    const userEmail = useAuthStore.getState().user?.email?.toLowerCase();
-    if (!adminEmails.includes(userEmail || "")) {
+    // Premium gate — server enforces via role, client shows prompt for non-ADMIN users
+    const user = useAuthStore.getState().user;
+    if (user?.role !== "ADMIN") {
       if (!confirm("AI Lab Analysis requires BioPoint+. Would you like to upgrade?")) return;
       window.location.href = "/premium";
       return;
