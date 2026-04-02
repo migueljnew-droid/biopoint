@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BioPoint — Health Intelligence Dashboard",
-  description: "Track your BioPoint Score, analyze bloodwork with AI, build peptide stacks, and optimize your biology.",
+  title: "BioPoint — Peptide & Supplement Manager",
+  description: "Manage your peptides and supplements in one place. Track doses, cycles, protocols, progress, and performance.",
   icons: { icon: "/favicon.png", apple: "/apple-touch-icon.png" },
 };
 

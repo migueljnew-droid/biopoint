@@ -302,7 +302,7 @@ export default function LoginPage() {
             className="text-xs tracking-[0.2em] uppercase font-medium mt-1"
             style={{ color: "var(--text-muted)" }}
           >
-            Biohacking Command Center
+            Your Stack, Organized
           </p>
         </motion.div>
 
@@ -365,8 +365,8 @@ export default function LoginPage() {
                 </h1>
                 <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                   {isRegister
-                    ? "Begin optimizing your biology"
-                    : "Sign in to your health command center"}
+                    ? "Start managing your peptides & supplements"
+                    : "Sign in to manage your protocol"}
                 </p>
               </motion.div>
             </AnimatePresence>
