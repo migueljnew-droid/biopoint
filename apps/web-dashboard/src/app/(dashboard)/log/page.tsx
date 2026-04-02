@@ -155,7 +155,7 @@ export default function DailyLogPage() {
               { key: "focusLevel", label: "Focus", color: "#A78BFA", max: 10, unit: "" },
               { key: "moodLevel", label: "Mood", color: "var(--error)", max: 10, unit: "" },
             ].map((metric) => {
-              const points = history.slice().reverse().map((log) => (log as Record<string, unknown>)[metric.key] as number | null).filter((v): v is number => v !== null);
+              const points = history.slice().reverse().map((log) => (log as unknown as Record<string, number | null>)[metric.key]).filter((v): v is number => v !== null);
               if (points.length < 2) return null;
               const maxVal = metric.max;
               const avg = points.reduce((a, b) => a + b, 0) / points.length;
