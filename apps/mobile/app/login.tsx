@@ -19,10 +19,12 @@ export default function LoginScreen() {
     const { login, loginWithGoogle, loginWithApple, isLoading, error, clearError } = useAuthStore();
 
     React.useEffect(() => {
-        const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-        if (googleClientId) {
+        const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+        const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+        if (webClientId) {
             socialAuth.google.configure({
-                webClientId: googleClientId,
+                webClientId,
+                iosClientId,
                 offlineAccess: true,
             });
         }
@@ -51,8 +53,8 @@ export default function LoginScreen() {
         }
         try {
             const sessionData = await socialAuth.google.signIn();
-            if (sessionData?.user) {
-                await loginWithGoogle(sessionData.user.id);
+            if (sessionData?.session?.access_token) {
+                await loginWithGoogle(sessionData.session.access_token);
                 router.replace('/(tabs)');
             }
         } catch (error: any) {
@@ -63,7 +65,11 @@ export default function LoginScreen() {
                 Alert.alert("Error", "Google Play Services not available");
             } else {
                 console.log('Google login error:', error);
-                Alert.alert("Google Login Error", error.message || "Unknown error");
+                Alert.alert(
+                    "Sign-In Issue",
+                    "We couldn't complete Google Sign-In right now. Please try again in a moment.",
+                    [{ text: "OK" }]
+                );
             }
         }
     };
@@ -75,16 +81,32 @@ export default function LoginScreen() {
         }
         try {
             const sessionData = await socialAuth.apple.signIn();
-            if (sessionData?.user) {
-                await loginWithApple(sessionData.user.id, sessionData.fullName || undefined);
-                router.replace('/(tabs)');
+            if (sessionData?.session?.access_token) {
+                // Retry backend sync up to 2 times (handles cold-start delays)
+                let lastError: any;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    try {
+                        await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
+                        router.replace('/(tabs)');
+                        return;
+                    } catch (err: any) {
+                        lastError = err;
+                        if (err.response?.status && err.response.status < 500) break; // Don't retry client errors
+                        if (attempt < 2) await new Promise(r => setTimeout(r, 2000)); // Wait 2s before retry
+                    }
+                }
+                throw lastError;
             }
         } catch (e: any) {
             if (e.code === 'ERR_REQUEST_CANCELED') {
                 // user cancelled
             } else {
                 console.log('Apple login error:', e);
-                Alert.alert("Apple Login Error", e.message || "Unknown error");
+                Alert.alert(
+                    "Sign-In Issue",
+                    "We couldn't complete Apple Sign-In right now. Please try again in a moment.",
+                    [{ text: "OK" }]
+                );
             }
         }
     };

@@ -18,37 +18,76 @@ export default function RegisterScreen() {
     const [showPassword, setShowPassword] = useState(false);
     const { register, loginWithGoogle, loginWithApple, isLoading, error, clearError } = useAuthStore();
 
+    React.useEffect(() => {
+        const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+        const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+        if (webClientId) {
+            socialAuth.google.configure({
+                webClientId,
+                iosClientId,
+                offlineAccess: true,
+            });
+        }
+        clearError();
+    }, []);
+
     const handleGoogleSignUp = async () => {
+        if (!socialAuth.google.isAvailable()) {
+            Alert.alert("Unavailable", "Google Sign-In is not configured on this device.");
+            return;
+        }
         try {
-            const userInfo = await socialAuth.google.signIn();
-            if (userInfo.idToken) {
-                await loginWithGoogle(userInfo.idToken);
+            const sessionData = await socialAuth.google.signIn();
+            if (sessionData?.session?.access_token) {
+                await loginWithGoogle(sessionData.session.access_token);
                 router.replace('/(tabs)');
             }
         } catch (error: any) {
-            if (error.code !== 'SIGN_IN_CANCELLED') {
-                Alert.alert("Google Sign Up Error", error.message || "Unknown error");
+            const statusCodes = socialAuth.google.statusCodes;
+            if (error.code === statusCodes.SIGN_IN_CANCELLED || error.code === 'ERR_REQUEST_CANCELED') {
+                // user cancelled
+            } else {
+                Alert.alert(
+                    "Sign-In Issue",
+                    "We couldn't complete Google Sign-In right now. Please try again in a moment.",
+                    [{ text: "OK" }]
+                );
             }
         }
     };
 
     const handleAppleSignUp = async () => {
+        if (!socialAuth.apple.isAvailable()) {
+            Alert.alert("Unavailable", "Apple Sign-In is not available on this device.");
+            return;
+        }
         try {
-            const credential = await socialAuth.apple.signIn();
-            if (credential.identityToken) {
-                await loginWithApple(credential.identityToken, credential.fullName || undefined);
-                router.replace('/(tabs)');
+            const sessionData2 = await socialAuth.apple.signIn();
+            if (sessionData2?.session?.access_token) {
+                let lastError: any;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    try {
+                        await loginWithApple(sessionData2.session.access_token, sessionData2.fullName || undefined);
+                        router.replace('/(tabs)');
+                        return;
+                    } catch (err: any) {
+                        lastError = err;
+                        if (err.response?.status && err.response.status < 500) break;
+                        if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
+                    }
+                }
+                throw lastError;
             }
         } catch (e: any) {
             if (e.code !== 'ERR_REQUEST_CANCELED') {
-                Alert.alert("Apple Sign Up Error", e.message || "Unknown error");
+                Alert.alert(
+                    "Sign-In Issue",
+                    "We couldn't complete Apple Sign-In right now. Please try again in a moment.",
+                    [{ text: "OK" }]
+                );
             }
         }
     };
-
-    React.useEffect(() => {
-        clearError();
-    }, []);
 
     const handleRegister = async () => {
         if (password !== confirmPassword) {

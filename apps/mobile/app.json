@@ -16,26 +16,29 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.biopoint.app",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSCameraUsageDescription": "BioPoint uses your camera to scan food and lab reports for analysis.",
         "NSPhotoLibraryUsageDescription": "BioPoint accesses your photo library to upload lab reports and progress photos.",
         "NSPhotoLibraryAddUsageDescription": "BioPoint saves progress photos to your library.",
         "NSFaceIDUsageDescription": "BioPoint uses Face ID to protect your health data.",
-        "NSHealthShareUsageDescription": "BioPoint reads your health data from Apple Health to calculate your BioPoint Score.",
-        "NSHealthUpdateUsageDescription": "BioPoint writes health data to Apple Health.",
+        "NSHealthShareUsageDescription": "BioPoint reads your steps, sleep, and heart rate to calculate your BioPoint score and track your health trends.",
+        "NSHealthUpdateUsageDescription": "BioPoint saves your health logs and protocol data to Apple Health for a unified health record.",
         "ITSAppUsesNonExemptEncryption": false
       },
       "entitlements": {
-        "com.apple.developer.healthkit": true,
-        "com.apple.developer.healthkit.background-delivery": true,
         "com.apple.security.application-groups": [
           "group.com.biopoint.app"
+        ],
+        "com.apple.developer.healthkit": true,
+        "com.apple.developer.healthkit.access": [
+          "health-records"
         ]
-      }
+      },
+      "appleTeamId": "2N5WMMZMGW"
     },
     "android": {
       "adaptiveIcon": {
@@ -53,6 +56,12 @@
       "expo-router",
       "expo-secure-store",
       "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.352377085358-ks7m7bbj5ihcpknfj1ie7ttjrna2e0g3"
+        }
+      ],
       [
         "expo-notifications",
         {

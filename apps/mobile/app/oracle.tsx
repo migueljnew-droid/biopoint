@@ -1,18 +1,23 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Platform, Pressable, Modal, ScrollView, Linking } from 'react-native';
 import { router } from 'expo-router';
 import { colors, spacing, borderRadius } from '../src/theme';
 import { ScreenWrapper, GlassView } from '../src/components';
 import { Ionicons } from '@expo/vector-icons';
 import { useChatStore, Message } from '../src/store/chatStore';
-import Animated, { FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import Markdown from 'react-native-markdown-display';
 import * as Haptics from 'expo-haptics';
 
 export default function OracleScreen() {
-    const { messages, isTyping, addMessage, generateResponse, clearHistory } = useChatStore();
+    const { messages, isTyping, addMessage, generateResponse, clearHistory, aiConsentGiven, giveAiConsent } = useChatStore();
     const [inputValue, setInputValue] = useState('');
     const flatListRef = useRef<FlatList>(null);
+
+    const handleConsent = () => {
+        giveAiConsent();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    };
 
     const handleSend = () => {
         if (!inputValue.trim()) return;
@@ -59,6 +64,50 @@ export default function OracleScreen() {
 
     return (
         <ScreenWrapper withGradient={true} edges={['top', 'left', 'right']}>
+            {/* AI Data Consent Modal — shown before first use */}
+            <Modal visible={!aiConsentGiven} animationType="fade" transparent>
+                <View style={styles.consentOverlay}>
+                    <Animated.View entering={FadeInDown.springify()} style={styles.consentContainer}>
+                        <GlassView variant="heavy" borderRadius={20} style={styles.consentCard}>
+                            <View style={styles.consentIconRow}>
+                                <View style={styles.consentIconCircle}>
+                                    <Ionicons name="shield-checkmark" size={28} color={colors.primary} />
+                                </View>
+                            </View>
+                            <Text style={styles.consentTitle}>AI Data Usage</Text>
+                            <ScrollView style={{ maxHeight: 280 }} showsVerticalScrollIndicator={false}>
+                                <Text style={styles.consentBody}>
+                                    The Oracle uses AI to analyze your questions and provide wellness insights. Before using this feature, please understand how your data is handled:
+                                </Text>
+                                <Text style={styles.consentBullet}>
+                                    {'\u2022'} <Text style={styles.consentBold}>What is sent:</Text> Your chat messages and relevant health context (biomarkers, supplement logs, fasting data) are sent to our secure backend for AI processing.
+                                </Text>
+                                <Text style={styles.consentBullet}>
+                                    {'\u2022'} <Text style={styles.consentBold}>Who processes it:</Text> BioPoint's backend server processes your data using Google Gemini AI. No personal identifiers (name, email) are included in AI requests.
+                                </Text>
+                                <Text style={styles.consentBullet}>
+                                    {'\u2022'} <Text style={styles.consentBold}>Data protection:</Text> All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Your data is never sold to third parties.
+                                </Text>
+                                <Text style={styles.consentBullet}>
+                                    {'\u2022'} <Text style={styles.consentBold}>Not medical advice:</Text> AI responses are for general wellness information only and are not a substitute for professional medical advice.
+                                </Text>
+                                <Pressable onPress={() => router.push('/settings/privacy' as any)}>
+                                    <Text style={styles.consentLink}>Read our full Privacy Policy</Text>
+                                </Pressable>
+                            </ScrollView>
+                            <View style={styles.consentActions}>
+                                <Pressable onPress={() => router.back()} style={styles.consentDecline}>
+                                    <Text style={styles.consentDeclineText}>Decline</Text>
+                                </Pressable>
+                                <Pressable onPress={handleConsent} style={styles.consentAccept}>
+                                    <Text style={styles.consentAcceptText}>I Understand & Agree</Text>
+                                </Pressable>
+                            </View>
+                        </GlassView>
+                    </Animated.View>
+                </View>
+            </Modal>
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 style={{ flex: 1 }}
@@ -133,6 +182,92 @@ export default function OracleScreen() {
 }
 
 const styles = StyleSheet.create({
+    // AI Consent Modal
+    consentOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        justifyContent: 'center',
+        padding: spacing.lg,
+    },
+    consentContainer: {
+        justifyContent: 'center',
+    },
+    consentCard: {
+        padding: spacing.xl,
+    },
+    consentIconRow: {
+        alignItems: 'center',
+        marginBottom: spacing.md,
+    },
+    consentIconCircle: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    consentTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: colors.textPrimary,
+        textAlign: 'center',
+        marginBottom: spacing.md,
+    },
+    consentBody: {
+        fontSize: 14,
+        color: colors.textSecondary,
+        lineHeight: 21,
+        marginBottom: spacing.md,
+    },
+    consentBullet: {
+        fontSize: 14,
+        color: colors.textSecondary,
+        lineHeight: 21,
+        marginBottom: spacing.sm,
+        paddingLeft: spacing.xs,
+    },
+    consentBold: {
+        fontWeight: '700',
+        color: colors.textPrimary,
+    },
+    consentLink: {
+        fontSize: 14,
+        color: colors.primary,
+        fontWeight: '600',
+        marginTop: spacing.sm,
+        marginBottom: spacing.md,
+        textDecorationLine: 'underline',
+    },
+    consentActions: {
+        flexDirection: 'row',
+        gap: spacing.md,
+        marginTop: spacing.md,
+    },
+    consentDecline: {
+        flex: 1,
+        paddingVertical: 14,
+        borderRadius: borderRadius.lg,
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        alignItems: 'center',
+    },
+    consentDeclineText: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: colors.textSecondary,
+    },
+    consentAccept: {
+        flex: 2,
+        paddingVertical: 14,
+        borderRadius: borderRadius.lg,
+        backgroundColor: colors.primary,
+        alignItems: 'center',
+    },
+    consentAcceptText: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#fff',
+    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',

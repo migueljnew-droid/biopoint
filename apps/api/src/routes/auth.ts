@@ -104,8 +104,18 @@ export async function authRoutes(app: FastifyInstance) {
                 },
             };
         } catch (error: any) {
-            console.error('Social auth error:', error);
-            return reply.status(500).send({ message: 'Social authentication failed' });
+            console.error('Social auth error:', error?.message, error?.code, error?.stack?.split('\n')[0]);
+            // Distinguish between transient vs permanent failures
+            if (error?.code === 'P2002') {
+                // Unique constraint — user already exists, try to find them
+                const email = (request.body as any)?.email;
+                return reply.status(409).send({ message: 'Account already exists. Try signing in instead.' });
+            }
+            if (error?.code?.startsWith?.('P')) {
+                // Prisma/database error — likely transient
+                return reply.status(503).send({ message: 'Service temporarily unavailable. Please try again.' });
+            }
+            return reply.status(500).send({ message: 'Social authentication failed. Please try again.' });
         }
     });
 

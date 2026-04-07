@@ -11,6 +11,7 @@ import { useAuthStore } from '../src/store/authStore';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { colors } from '../src/theme';
 import { requestPermissions } from '../src/services/notificationService';
+import { api } from '../src/services/api';
 
 export default function RootLayout() {
     const checkAuth = useAuthStore((s) => s.checkAuth);
@@ -18,6 +19,8 @@ export default function RootLayout() {
 
     useEffect(() => {
         SystemUI.setBackgroundColorAsync(colors.background);
+        // Wake up backend (Render cold-start) so auth is ready when user taps login
+        api.get('/health').catch(() => {});
         checkAuth()
             .then(() => {
                 if (useAuthStore.getState().isAuthenticated) {

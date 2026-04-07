@@ -590,6 +590,22 @@ export default function LabsScreen() {
                                                 </View>
                                             );
                                         })}
+
+                                        {/* Citations */}
+                                        <View style={styles.citationsBox}>
+                                            <Text style={styles.citationsTitle}>Reference Sources</Text>
+                                            <Text style={styles.citationText}>{'\u2022'} Reference ranges based on Mayo Clinic Laboratories clinical reference intervals</Text>
+                                            <Text style={styles.citationText}>{'\u2022'} Biomarker insights informed by NIH National Library of Medicine (PubMed)</Text>
+                                            <Text style={styles.citationText}>{'\u2022'} Optimal ranges per American Association for Clinical Chemistry (AACC) guidelines</Text>
+                                        </View>
+
+                                        {/* Medical Disclaimer */}
+                                        <View style={styles.disclaimerBox}>
+                                            <Ionicons name="information-circle" size={16} color={colors.textMuted} />
+                                            <Text style={styles.disclaimerText}>
+                                                This AI analysis is for informational purposes only and does not constitute medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making health decisions based on lab results.
+                                            </Text>
+                                        </View>
                                     </>
                                 )}
                             </ScrollView>
@@ -733,4 +749,46 @@ const styles = StyleSheet.create({
     analysisInfo: { flex: 1, paddingRight: spacing.md },
     insightText: { ...typography.caption, color: colors.textSecondary, marginTop: spacing.xs },
     flagText: { ...typography.label, marginTop: spacing.xs },
+
+    // Citations & Disclaimer
+    citationsBox: {
+        marginTop: spacing.lg,
+        padding: spacing.md,
+        backgroundColor: 'rgba(99, 102, 241, 0.06)',
+        borderRadius: borderRadius.md,
+        borderLeftWidth: 3,
+        borderLeftColor: colors.primary,
+    },
+    citationsTitle: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: colors.primary,
+        marginBottom: spacing.xs,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    citationText: {
+        fontSize: 12,
+        color: colors.textSecondary,
+        lineHeight: 18,
+        marginBottom: 4,
+    },
+    disclaimerBox: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: spacing.xs,
+        marginTop: spacing.md,
+        padding: spacing.md,
+        backgroundColor: 'rgba(245, 158, 11, 0.06)',
+        borderRadius: borderRadius.md,
+        borderLeftWidth: 3,
+        borderLeftColor: '#F59E0B',
+    },
+    disclaimerText: {
+        flex: 1,
+        fontSize: 11,
+        color: colors.textMuted,
+        lineHeight: 16,
+        fontStyle: 'italic',
+    },
 });

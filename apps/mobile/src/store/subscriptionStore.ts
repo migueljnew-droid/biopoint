@@ -32,9 +32,7 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             initialize: async () => {
                 try {
                     if (!REVENUECAT_API_KEY) {
-                        // No RevenueCat key — grant premium to admin emails as fallback
-                        // TODO (SEC-004): Move to server-side entitlement before production
-                        set({ isPremium: true, plan: 'yearly' });
+                        set({ isPremium: false, plan: 'free' });
                         return;
                     }
                     Purchases.configure({ apiKey: REVENUECAT_API_KEY });
@@ -42,8 +40,8 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
                     set({ isPremium });
                 } catch (e) {
-                    // RevenueCat not configured — grant premium as fallback for TestFlight
-                    set({ isPremium: true, plan: 'yearly' });
+                    console.log('RevenueCat init failed:', e);
+                    set({ isPremium: false, plan: 'free' });
                 }
             },
 

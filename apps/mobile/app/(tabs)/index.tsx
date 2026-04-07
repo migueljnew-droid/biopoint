@@ -8,8 +8,8 @@ import { router } from 'expo-router';
 import { WeightPicker, ScreenWrapper, GlassView, AnimatedButton, GlassPicker, ScoreChart, DigitalTwinViewer, BreathingGuide } from '../../src/components';
 import { TodayStack } from '../../src/components/TodayStack';
 import { useStacksStore } from '../../src/store/stacksStore';
-import Animated, { FadeInDown, FadeInRight, SlideInDown, SlideOutDown, LinearTransition } from 'react-native-reanimated';
 import { healthKitService } from '../../src/services/healthKitService';
+import Animated, { FadeInDown, FadeInRight, SlideInDown, SlideOutDown, LinearTransition } from 'react-native-reanimated';
 
 export default function DashboardScreen() {
     const { bioPointScore, weeklyTrend, scoreHistory, activeFasting, todayNutrition, isLoading, fetchDashboard, logToday } = useDashboardStore();
@@ -30,45 +30,26 @@ export default function DashboardScreen() {
         weightKg: '75'
     });
 
+
     const handleBioSync = async () => {
-        Alert.alert(
-            "Bio-Sync",
-            "Requesting access to HealthKit...",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Connect",
-                    onPress: async () => {
-                        const authorized = await healthKitService.init();
-                        if (authorized) {
-                            const [sleep, steps] = await Promise.all([
-                                healthKitService.getSleep(),
-                                healthKitService.getSteps()
-                            ]);
-
-                            // Update Log Data State (for visual confirmation before save)
-                            setLogData(prev => ({
-                                ...prev,
-                                sleepHours: sleep > 0 ? sleep.toFixed(1) : prev.sleepHours,
-                                // Note: Steps aren't displayed in log modal but sync confirms connection
-                            }));
-
-                            Alert.alert("Sync Successful", `Retrieved:\n- Sleep: ${sleep.toFixed(1)} hrs\n- Steps: ${steps}`);
-                            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                        } else {
-                            Alert.alert("Sync Failed", "HealthKit permissions denied or unavailable.");
-                            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-                        }
-                    }
-                }
-            ]
-        );
+        try {
+            const authorized = await healthKitService.init();
+            if (authorized) {
+                const [sleep, steps] = await Promise.all([
+                    healthKitService.getSleep(),
+                    healthKitService.getSteps(),
+                ]);
+                setHealthData({ steps, sleep, synced: true });
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            }
+        } catch (e) {
+            console.log('HealthKit sync failed:', e);
+        }
     };
 
     useEffect(() => {
         fetchDashboard();
         fetchStacks();
-        // Auto-sync HealthKit data on mount (iOS only)
         if (Platform.OS === 'ios') {
             (async () => {
                 try {
@@ -127,7 +108,7 @@ export default function DashboardScreen() {
                     />
                 </View>
                 <View style={{ position: 'absolute', right: 0, top: 0, flexDirection: 'row', gap: 8 }}>
-                    <Pressable onPress={handleBioSync} style={styles.iconButton}>
+                    <Pressable onPress={() => setShowLogModal(true)} style={styles.iconButton}>
                         <GlassView variant="light" borderRadius={borderRadius.full} style={styles.iconButtonInner}>
                             <Ionicons name="sync" size={20} color={colors.accent} />
                         </GlassView>
@@ -173,7 +154,7 @@ export default function DashboardScreen() {
                     </GlassView>
                 </Animated.View>
 
-                {/* Apple Health Data */}
+                {/* Apple Health Integration — HealthKit Data */}
                 {Platform.OS === 'ios' && (
                     <Animated.View entering={FadeInDown.delay(50).springify()}>
                         <GlassView variant="medium" borderRadius={borderRadius.lg} style={styles.healthCard}>
@@ -221,6 +202,10 @@ export default function DashboardScreen() {
                                     <Text style={{ color: colors.accent, fontSize: 13, fontWeight: '500' }}>Connect Apple Health to track vitals</Text>
                                 </Pressable>
                             )}
+                            <View style={styles.healthPoweredBy}>
+                                <Ionicons name="heart-circle" size={12} color="#FF2D55" />
+                                <Text style={styles.healthPoweredByText}>Powered by Apple HealthKit</Text>
+                            </View>
                         </GlassView>
                     </Animated.View>
                 )}
@@ -477,6 +462,20 @@ const styles = StyleSheet.create({
         paddingTop: spacing.sm,
         borderTopWidth: 1,
         borderTopColor: 'rgba(255,255,255,0.06)',
+    },
+    healthPoweredBy: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+        marginTop: spacing.sm,
+        paddingTop: spacing.xs,
+    },
+    healthPoweredByText: {
+        fontSize: 10,
+        color: 'rgba(255,255,255,0.35)',
+        fontWeight: '500',
+        letterSpacing: 0.3,
     },
     header: {
         flexDirection: 'row',

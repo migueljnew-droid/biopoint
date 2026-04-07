@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../services/api';
+import { updateWidgetData } from '../services/widgetService';
 
 interface BioPointBreakdown {
     sleep: number;
@@ -63,16 +64,24 @@ export const useDashboardStore = create<DashboardState>((set) => ({
             // Recalculate score before fetching
             await api.post('/dashboard/calculate').catch(() => {});
             const response = await api.get('/dashboard');
+            const d = response.data;
             set({
-                bioPointScore: response.data.bioPointScore,
-                todayLog: response.data.todayLog,
-                recentLogs: response.data.recentLogs,
-                scoreHistory: response.data.scoreHistory,
-                weeklyTrend: response.data.weeklyTrend,
-                activeFasting: response.data.activeFasting,
-                todayNutrition: response.data.todayNutrition,
+                bioPointScore: d.bioPointScore,
+                todayLog: d.todayLog,
+                recentLogs: d.recentLogs,
+                scoreHistory: d.scoreHistory,
+                weeklyTrend: d.weeklyTrend,
+                activeFasting: d.activeFasting,
+                todayNutrition: d.todayNutrition,
                 isLoading: false,
             });
+            // Push to iOS widget via App Group
+            updateWidgetData({
+                score: d.bioPointScore?.score ?? 0,
+                trend: d.weeklyTrend != null ? (d.weeklyTrend >= 0 ? `+${d.weeklyTrend}` : `${d.weeklyTrend}`) : '--',
+                calories: d.todayNutrition?.totalCalories ?? 0,
+                calorieTarget: 2000,
+            }).catch(() => {});
         } catch (error: any) {
             set({
                 error: error.response?.data?.message || 'Failed to fetch dashboard',
@@ -93,11 +102,16 @@ export const useDashboardStore = create<DashboardState>((set) => ({
             // Calculate score then re-fetch
             await api.post('/dashboard/calculate');
             const dashResponse = await api.get('/dashboard');
+            const dr = dashResponse.data;
             set({
-                bioPointScore: dashResponse.data.bioPointScore,
-                recentLogs: dashResponse.data.recentLogs,
-                weeklyTrend: dashResponse.data.weeklyTrend,
+                bioPointScore: dr.bioPointScore,
+                recentLogs: dr.recentLogs,
+                weeklyTrend: dr.weeklyTrend,
             });
+            updateWidgetData({
+                score: dr.bioPointScore?.score ?? 0,
+                trend: dr.weeklyTrend != null ? (dr.weeklyTrend >= 0 ? `+${dr.weeklyTrend}` : `${dr.weeklyTrend}`) : '--',
+            }).catch(() => {});
         } catch (error: any) {
             set({
                 error: error.response?.data?.message || 'Failed to log',

@@ -1,4 +1,4 @@
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
 
 // Safe Google Sign In Import — only used to get the ID token from native SDK
@@ -7,7 +7,6 @@ try {
     const googleModule = require('@react-native-google-signin/google-signin');
     GoogleSignin = googleModule.GoogleSignin;
 } catch (e) {
-    // Native module not available — Google Sign-In won't work
     console.log('Google Sign-In native module not available');
 }
 
@@ -15,7 +14,7 @@ try {
 let AppleAuthentication: any = null;
 try {
     const appleModule = require('expo-apple-authentication');
-    if (appleModule && appleModule.signInAsync) {
+    if (appleModule && typeof appleModule.signInAsync === 'function') {
         AppleAuthentication = appleModule;
     }
 } catch (e) {
@@ -30,28 +29,40 @@ export const socialAuth = {
             try {
                 GoogleSignin.configure(config);
             } catch (e) {
-                console.warn('GoogleSignin configure failed');
+                console.warn('GoogleSignin configure failed:', e);
             }
         },
         signIn: async () => {
             if (!GoogleSignin) {
                 throw new Error('Google Sign-In is not available on this device');
             }
-            await GoogleSignin.hasPlayServices();
-            const userInfo = await GoogleSignin.signIn();
+            try {
+                if (Platform.OS === 'android') {
+                    await GoogleSignin.hasPlayServices();
+                }
+                const userInfo = await GoogleSignin.signIn();
 
-            if (!userInfo.idToken) {
-                throw new Error('No ID token from Google');
+                // v13+ returns { type, data: { idToken, user } }
+                // v12 and below returns { idToken, user } directly
+                const idToken = userInfo?.data?.idToken || userInfo?.idToken;
+
+                if (!idToken) {
+                    throw new Error('No ID token from Google');
+                }
+
+                const { data, error } = await supabase.auth.signInWithIdToken({
+                    provider: 'google',
+                    token: idToken,
+                });
+
+                if (error) throw error;
+                return data;
+            } catch (e: any) {
+                // Re-throw cancellation codes so callers can ignore them
+                if (e.code === GoogleSignin.statusCodes?.SIGN_IN_CANCELLED) throw e;
+                if (e.code === 'ERR_REQUEST_CANCELED') throw e;
+                throw new Error('Google Sign-In failed: ' + (e.message || 'Unknown error'));
             }
-
-            // Use Supabase to verify the Google token and create/sign in user
-            const { data, error } = await supabase.auth.signInWithIdToken({
-                provider: 'google',
-                token: userInfo.idToken,
-            });
-
-            if (error) throw error;
-            return data;
         },
         statusCodes: GoogleSignin?.statusCodes || {
             SIGN_IN_CANCELLED: 'SIGN_IN_CANCELLED',
@@ -66,24 +77,32 @@ export const socialAuth = {
                 throw new Error('Apple Sign-In is not available on this device');
             }
 
-            const credential = await AppleAuthentication.signInAsync({
-                requestedScopes: [
-                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
-                ],
-            });
+            let credential: any;
+            try {
+                credential = await AppleAuthentication.signInAsync({
+                    requestedScopes: [
+                        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                    ],
+                });
+            } catch (e: any) {
+                if (e.code === 'ERR_REQUEST_CANCELED') throw e;
+                throw new Error('Apple Sign-In failed: ' + (e.message || 'Unknown error'));
+            }
 
             if (!credential.identityToken) {
                 throw new Error('No identity token from Apple');
             }
 
-            // Use Supabase to verify the Apple token and create/sign in user
             const { data, error } = await supabase.auth.signInWithIdToken({
                 provider: 'apple',
                 token: credential.identityToken,
             });
 
-            if (error) throw error;
+            if (error) {
+                console.log('Supabase Apple signInWithIdToken error:', error.message);
+                throw new Error('Authentication failed. Please try again.');
+            }
 
             return {
                 ...data,

@@ -16,8 +16,8 @@ interface AuthState {
     error: string | null;
 
     login: (email: string, password: string) => Promise<void>;
-    loginWithGoogle: (idToken: string) => Promise<void>;
-    loginWithApple: (identityToken: string, fullName?: { givenName?: string | null, familyName?: string | null }) => Promise<void>;
+    loginWithGoogle: (supabaseAccessToken?: string) => Promise<void>;
+    loginWithApple: (supabaseAccessToken?: string, fullName?: { givenName?: string | null, familyName?: string | null }) => Promise<void>;
     register: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<void>;
@@ -70,15 +70,19 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            loginWithGoogle: async (_idToken: string) => {
+            loginWithGoogle: async (supabaseAccessToken?: string) => {
                 // Google token already verified by Supabase in socialAuth.ts
                 // Now sync user with our custom API using the Supabase session token
                 set({ isLoading: true, error: null });
                 try {
                     await clearTokens();
-                    const { data: { session } } = await supabase.auth.getSession();
+                    let accessToken = supabaseAccessToken;
+                    if (!accessToken) {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        accessToken = session?.access_token;
+                    }
                     const response = await api.post('/auth/social', { provider: 'google' }, {
-                        headers: { Authorization: `Bearer ${session?.access_token}` },
+                        headers: { Authorization: `Bearer ${accessToken}` },
                     });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);
@@ -96,18 +100,22 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            loginWithApple: async (_identityToken: string, fullName?: { givenName?: string | null, familyName?: string | null }) => {
+            loginWithApple: async (supabaseAccessToken?: string, fullName?: { givenName?: string | null, familyName?: string | null }) => {
                 // Apple token already verified by Supabase in socialAuth.ts
                 // Now sync user with our custom API using the Supabase session token
                 set({ isLoading: true, error: null });
                 try {
                     await clearTokens();
-                    const { data: { session } } = await supabase.auth.getSession();
+                    let accessToken = supabaseAccessToken;
+                    if (!accessToken) {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        accessToken = session?.access_token;
+                    }
                     const response = await api.post('/auth/social', {
                         provider: 'apple',
                         fullName: fullName ? `${fullName.givenName || ''} ${fullName.familyName || ''}`.trim() : undefined,
                     }, {
-                        headers: { Authorization: `Bearer ${session?.access_token}` },
+                        headers: { Authorization: `Bearer ${accessToken}` },
                     });
                     const { user, tokens } = response.data;
                     await setTokens(tokens.accessToken, tokens.refreshToken);

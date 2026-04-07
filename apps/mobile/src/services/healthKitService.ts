@@ -4,8 +4,6 @@ import AppleHealthKit, {
 } from 'react-native-health';
 import { Platform } from 'react-native';
 
-// PULSE PROTOCOL: HEALTHKIT BRIDGE
-
 const PERMISSIONS: HealthKitPermissions = {
     permissions: {
         read: [
@@ -15,7 +13,7 @@ const PERMISSIONS: HealthKitPermissions = {
             AppleHealthKit.Constants.Permissions.HeartRateVariability,
             AppleHealthKit.Constants.Permissions.Weight,
         ],
-        write: [], // We only read for now
+        write: [],
     },
 };
 
@@ -38,7 +36,7 @@ export const healthKitService = {
     getSleep: async (): Promise<number> => {
         if (Platform.OS !== 'ios') return 0;
 
-        let options = {
+        const options = {
             startDate: new Date(new Date().getTime() - 24 * 60 * 60 * 1000).toISOString(),
             endDate: new Date().toISOString(),
         };
@@ -49,15 +47,13 @@ export const healthKitService = {
                     resolve(0);
                     return;
                 }
-                // Simplified calculation: Sum 'ASLEEP' periods
-                // In prod, this needs robust parsing of 'INBED' vs 'ASLEEP'
                 const totalMinutes = results.reduce((acc, sample) => {
                     const start = new Date(sample.startDate).getTime();
                     const end = new Date(sample.endDate).getTime();
                     return acc + (end - start) / 1000 / 60;
                 }, 0);
 
-                resolve(totalMinutes / 60); // Return hours
+                resolve(totalMinutes / 60);
             });
         });
     },
@@ -75,6 +71,4 @@ export const healthKitService = {
             });
         });
     },
-
-    // Future: HRV, Weight hooks...
 };

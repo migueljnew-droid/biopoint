@@ -17,7 +17,7 @@ struct BioPointData {
 
 struct BioPointProvider: TimelineProvider {
     func placeholder(in context: Context) -> BioPointEntry {
-        BioPointEntry(date: Date(), data: sampleData)
+        BioPointEntry(date: Date(), data: fallbackData)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (BioPointEntry) -> Void) {
@@ -31,13 +31,26 @@ struct BioPointProvider: TimelineProvider {
     }
 
     private func loadData() -> BioPointData {
-        // App Group data sharing will be wired in a future update
-        // For now, show sample data so the widget renders properly
-        return sampleData
+        guard let defaults = UserDefaults(suiteName: "group.com.biopoint.app"),
+              let jsonString = defaults.string(forKey: "widget_data"),
+              let jsonData = jsonString.data(using: .utf8),
+              let dict = try? JSONSerialization.jsonObject(with: jsonData) as? [String: String] else {
+            return fallbackData
+        }
+
+        return BioPointData(
+            score: Int(dict["biopoint_score"] ?? "") ?? 0,
+            trend: dict["biopoint_trend"] ?? "--",
+            stacksDone: Int(dict["stacks_done"] ?? "") ?? 0,
+            stacksTotal: Int(dict["stacks_total"] ?? "") ?? 0,
+            calories: Int(dict["calories_today"] ?? "") ?? 0,
+            calorieTarget: Int(dict["calorie_target"] ?? "") ?? 2000,
+            lastUpdated: Date()
+        )
     }
 
-    private var sampleData: BioPointData {
-        BioPointData(score: 72, trend: "+3", stacksDone: 2, stacksTotal: 5, calories: 1450, calorieTarget: 2000, lastUpdated: Date())
+    private var fallbackData: BioPointData {
+        BioPointData(score: 0, trend: "--", stacksDone: 0, stacksTotal: 0, calories: 0, calorieTarget: 2000, lastUpdated: Date())
     }
 }
 

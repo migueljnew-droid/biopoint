@@ -83,10 +83,22 @@ export default function PrivacyScreen() {
                     </BulletItem>
 
                     {/* Section 3 */}
-                    <SectionHeader>3. Food Photo Analysis</SectionHeader>
+                    <SectionHeader>3. AI-Powered Features & Data Sharing</SectionHeader>
                     <BodyText>
-                        Our food photo analysis feature sends only the food image to a third-party AI service. No personal information, health conditions, medical record numbers, or identifying data is included with the image. Food photos are analyzed solely to estimate nutritional content.
+                        BioPoint uses AI to power The Oracle (chat-based health insights) and Lab Analysis features. Here is exactly how your data is handled:
                     </BodyText>
+                    <BulletItem label="The Oracle: ">
+                        When you send a message to The Oracle, your chat message and relevant health context (biomarker values, supplement logs, fasting data) are sent to BioPoint's backend server. Our backend processes your request using Google Gemini AI. No personal identifiers (name, email, account ID) are included in AI requests.
+                    </BulletItem>
+                    <BulletItem label="Lab Analysis: ">
+                        When you upload lab results, the document image is processed by our backend using AI to extract biomarker values. The original image is stored securely; only extracted data values are retained.
+                    </BulletItem>
+                    <BulletItem label="Food Photo Analysis: ">
+                        Food images are sent to a third-party AI service solely to estimate nutritional content. No personal information or health data is included with the image.
+                    </BulletItem>
+                    <BulletItem label="Consent: ">
+                        You are asked to review and consent to AI data processing before first using The Oracle. You may decline and still use all other features of BioPoint.
+                    </BulletItem>
 
                     {/* Section 4 */}
                     <SectionHeader>4. Third-Party Service Providers (Business Associates)</SectionHeader>

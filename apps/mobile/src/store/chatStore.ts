@@ -14,9 +14,11 @@ export interface Message {
 interface ChatState {
     messages: Message[];
     isTyping: boolean;
+    aiConsentGiven: boolean;
     addMessage: (role: Message['role'], content: string) => void;
     setTyping: (typing: boolean) => void;
     clearHistory: () => void;
+    giveAiConsent: () => void;
     generateResponse: (userMessage: string) => Promise<void>;
 }
 
@@ -26,10 +28,11 @@ export const useChatStore = create<ChatState>()(
             messages: [{
                 id: 'init-1',
                 role: 'assistant',
-                content: "Greetings. I am The Oracle. I have analyzed your biological data. Ask me anything about your health, trends, or optimal performance protocols.",
+                content: "Greetings. I am The Oracle. Ask me anything about your health, trends, or optimal performance protocols.\n\n*Disclaimer: The Oracle provides general wellness information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making health decisions.*",
                 timestamp: Date.now()
             }],
             isTyping: false,
+            aiConsentGiven: false,
 
             addMessage: (role, content) => {
                 const newMessage: Message = {
@@ -47,10 +50,12 @@ export const useChatStore = create<ChatState>()(
                 messages: [{
                     id: 'init-' + Date.now(),
                     role: 'assistant',
-                    content: "Greetings. I am The Oracle. I have analyzed your biological data. Ask me anything about your health, trends, or optimal performance protocols.",
+                    content: "Greetings. I am The Oracle. Ask me anything about your health, trends, or optimal performance protocols.\n\n*Disclaimer: The Oracle provides general wellness information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making health decisions.*",
                     timestamp: Date.now()
                 }]
             }),
+
+            giveAiConsent: () => set({ aiConsentGiven: true }),
 
             generateResponse: async (userMessage: string) => {
                 const { addMessage, setTyping, messages } = get();
@@ -69,7 +74,9 @@ export const useChatStore = create<ChatState>()(
                         history,
                     });
 
-                    addMessage('assistant', (response.data as { response: string }).response);
+                    const aiResponse = (response.data as { response: string }).response;
+                    const withDisclaimer = aiResponse + '\n\n---\n*Sources: NIH, Mayo Clinic, PubMed. This is general wellness information, not medical advice. Consult your healthcare provider.*';
+                    addMessage('assistant', withDisclaimer);
                 } catch (error: any) {
                     const errMsg = error.response?.status === 503
                         ? "AI service is not configured. Please contact support."
