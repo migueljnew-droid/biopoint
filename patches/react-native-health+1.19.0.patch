@@ -1,34 +1,34 @@
 diff --git a/node_modules/react-native-health/index.js b/node_modules/react-native-health/index.js
-index 06e5105..558cc15 100644
+index 06e5105..1a20221 100644
 --- a/node_modules/react-native-health/index.js
 +++ b/node_modules/react-native-health/index.js
-@@ -1,14 +1,26 @@
+@@ -1,14 +1,25 @@
 -import { Activities, Observers, Permissions, Units } from './src/constants'
 +const { Activities, Observers, Permissions, Units } = require('./src/constants')
  
 -const { AppleHealthKit } = require('react-native').NativeModules
-+// Use lazy access for new architecture compatibility (RN 0.76+)
-+// NativeModules are loaded lazily in bridgeless mode, so we can't
-+// copy them with Object.assign at import time.
-+function getNativeModule() {
++// Lazy access for new architecture compatibility (RN 0.76+)
++// NativeModules load lazily in bridgeless mode — access at call time, not import time
++function getNative() {
 +  return require('react-native').NativeModules.AppleHealthKit
 +}
  
 -export const HealthKit = Object.assign({}, AppleHealthKit, {
-+const HealthKit = new Proxy({
++const HealthKit = {
    Constants: {
      Activities,
      Observers,
      Permissions,
      Units,
    },
-+}, {
-+  get(target, prop) {
-+    if (prop in target) return target[prop]
-+    const native = getNativeModule()
-+    if (native && prop in native) return native[prop].bind(native)
-+    return undefined
-+  },
- })
+-})
++  isAvailable(cb) { return getNative().isAvailable(cb) },
++  initHealthKit(permissions, cb) { return getNative().initHealthKit(permissions, cb) },
++  getStepCount(opts, cb) { return getNative().getStepCount(opts, cb) },
++  getSleepSamples(opts, cb) { return getNative().getSleepSamples(opts, cb) },
++  getHeartRateSamples(opts, cb) { return getNative().getHeartRateSamples(opts, cb) },
++  getLatestWeight(opts, cb) { return getNative().getLatestWeight(opts, cb) },
++  getHeartRateVariabilitySamples(opts, cb) { return getNative().getHeartRateVariabilitySamples(opts, cb) },
++}
  
  module.exports = HealthKit
