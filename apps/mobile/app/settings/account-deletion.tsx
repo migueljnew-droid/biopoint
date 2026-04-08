@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, Alert, ActivityIndicator, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { colors, spacing, typography, borderRadius } from '../../src/theme';
-import { ScreenWrapper, GlassView, Button } from '../../src/components';
+import { ScreenWrapper, GlassView, AnimatedButton } from '../../src/components';
 import { Ionicons } from '@expo/vector-icons';
 import { apiService } from '../../src/services/api';
 
@@ -219,20 +219,16 @@ export default function AccountDeletionScreen() {
                     </GlassView>
 
                     <View style={styles.buttonContainer}>
-                        <Button
+                        <AnimatedButton
                             title="Cancel Deletion Request"
                             onPress={handleCancelDeletion}
-                            variant="secondary"
-                            size="large"
-                            icon="close-circle"
+                            variant="primary"
                         />
-                        
-                        <Button
+
+                        <AnimatedButton
                             title="Back to Settings"
                             onPress={() => router.back()}
-                            variant="outline"
-                            size="large"
-                            icon="arrow-back"
+                            variant="secondary"
                         />
                     </View>
                 </ScrollView>
@@ -335,7 +331,7 @@ export default function AccountDeletionScreen() {
                             onPress={() => setUnderstandConsequences(!understandConsequences)}
                         >
                             {understandConsequences && (
-                                <Ionicons name="checkmark" size={16} color={colors.surface} />
+                                <Ionicons name="checkmark" size={16} color={'#fff'} />
                             )}
                         </Pressable>
                         <Text style={styles.checkboxLabel}>
@@ -349,7 +345,7 @@ export default function AccountDeletionScreen() {
                             onPress={() => setImmediateEffect(!immediateEffect)}
                         >
                             {immediateEffect && (
-                                <Ionicons name="checkmark" size={16} color={colors.surface} />
+                                <Ionicons name="checkmark" size={16} color={'#fff'} />
                             )}
                         </Pressable>
                         <Text style={styles.checkboxLabel}>
@@ -358,13 +354,11 @@ export default function AccountDeletionScreen() {
                     </View>
                 </GlassView>
 
-                <Button
+                <AnimatedButton
                     title={deleting ? "Processing..." : "Delete My Account"}
                     onPress={handleDeleteAccount}
                     disabled={deleting || !understandConsequences || !email.trim()}
-                    variant="error"
-                    size="large"
-                    icon="trash"
+                    variant="primary"
                 />
             </ScrollView>
         </ScreenWrapper>
@@ -470,7 +464,7 @@ const styles = StyleSheet.create({
         paddingVertical: spacing.sm,
         fontSize: 16,
         color: colors.textPrimary,
-        backgroundColor: colors.surface,
+        backgroundColor: '#fff',
     },
     textArea: {
         height: 80,
@@ -485,7 +479,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         borderWidth: 2,
-        borderColor: colors.border,
+        borderColor: colors.glass.border,
         borderRadius: borderRadius.sm,
         marginRight: spacing.sm,
         marginTop: 2,
