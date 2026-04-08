@@ -62,10 +62,12 @@ export default function RegisterScreen() {
             return;
         }
         try {
-            const sessionData2 = await socialAuth.apple.signIn();
-            if (sessionData2?.session?.access_token) {
-                await loginWithApple(sessionData2.session.access_token, sessionData2.fullName || undefined);
+            const sessionData = await socialAuth.apple.signIn();
+            if (sessionData?.session?.access_token) {
+                await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
                 router.replace('/(tabs)');
+            } else {
+                Alert.alert("Sign-In Issue", "Could not get authentication token. Please try signing in from the login screen instead.");
             }
         } catch (e: any) {
             if (e.code === 'ERR_REQUEST_CANCELED') return;

@@ -83,13 +83,23 @@ export default function LoginScreen() {
         try {
             const sessionData = await socialAuth.apple.signIn();
             if (sessionData?.session?.access_token) {
-                await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
-                router.replace('/(tabs)');
+                try {
+                    await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
+                    router.replace('/(tabs)');
+                } catch (apiErr: any) {
+                    Alert.alert("Connection Error", "Signed in with Apple but couldn't reach our server. Please try again in a moment.");
+                }
+            } else {
+                Alert.alert("Sign-In Issue", "Apple authentication succeeded but no session was returned. Please try again.");
             }
         } catch (e: any) {
             if (e.code === 'ERR_REQUEST_CANCELED') return;
-            if (__DEV__) console.log('Apple login error:', e);
-            Alert.alert("Sign-In Failed", "Apple Sign-In could not be completed. Please try again.");
+            const msg = e.message || '';
+            if (msg.includes('AUTH_FAILED')) {
+                Alert.alert("Authentication Error", "Apple verification failed. Please try again.");
+            } else {
+                Alert.alert("Sign-In Failed", "Apple Sign-In could not be completed. Please try again.");
+            }
         }
     };
 
