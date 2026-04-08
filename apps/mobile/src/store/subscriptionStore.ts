@@ -49,23 +49,29 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                 set({ isLoading: true, error: null });
                 try {
                     const offerings = await Purchases.getOfferings();
-                    if (offerings.current !== null) {
-                        const packageToBuy = packageType === 'monthly'
-                            ? offerings.current.monthly
-                            : offerings.current.annual;
+                    if (!offerings.current) {
+                        set({ error: 'No subscription plans available. Please try again later.' });
+                        return;
+                    }
 
-                        if (packageToBuy) {
-                            const { customerInfo } = await Purchases.purchasePackage(packageToBuy);
-                            const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
+                    const packageToBuy = packageType === 'monthly'
+                        ? offerings.current.monthly
+                        : offerings.current.annual;
 
-                            if (isPremium) {
-                                set({
-                                    isPremium: true,
-                                    plan: packageType as 'monthly' | 'yearly',
-                                    expiryDate: customerInfo.latestExpirationDate
-                                });
-                            }
-                        }
+                    if (!packageToBuy) {
+                        set({ error: `${packageType} plan is not available. Please try again later.` });
+                        return;
+                    }
+
+                    const { customerInfo } = await Purchases.purchasePackage(packageToBuy);
+                    const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
+
+                    if (isPremium) {
+                        set({
+                            isPremium: true,
+                            plan: packageType as 'monthly' | 'yearly',
+                            expiryDate: customerInfo.latestExpirationDate
+                        });
                     }
                 } catch (e: any) {
                     if (!e.userCancelled) {

@@ -30,10 +30,17 @@ export default function PremiumScreen() {
     const handlePurchase = async () => {
         try {
             await purchase(selectedPlan);
-            Alert.alert('Welcome to BioPoint+', 'You are now a premium member!');
-            router.back();
-        } catch (e) {
-            Alert.alert('Error', 'Purchase failed. Please try again.');
+            // Only show success if actually premium now
+            const isPremium = useSubscriptionStore.getState().isPremium;
+            const error = useSubscriptionStore.getState().error;
+            if (error) {
+                Alert.alert('Purchase Issue', error);
+            } else if (isPremium) {
+                Alert.alert('Welcome to BioPoint+', 'You are now a premium member!');
+                router.back();
+            }
+        } catch (e: any) {
+            Alert.alert('Error', e.message || 'Purchase failed. Please try again.');
         }
     };
 
