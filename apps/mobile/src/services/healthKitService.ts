@@ -1,21 +1,26 @@
-import AppleHealthKit, {
-    HealthValue,
-    HealthKitPermissions,
-} from 'react-native-health';
 import { Platform } from 'react-native';
 
-const PERMISSIONS: HealthKitPermissions = {
-    permissions: {
-        read: [
-            AppleHealthKit.Constants.Permissions.HeartRate,
-            AppleHealthKit.Constants.Permissions.StepCount,
-            AppleHealthKit.Constants.Permissions.SleepAnalysis,
-            AppleHealthKit.Constants.Permissions.HeartRateVariability,
-            AppleHealthKit.Constants.Permissions.Weight,
-        ],
-        write: [],
-    },
-};
+// Lazy-load react-native-health to prevent crash if native module isn't ready
+// (RN 0.76+ bridgeless architecture loads NativeModules lazily)
+function getHealthKit() {
+    return require('react-native-health').default || require('react-native-health');
+}
+
+function getPermissions() {
+    const AppleHealthKit = getHealthKit();
+    return {
+        permissions: {
+            read: [
+                AppleHealthKit.Constants.Permissions.HeartRate,
+                AppleHealthKit.Constants.Permissions.StepCount,
+                AppleHealthKit.Constants.Permissions.SleepAnalysis,
+                AppleHealthKit.Constants.Permissions.HeartRateVariability,
+                AppleHealthKit.Constants.Permissions.Weight,
+            ],
+            write: [],
+        },
+    };
+}
 
 export const healthKitService = {
     init: async (): Promise<boolean> => {
@@ -27,15 +32,22 @@ export const healthKitService = {
                 resolve(false);
             }, 10000);
 
-            AppleHealthKit.initHealthKit(PERMISSIONS, (err: string) => {
+            try {
+                const AppleHealthKit = getHealthKit();
+                AppleHealthKit.initHealthKit(getPermissions(), (err: string) => {
+                    clearTimeout(timeout);
+                    if (err) {
+                        console.log('[HealthKit] Error initializing:', err);
+                        resolve(false);
+                        return;
+                    }
+                    resolve(true);
+                });
+            } catch (e) {
                 clearTimeout(timeout);
-                if (err) {
-                    console.log('[HealthKit] Error initializing:', err);
-                    resolve(false);
-                    return;
-                }
-                resolve(true);
-            });
+                console.log('[HealthKit] Failed to load native module:', e);
+                resolve(false);
+            }
         });
     },
 
@@ -48,19 +60,20 @@ export const healthKitService = {
         };
 
         return new Promise((resolve) => {
-            AppleHealthKit.getSleepSamples(options, (err: Object, results: Array<any>) => {
-                if (err) {
-                    resolve(0);
-                    return;
-                }
-                const totalMinutes = results.reduce((acc, sample) => {
-                    const start = new Date(sample.startDate).getTime();
-                    const end = new Date(sample.endDate).getTime();
-                    return acc + (end - start) / 1000 / 60;
-                }, 0);
-
-                resolve(totalMinutes / 60);
-            });
+            try {
+                const AppleHealthKit = getHealthKit();
+                AppleHealthKit.getSleepSamples(options, (err: Object, results: Array<any>) => {
+                    if (err) { resolve(0); return; }
+                    const totalMinutes = results.reduce((acc: number, sample: any) => {
+                        const start = new Date(sample.startDate).getTime();
+                        const end = new Date(sample.endDate).getTime();
+                        return acc + (end - start) / 1000 / 60;
+                    }, 0);
+                    resolve(totalMinutes / 60);
+                });
+            } catch {
+                resolve(0);
+            }
         });
     },
 
@@ -68,13 +81,15 @@ export const healthKitService = {
         if (Platform.OS !== 'ios') return 0;
 
         return new Promise((resolve) => {
-            AppleHealthKit.getStepCount({}, (err: Object, results: HealthValue) => {
-                if (err) {
-                    resolve(0);
-                    return;
-                }
-                resolve(results.value);
-            });
+            try {
+                const AppleHealthKit = getHealthKit();
+                AppleHealthKit.getStepCount({}, (err: Object, results: any) => {
+                    if (err) { resolve(0); return; }
+                    resolve(results.value);
+                });
+            } catch {
+                resolve(0);
+            }
         });
     },
 };
