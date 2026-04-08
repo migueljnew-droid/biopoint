@@ -79,9 +79,27 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "b4fad390-ffb4-4771-b244-ec395f364fd0"
+        "projectId": "b4fad390-ffb4-4771-b244-ec395f364fd0",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "bundleIdentifier": "com.biopoint.app.widget",
+                  "targetName": "BioPointWidget"
+                }
+              ]
+            }
+          }
+        }
       }
     },
-    "owner": "louisgoldlive"
+    "owner": "louisgoldlive",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b4fad390-ffb4-4771-b244-ec395f364fd0"
+    }
   }
 }

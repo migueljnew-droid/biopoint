@@ -35,7 +35,8 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                         set({ isPremium: false, plan: 'free' });
                         return;
                     }
-                    Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+                    Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
+                    await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
                     const customerInfo = await Purchases.getCustomerInfo();
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
                     set({ isPremium });
