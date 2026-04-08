@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Switch, Alert, Platform } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { colors, spacing, borderRadius } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
@@ -192,6 +192,31 @@ export default function SettingsScreen() {
                         />
                     </GlassView>
                 </Animated.View>
+
+                {/* Apple Health Integration */}
+                {Platform.OS === 'ios' && (
+                    <Animated.View entering={FadeInDown.delay(350).springify()}>
+                        <SectionHeader title="Apple Health (HealthKit)" />
+                        <GlassView variant="medium" borderRadius={borderRadius.lg} style={styles.sectionContainer}>
+                            <View style={styles.healthKitInfo}>
+                                <View style={styles.healthKitHeader}>
+                                    <Ionicons name="heart" size={20} color="#FF2D55" />
+                                    <Text style={styles.healthKitTitle}>HealthKit Integration</Text>
+                                </View>
+                                <Text style={styles.healthKitDesc}>
+                                    BioPoint reads the following data from Apple Health to calculate your BioPoint score:
+                                </Text>
+                                <Text style={styles.healthKitItem}>{'\u2022'} Step Count (daily activity)</Text>
+                                <Text style={styles.healthKitItem}>{'\u2022'} Sleep Analysis (sleep duration)</Text>
+                                <Text style={styles.healthKitItem}>{'\u2022'} Heart Rate (resting heart rate)</Text>
+                                <Text style={styles.healthKitDesc}>
+                                    This data is read with your explicit permission and is displayed on your dashboard. It is never shared with third parties or used for advertising.
+                                </Text>
+                                <Text style={styles.healthKitPowered}>Powered by Apple HealthKit</Text>
+                            </View>
+                        </GlassView>
+                    </Animated.View>
+                )}
 
                 {/* App Preferences */}
                 <Animated.View entering={FadeInDown.delay(400).springify()}>
@@ -435,5 +460,39 @@ const styles = StyleSheet.create({
         color: colors.textMuted,
         fontSize: 12,
         marginBottom: spacing.lg,
+    },
+    healthKitInfo: {
+        padding: spacing.md,
+    },
+    healthKitHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: spacing.sm,
+        marginBottom: spacing.sm,
+    },
+    healthKitTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: colors.textPrimary,
+    },
+    healthKitDesc: {
+        fontSize: 13,
+        color: colors.textSecondary,
+        lineHeight: 19,
+        marginBottom: spacing.sm,
+    },
+    healthKitItem: {
+        fontSize: 13,
+        color: colors.textPrimary,
+        lineHeight: 20,
+        paddingLeft: spacing.sm,
+    },
+    healthKitPowered: {
+        fontSize: 10,
+        color: 'rgba(255,255,255,0.35)',
+        fontWeight: '500',
+        textAlign: 'center',
+        marginTop: spacing.sm,
+        letterSpacing: 0.3,
     },
 });

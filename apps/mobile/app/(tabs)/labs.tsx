@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, RefreshControl, Alert, ActivityIndicator, ScrollView, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, RefreshControl, Alert, ActivityIndicator, ScrollView, Modal, Dimensions, Linking } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { colors, spacing, typography, borderRadius } from '../../src/theme';
 import { ScreenWrapper, GlassView } from '../../src/components';
 import { labsService, AnalysisResult } from '../../src/services/labs';
 import { api } from '../../src/services/api';
+import { useChatStore } from '../../src/store/chatStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -163,6 +164,26 @@ export default function LabsScreen() {
     };
 
     const handleAnalyze = async (id: string) => {
+        // Check AI consent before sending data
+        const { aiConsentGiven, giveAiConsent } = useChatStore.getState();
+        if (!aiConsentGiven) {
+            Alert.alert(
+                'AI Data Usage',
+                'Lab analysis sends your lab report image to BioPoint\'s backend server for AI processing using Google Gemini. No personal identifiers (name, email) are included.\n\nYour data is encrypted in transit and at rest. It is never sold to third parties.\n\nDo you consent to AI processing of your lab data?',
+                [
+                    { text: 'Decline', style: 'cancel' },
+                    {
+                        text: 'I Agree',
+                        onPress: () => {
+                            giveAiConsent();
+                            handleAnalyze(id); // Retry after consent
+                        },
+                    },
+                ]
+            );
+            return;
+        }
+
         setAnalyzingId(id);
         try {
             // Send image directly from device if we have it (bypasses R2 download)

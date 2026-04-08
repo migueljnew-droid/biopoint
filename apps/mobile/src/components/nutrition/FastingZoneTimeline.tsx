@@ -138,10 +138,19 @@ export function FastingZoneTimeline({ elapsedHours, targetHours }: FastingZoneTi
                                     </Text>
                                 </View>
                             )}
+                            {(isCurrent || isPast) && (
+                                <Text style={styles.citationText}>{zone.citation}</Text>
+                            )}
                         </View>
                     </Animated.View>
                 );
             })}
+            <View style={styles.disclaimerContainer}>
+                <Ionicons name="information-circle-outline" size={13} color={colors.textMuted} />
+                <Text style={styles.disclaimerText}>
+                    Metabolic zone timelines are approximate and vary by individual. Based on peer-reviewed research. Not medical advice — consult your healthcare provider.
+                </Text>
+            </View>
         </View>
     );
 }
@@ -219,5 +228,28 @@ const styles = StyleSheet.create({
         fontSize: 11,
         fontWeight: '700',
         fontVariant: ['tabular-nums'],
+    },
+    citationText: {
+        fontSize: 9,
+        color: 'rgba(255,255,255,0.3)',
+        marginTop: 3,
+        lineHeight: 13,
+        fontStyle: 'italic',
+    },
+    disclaimerContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: 6,
+        marginTop: spacing.md,
+        paddingTop: spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(255,255,255,0.05)',
+    },
+    disclaimerText: {
+        flex: 1,
+        fontSize: 10,
+        color: colors.textMuted,
+        lineHeight: 14,
+        fontStyle: 'italic',
     },
 });
