@@ -101,8 +101,6 @@ export const useAuthStore = create<AuthState>()(
             },
 
             loginWithApple: async (supabaseAccessToken?: string, fullName?: { givenName?: string | null, familyName?: string | null }) => {
-                // Apple token already verified by Supabase in socialAuth.ts
-                // Now sync user with our custom API using the Supabase session token
                 set({ isLoading: true, error: null });
                 try {
                     await clearTokens();
@@ -111,24 +109,37 @@ export const useAuthStore = create<AuthState>()(
                         const { data: { session } } = await supabase.auth.getSession();
                         accessToken = session?.access_token;
                     }
-                    const response = await api.post('/auth/social', {
-                        provider: 'apple',
-                        fullName: fullName ? `${fullName.givenName || ''} ${fullName.familyName || ''}`.trim() : undefined,
-                    }, {
-                        headers: { Authorization: `Bearer ${accessToken}` },
-                    });
-                    const { user, tokens } = response.data;
-                    await setTokens(tokens.accessToken, tokens.refreshToken);
-                    set({
-                        user: { ...user, onboardingComplete: user.onboardingComplete ?? false },
-                        isAuthenticated: true,
-                        isLoading: false,
-                    });
+                    const fullNameStr = fullName ? `${fullName.givenName || ''} ${fullName.familyName || ''}`.trim() : undefined;
+
+                    // Retry up to 3 times for backend sync (handles transient failures)
+                    let lastError: any;
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        try {
+                            const response = await api.post('/auth/social', {
+                                provider: 'apple',
+                                fullName: fullNameStr || undefined,
+                            }, {
+                                headers: { Authorization: `Bearer ${accessToken}` },
+                            });
+                            const { user, tokens } = response.data;
+                            await setTokens(tokens.accessToken, tokens.refreshToken);
+                            set({
+                                user: { ...user, onboardingComplete: user.onboardingComplete ?? false },
+                                isAuthenticated: true,
+                                isLoading: false,
+                                error: null,
+                            });
+                            return; // Success — exit
+                        } catch (err: any) {
+                            lastError = err;
+                            if (err.response?.status && err.response.status < 500) break;
+                            if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
+                        }
+                    }
+                    set({ error: lastError?.response?.data?.message || 'Apple Login failed', isLoading: false });
+                    throw lastError;
                 } catch (error: any) {
-                    set({
-                        error: error.response?.data?.message || 'Apple Login failed',
-                        isLoading: false,
-                    });
+                    set({ isLoading: false });
                     throw error;
                 }
             },

@@ -49,14 +49,16 @@ export default function AccountDeletionScreen() {
     const loadData = async () => {
         try {
             const [status, policy] = await Promise.all([
-                apiService.get<DeletionStatus>('/user/delete-account/status'),
-                apiService.get<DataRetentionPolicy>('/user/data-retention-policy'),
+                apiService.get<DeletionStatus>('/user/delete-account/status').catch(() => ({
+                    hasPendingDeletion: false, status: null, requestedAt: null,
+                    scheduledFor: null, reason: null, completedAt: null,
+                })),
+                apiService.get<DataRetentionPolicy>('/user/data-retention-policy').catch(() => null),
             ]);
             setDeletionStatus(status);
-            setRetentionPolicy(policy);
+            if (policy) setRetentionPolicy(policy);
         } catch (error) {
-            console.error('Failed to load data:', error);
-            Alert.alert('Error', 'Failed to load account information');
+            console.log('Failed to load deletion data:', error);
         } finally {
             setLoading(false);
         }

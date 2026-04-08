@@ -79,35 +79,17 @@ export default function LoginScreen() {
             Alert.alert("Unavailable", "Apple Sign-In is not available on this device.");
             return;
         }
+        clearError();
         try {
             const sessionData = await socialAuth.apple.signIn();
             if (sessionData?.session?.access_token) {
-                // Retry backend sync up to 2 times (handles cold-start delays)
-                let lastError: any;
-                for (let attempt = 0; attempt < 3; attempt++) {
-                    try {
-                        await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
-                        router.replace('/(tabs)');
-                        return;
-                    } catch (err: any) {
-                        lastError = err;
-                        if (err.response?.status && err.response.status < 500) break; // Don't retry client errors
-                        if (attempt < 2) await new Promise(r => setTimeout(r, 2000)); // Wait 2s before retry
-                    }
-                }
-                throw lastError;
+                await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
+                router.replace('/(tabs)');
             }
         } catch (e: any) {
-            if (e.code === 'ERR_REQUEST_CANCELED') {
-                // user cancelled
-            } else {
-                console.log('Apple login error:', e);
-                Alert.alert(
-                    "Sign-In Issue",
-                    "We couldn't complete Apple Sign-In right now. Please try again in a moment.",
-                    [{ text: "OK" }]
-                );
-            }
+            if (e.code === 'ERR_REQUEST_CANCELED') return;
+            // Show real error for debugging — remove DEBUG prefix before final submission
+            Alert.alert("DEBUG Apple Error", e.message || JSON.stringify(e));
         }
     };
 

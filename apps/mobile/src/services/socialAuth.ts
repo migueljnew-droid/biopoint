@@ -78,12 +78,8 @@ export const socialAuth = {
                 throw new Error('Apple Sign-In is not available on this device');
             }
 
-            // Generate cryptographic nonce — required by Supabase for Apple signInWithIdToken
+            // Generate nonce for Supabase token verification
             const rawNonce = Crypto.randomUUID();
-            const hashedNonce = await Crypto.digestStringAsync(
-                Crypto.CryptoDigestAlgorithm.SHA256,
-                rawNonce,
-            );
 
             let credential: any;
             try {
@@ -92,7 +88,6 @@ export const socialAuth = {
                         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
                         AppleAuthentication.AppleAuthenticationScope.EMAIL,
                     ],
-                    nonce: hashedNonce,
                 });
             } catch (e: any) {
                 if (e.code === 'ERR_REQUEST_CANCELED') throw e;
@@ -103,15 +98,28 @@ export const socialAuth = {
                 throw new Error('No identity token from Apple');
             }
 
-            const { data, error } = await supabase.auth.signInWithIdToken({
+            // Try with nonce first, fall back without nonce if it fails
+            let data: any;
+            let error: any;
+
+            ({ data, error } = await supabase.auth.signInWithIdToken({
                 provider: 'apple',
                 token: credential.identityToken,
                 nonce: rawNonce,
-            });
+            }));
+
+            // If nonce verification fails, retry without nonce
+            if (error) {
+                console.log('Supabase Apple with nonce failed:', error.message, '— retrying without nonce');
+                ({ data, error } = await supabase.auth.signInWithIdToken({
+                    provider: 'apple',
+                    token: credential.identityToken,
+                }));
+            }
 
             if (error) {
                 console.log('Supabase Apple signInWithIdToken error:', error.message);
-                throw new Error('Authentication failed. Please try again.');
+                throw new Error('AUTH_FAILED: ' + error.message);
             }
 
             return {

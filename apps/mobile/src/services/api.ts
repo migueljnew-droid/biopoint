@@ -35,9 +35,12 @@ export async function clearTokens(): Promise<void> {
 // Request interceptor - add auth header
 api.interceptors.request.use(
     async (config) => {
-        const token = await getAccessToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        // Don't overwrite Authorization if caller already set it (e.g. social auth with Supabase token)
+        if (!config.headers.Authorization) {
+            const token = await getAccessToken();
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
         }
         return config;
     },

@@ -64,27 +64,12 @@ export default function RegisterScreen() {
         try {
             const sessionData2 = await socialAuth.apple.signIn();
             if (sessionData2?.session?.access_token) {
-                let lastError: any;
-                for (let attempt = 0; attempt < 3; attempt++) {
-                    try {
-                        await loginWithApple(sessionData2.session.access_token, sessionData2.fullName || undefined);
-                        router.replace('/(tabs)');
-                        return;
-                    } catch (err: any) {
-                        lastError = err;
-                        if (err.response?.status && err.response.status < 500) break;
-                        if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
-                    }
-                }
-                throw lastError;
+                await loginWithApple(sessionData2.session.access_token, sessionData2.fullName || undefined);
+                router.replace('/(tabs)');
             }
         } catch (e: any) {
             if (e.code !== 'ERR_REQUEST_CANCELED') {
-                Alert.alert(
-                    "Sign-In Issue",
-                    "We couldn't complete Apple Sign-In right now. Please try again in a moment.",
-                    [{ text: "OK" }]
-                );
+                console.log('Apple signup error:', e);
             }
         }
     };
