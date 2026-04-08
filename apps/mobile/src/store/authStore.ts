@@ -189,7 +189,33 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     const token = await getAccessToken();
                     if (!token) {
-                        set({ isAuthenticated: false, isLoading: false });
+                        // No API token — check if we have a Supabase session (social auth)
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (session?.access_token) {
+                            // Supabase session exists — try to sync with backend
+                            try {
+                                const provider = session.user?.app_metadata?.provider || 'apple';
+                                const response = await api.post('/auth/social', { provider }, {
+                                    headers: { Authorization: `Bearer ${session.access_token}` },
+                                });
+                                const { user, tokens } = response.data;
+                                await setTokens(tokens.accessToken, tokens.refreshToken);
+                                set({
+                                    user: { ...user, onboardingComplete: user.onboardingComplete ?? false },
+                                    isAuthenticated: true,
+                                    isLoading: false,
+                                });
+                            } catch {
+                                // Backend unreachable — still treat as authenticated with Supabase session
+                                set({
+                                    user: { email: session.user?.email || '', onboardingComplete: true },
+                                    isAuthenticated: true,
+                                    isLoading: false,
+                                });
+                            }
+                        } else {
+                            set({ isAuthenticated: false, isLoading: false });
+                        }
                         return;
                     }
 
