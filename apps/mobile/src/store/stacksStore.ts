@@ -46,6 +46,7 @@ interface StacksState {
 
     fetchStacks: () => Promise<void>;
     createStack: (data: { name: string; goal?: string }) => Promise<Stack>;
+    deleteStack: (stackId: string) => Promise<void>;
     addItem: (stackId: string, item: CreateStackItemInput) => Promise<StackItem>;
     updateItem: (stackId: string, itemId: string, item: Partial<CreateStackItemInput>) => Promise<StackItem>;
     removeItem: (stackId: string, itemId: string) => Promise<void>;
@@ -80,6 +81,18 @@ export const useStacksStore = create<StacksState>((set) => ({
             return response.data;
         } catch (error: any) {
             set({ error: error.response?.data?.message || 'Failed to create stack', isLoading: false });
+            throw error;
+        }
+    },
+
+    deleteStack: async (stackId) => {
+        try {
+            await api.delete(`/stacks/${stackId}`);
+            set((state) => ({
+                stacks: state.stacks.filter((s) => s.id !== stackId),
+            }));
+        } catch (error: any) {
+            set({ error: error.response?.data?.message || 'Failed to delete stack' });
             throw error;
         }
     },

@@ -373,11 +373,9 @@ export default function StacksScreen() {
                         style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
                         onPress={() => {
                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            // Premium check - admin emails always have access
-                            const adminEmails = ['migueljnew@gmail.com', 'booklouisgold@gmail.com'];
                             const userEmail = useAuthStore.getState().user?.email?.toLowerCase();
-                            const hasAccess = isPremium || (userEmail && adminEmails.includes(userEmail));
-                            if (!hasAccess && stacks.length >= 1) {
+                            const isAdmin = userEmail === 'migueljnew@gmail.com';
+                            if (!isPremium && !isAdmin && stacks.length >= 1) {
                                 Alert.alert(
                                     'Premium Required',
                                     'Free users can only create 1 stack. Upgrade to BioPoint+ for unlimited stacks.',
@@ -418,6 +416,21 @@ export default function StacksScreen() {
                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                     <Pressable onPress={() => handlePublishStack(stack)} hitSlop={8}>
                                         <Ionicons name="share-social-outline" size={20} color={colors.accent} />
+                                    </Pressable>
+                                    <Pressable onPress={() => {
+                                        Alert.alert('Delete Stack', `Delete "${stack.name}" and all its items?`, [
+                                            { text: 'Cancel', style: 'cancel' },
+                                            { text: 'Delete', style: 'destructive', onPress: async () => {
+                                                try {
+                                                    await useStacksStore.getState().deleteStack(stack.id);
+                                                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                                                } catch {
+                                                    Alert.alert('Error', 'Failed to delete stack');
+                                                }
+                                            }},
+                                        ]);
+                                    }} hitSlop={8}>
+                                        <Ionicons name="trash-outline" size={18} color={colors.error} />
                                     </Pressable>
                                     <View style={[styles.statusBadge, stack.isActive ? styles.activeBadge : styles.inactiveBadge]}>
                                         <Ionicons name={stack.isActive ? 'checkmark-circle' : 'pause-circle'} size={12} color={stack.isActive ? colors.success : colors.textMuted} />
