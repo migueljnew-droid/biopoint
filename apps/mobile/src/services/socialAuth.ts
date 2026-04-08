@@ -72,9 +72,28 @@ export const socialAuth = {
     },
     apple: {
         isAvailable: () => AppleAuthentication !== null && Platform.OS === 'ios',
+        checkAvailability: async () => {
+            if (!AppleAuthentication) return false;
+            try {
+                return await AppleAuthentication.isAvailableAsync();
+            } catch {
+                return false;
+            }
+        },
         signIn: async () => {
             if (!AppleAuthentication) {
                 throw new Error('Apple Sign-In is not available on this device');
+            }
+
+            // Check availability first (important for iPad)
+            try {
+                const available = await AppleAuthentication.isAvailableAsync();
+                if (!available) {
+                    throw new Error('Apple Sign-In is not available on this device');
+                }
+            } catch (e: any) {
+                if (e.message?.includes('not available')) throw e;
+                // If check fails, still try signing in
             }
 
             let credential: any;

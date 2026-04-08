@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -163,8 +163,17 @@ export default function PremiumScreen() {
                 <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
                 <View style={styles.footerContent}>
                     <Text style={styles.disclaimer}>
-                        Recurring billing. Cancel anytime.
+                        {selectedPlan === 'monthly' ? '$9.99/month' : '$79.99/year'}. Recurring billing. Cancel anytime.
                     </Text>
+                    <View style={styles.legalLinks}>
+                        <Pressable onPress={() => Linking.openURL('https://biopointapp.com/terms')}>
+                            <Text style={styles.legalLink}>Terms of Use</Text>
+                        </Pressable>
+                        <Text style={styles.legalSep}>•</Text>
+                        <Pressable onPress={() => Linking.openURL('https://biopointapp.com/privacy')}>
+                            <Text style={styles.legalLink}>Privacy Policy</Text>
+                        </Pressable>
+                    </View>
                     <AnimatedButton
                         title={isLoading ? "Processing..." : `Start ${selectedPlan === 'yearly' ? '7-Day Free Trial' : 'Subscription'} `}
                         onPress={handlePurchase}
@@ -343,7 +352,22 @@ const styles = StyleSheet.create({
         marginBottom: spacing.md,
     },
     subscribeButton: {
-        // Override style if needed
         backgroundColor: colors.warning,
+    },
+    legalLinks: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: spacing.sm,
+        marginBottom: spacing.sm,
+    },
+    legalLink: {
+        ...typography.caption,
+        color: colors.primary,
+        textDecorationLine: 'underline',
+    },
+    legalSep: {
+        ...typography.caption,
+        color: colors.textMuted,
     },
 });
