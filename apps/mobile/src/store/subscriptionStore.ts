@@ -1,13 +1,34 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Purchases from 'react-native-purchases';
+import Purchases, { type PurchasesPackage } from 'react-native-purchases';
 import { Platform } from 'react-native';
 
 const REVENUECAT_API_KEY = Platform.select({
     ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '',
     android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '',
 });
+
+let configuredOnce = false;
+
+async function ensureConfigured(): Promise<boolean> {
+    if (!REVENUECAT_API_KEY) return false;
+    if (configuredOnce) return true;
+    try {
+        Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
+        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+        configuredOnce = true;
+        return true;
+    } catch (e: any) {
+        // Already configured from a previous session/hot reload
+        if (e.message?.includes('configured')) {
+            configuredOnce = true;
+            return true;
+        }
+        console.log('RevenueCat configure failed:', e);
+        return false;
+    }
+}
 
 interface SubscriptionState {
     isPremium: boolean;
@@ -31,12 +52,11 @@ export const useSubscriptionStore = create<SubscriptionState>()(
 
             initialize: async () => {
                 try {
-                    if (!REVENUECAT_API_KEY) {
-                        set({ isPremium: false, plan: 'free' });
+                    const ok = await ensureConfigured();
+                    if (!ok) {
+                        set({ isPremium: false, plan: 'free', expiryDate: null });
                         return;
                     }
-                    Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
-                    await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
                     const customerInfo = await Purchases.getCustomerInfo();
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
                     if (isPremium) {
@@ -46,21 +66,17 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                     }
                 } catch (e) {
                     console.log('RevenueCat init failed:', e);
-                    set({ isPremium: false, plan: 'free' });
+                    set({ isPremium: false, plan: 'free', expiryDate: null });
                 }
             },
 
             purchase: async (packageType: string) => { // 'monthly' or 'yearly'
                 set({ isLoading: true, error: null });
                 try {
-                    if (!REVENUECAT_API_KEY) {
+                    const ok = await ensureConfigured();
+                    if (!ok) {
                         set({ error: 'Subscription service not configured.' });
                         return;
-                    }
-                    // Only configure if not already configured (prevents singleton error)
-                    if (!Purchases.isConfigured()) {
-                        Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
-                        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
                     }
                     const offerings = await Purchases.getOfferings();
                     if (!offerings.current || !offerings.current.availablePackages.length) {
@@ -68,17 +84,18 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                         return;
                     }
 
-                    // Try standard RC identifiers first, then fall back to custom identifiers
-                    let packageToBuy = packageType === 'monthly'
-                        ? offerings.current.monthly
-                        : offerings.current.annual;
+                    // Find package by packageType enum, standard identifier, or custom identifier
+                    const pkgs = offerings.current.availablePackages;
+                    let packageToBuy: PurchasesPackage | null | undefined = null;
 
-                    // Fall back: search availablePackages by identifier
-                    if (!packageToBuy) {
-                        const searchId = packageType === 'monthly' ? 'monthly' : 'yearly';
-                        packageToBuy = offerings.current.availablePackages.find(
-                            (p) => p.identifier === searchId || p.identifier === `$rc_${packageType}`
-                        ) || null;
+                    if (packageType === 'monthly') {
+                        packageToBuy = offerings.current.monthly
+                            || pkgs.find((p) => p.packageType === Purchases.PACKAGE_TYPE.MONTHLY)
+                            || pkgs.find((p) => p.identifier === 'monthly' || p.identifier === '$rc_monthly');
+                    } else {
+                        packageToBuy = offerings.current.annual
+                            || pkgs.find((p) => p.packageType === Purchases.PACKAGE_TYPE.ANNUAL)
+                            || pkgs.find((p) => p.identifier === 'yearly' || p.identifier === '$rc_annual');
                     }
 
                     if (!packageToBuy) {
@@ -108,17 +125,14 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             restorePurchases: async () => {
                 set({ isLoading: true, error: null });
                 try {
-                    if (!Purchases.isConfigured()) {
-                        if (!REVENUECAT_API_KEY) {
-                            set({ error: 'Subscription service not configured.' });
-                            return;
-                        }
-                        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+                    const ok = await ensureConfigured();
+                    if (!ok) {
+                        set({ error: 'Subscription service not configured.' });
+                        return;
                     }
                     const customerInfo = await Purchases.restorePurchases();
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
                     if (isPremium) {
-                        // Logic to determine plan from entitlements could go here
                         set({ isPremium: true });
                     } else {
                         set({ error: 'No active subscription found to restore.' });
