@@ -48,6 +48,13 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             purchase: async (packageType: string) => { // 'monthly' or 'yearly'
                 set({ isLoading: true, error: null });
                 try {
+                    // Ensure RevenueCat is configured before any purchase attempt
+                    if (REVENUECAT_API_KEY) {
+                        Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+                    } else {
+                        set({ error: 'Subscription service not configured.' });
+                        return;
+                    }
                     const offerings = await Purchases.getOfferings();
                     if (!offerings.current) {
                         set({ error: 'No subscription plans available. Please try again later.' });
