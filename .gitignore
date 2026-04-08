@@ -175,3 +175,5 @@ prisma/*.db-journal
 .docker/
 # SPEAR Framework - Ignore output artifacts (keep config and templates)
 .spear/output/
+graphify-out/
+__pycache__/
