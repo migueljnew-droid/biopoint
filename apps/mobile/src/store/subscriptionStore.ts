@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Purchases, { type PurchasesPackage } from 'react-native-purchases';
+import Purchases, { type PurchasesPackage, LOG_LEVEL } from 'react-native-purchases';
 import { Platform } from 'react-native';
 
 const REVENUECAT_API_KEY = Platform.select({
@@ -9,18 +9,34 @@ const REVENUECAT_API_KEY = Platform.select({
     android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '',
 });
 
+const ENTITLEMENT_ID = 'premium';
+
+interface SubscriptionState {
+    isPremium: boolean;
+    plan: 'free' | 'monthly' | 'yearly';
+    expiryDate: string | null;
+    isLoading: boolean;
+    error: string | null;
+    packages: PurchasesPackage[];
+    initialized: boolean;
+    initialize: () => Promise<void>;
+    fetchOfferings: () => Promise<void>;
+    purchase: (pkg: PurchasesPackage) => Promise<void>;
+    purchaseByType: (packageType: string) => Promise<void>;
+    restorePurchases: () => Promise<void>;
+}
+
 let configuredOnce = false;
 
 async function ensureConfigured(): Promise<boolean> {
     if (!REVENUECAT_API_KEY) return false;
     if (configuredOnce) return true;
     try {
-        Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
+        Purchases.setLogLevel(LOG_LEVEL.ERROR);
         await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
         configuredOnce = true;
         return true;
     } catch (e: any) {
-        // Already configured from a previous session/hot reload
         if (e.message?.includes('configured')) {
             configuredOnce = true;
             return true;
@@ -30,47 +46,78 @@ async function ensureConfigured(): Promise<boolean> {
     }
 }
 
-interface SubscriptionState {
-    isPremium: boolean;
-    plan: 'free' | 'monthly' | 'yearly';
-    expiryDate: string | null;
-    isLoading: boolean;
-    error: string | null;
-    initialize: () => Promise<void>;
-    purchase: (packageId: string) => Promise<void>;
-    restorePurchases: () => Promise<void>;
-}
-
 export const useSubscriptionStore = create<SubscriptionState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             isPremium: false,
             plan: 'free',
             expiryDate: null,
             isLoading: false,
             error: null,
+            packages: [],
+            initialized: false,
 
             initialize: async () => {
+                if (get().initialized) return;
                 try {
                     const ok = await ensureConfigured();
                     if (!ok) {
-                        set({ isPremium: false, plan: 'free', expiryDate: null });
+                        set({ isPremium: false, plan: 'free', expiryDate: null, initialized: true });
                         return;
                     }
+                    set({ initialized: true });
+                    // Check entitlement
                     const customerInfo = await Purchases.getCustomerInfo();
-                    const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
+                    const isPremium = !!customerInfo.entitlements.active[ENTITLEMENT_ID];
                     if (isPremium) {
                         set({ isPremium: true });
                     } else {
                         set({ isPremium: false, plan: 'free', expiryDate: null });
                     }
+                    // Pre-fetch offerings
+                    await get().fetchOfferings();
                 } catch (e) {
                     console.log('RevenueCat init failed:', e);
-                    set({ isPremium: false, plan: 'free', expiryDate: null });
+                    set({ isPremium: false, plan: 'free', expiryDate: null, initialized: true });
                 }
             },
 
-            purchase: async (packageType: string) => { // 'monthly' or 'yearly'
+            fetchOfferings: async () => {
+                try {
+                    const offerings = await Purchases.getOfferings();
+                    if (offerings.current) {
+                        set({ packages: offerings.current.availablePackages });
+                    }
+                } catch (e) {
+                    console.log('Fetch offerings error:', e);
+                }
+            },
+
+            purchase: async (pkg: PurchasesPackage) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const { customerInfo } = await Purchases.purchasePackage(pkg);
+                    const isPremium = !!customerInfo.entitlements.active[ENTITLEMENT_ID];
+                    if (isPremium) {
+                        const planType = (pkg.packageType === 'MONTHLY' || pkg.identifier === '$rc_monthly')
+                            ? 'monthly' : 'yearly';
+                        set({
+                            isPremium: true,
+                            plan: planType,
+                            expiryDate: customerInfo.latestExpirationDate
+                        });
+                    }
+                } catch (e: any) {
+                    if (!e.userCancelled) {
+                        set({ error: e.message || 'Purchase failed' });
+                    }
+                } finally {
+                    set({ isLoading: false });
+                }
+            },
+
+            // Fallback: find package by type string then purchase
+            purchaseByType: async (packageType: string) => {
                 set({ isLoading: true, error: null });
                 try {
                     const ok = await ensureConfigured();
@@ -78,24 +125,28 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                         set({ error: 'Subscription service not configured.' });
                         return;
                     }
-                    const offerings = await Purchases.getOfferings();
-                    if (!offerings.current || !offerings.current.availablePackages.length) {
+
+                    let pkgs = get().packages;
+                    if (!pkgs.length) {
+                        await get().fetchOfferings();
+                        pkgs = get().packages;
+                    }
+
+                    if (!pkgs.length) {
                         set({ error: 'No subscription plans available. Please try again later.' });
                         return;
                     }
 
-                    // Find package by packageType enum, standard identifier, or custom identifier
-                    const pkgs = offerings.current.availablePackages;
-                    let packageToBuy: PurchasesPackage | null | undefined = null;
-
+                    // Match exactly how Omni does it
+                    let packageToBuy: PurchasesPackage | undefined;
                     if (packageType === 'monthly') {
-                        packageToBuy = offerings.current.monthly
-                            || pkgs.find((p) => p.packageType === Purchases.PACKAGE_TYPE.MONTHLY)
-                            || pkgs.find((p) => p.identifier === 'monthly' || p.identifier === '$rc_monthly');
+                        packageToBuy = pkgs.find(
+                            (p) => p.packageType === 'MONTHLY' || p.identifier === '$rc_monthly' || p.identifier === 'monthly'
+                        );
                     } else {
-                        packageToBuy = offerings.current.annual
-                            || pkgs.find((p) => p.packageType === Purchases.PACKAGE_TYPE.ANNUAL)
-                            || pkgs.find((p) => p.identifier === 'yearly' || p.identifier === '$rc_annual');
+                        packageToBuy = pkgs.find(
+                            (p) => p.packageType === 'ANNUAL' || p.identifier === '$rc_annual' || p.identifier === 'yearly'
+                        );
                     }
 
                     if (!packageToBuy) {
@@ -103,16 +154,7 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                         return;
                     }
 
-                    const { customerInfo } = await Purchases.purchasePackage(packageToBuy);
-                    const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
-
-                    if (isPremium) {
-                        set({
-                            isPremium: true,
-                            plan: packageType as 'monthly' | 'yearly',
-                            expiryDate: customerInfo.latestExpirationDate
-                        });
-                    }
+                    await get().purchase(packageToBuy);
                 } catch (e: any) {
                     if (!e.userCancelled) {
                         set({ error: e.message || 'Purchase failed' });
@@ -131,7 +173,7 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                         return;
                     }
                     const customerInfo = await Purchases.restorePurchases();
-                    const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
+                    const isPremium = !!customerInfo.entitlements.active[ENTITLEMENT_ID];
                     if (isPremium) {
                         set({ isPremium: true });
                     } else {
@@ -146,7 +188,12 @@ export const useSubscriptionStore = create<SubscriptionState>()(
         }),
         {
             name: 'subscription-storage',
-            storage: createJSONStorage(() => AsyncStorage)
+            storage: createJSONStorage(() => AsyncStorage),
+            partialize: (state) => ({
+                isPremium: state.isPremium,
+                plan: state.plan,
+                expiryDate: state.expiryDate,
+            }),
         }
     )
 );

@@ -24,12 +24,12 @@ const FeatureRow = ({ icon, title, desc, delay }: any) => (
 );
 
 export default function PremiumScreen() {
-    const { purchase, restorePurchases, isLoading } = useSubscriptionStore();
+    const { purchaseByType, restorePurchases, isLoading } = useSubscriptionStore();
     const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
 
     const handlePurchase = async () => {
         try {
-            await purchase(selectedPlan);
+            await purchaseByType(selectedPlan);
             // Only show success if actually premium now
             const isPremium = useSubscriptionStore.getState().isPremium;
             const error = useSubscriptionStore.getState().error;
