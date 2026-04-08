@@ -83,12 +83,11 @@ export default function LoginScreen() {
         try {
             const sessionData = await socialAuth.apple.signIn();
             if (sessionData?.session?.access_token) {
-                try {
-                    await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
-                    router.replace('/(tabs)');
-                } catch (apiErr: any) {
-                    Alert.alert("Connection Error", "Signed in with Apple but couldn't reach our server. Please try again in a moment.");
-                }
+                // Navigate immediately — Supabase auth succeeded
+                loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined).catch(() => {
+                    // Backend sync failed (cold start) — will retry on next app launch
+                });
+                router.replace('/(tabs)');
             } else {
                 Alert.alert("Sign-In Issue", "Apple authentication succeeded but no session was returned. Please try again.");
             }

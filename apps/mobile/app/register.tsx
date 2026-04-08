@@ -64,14 +64,13 @@ export default function RegisterScreen() {
         try {
             const sessionData = await socialAuth.apple.signIn();
             if (sessionData?.session?.access_token) {
-                await loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined);
+                loginWithApple(sessionData.session.access_token, sessionData.fullName || undefined).catch(() => {});
                 router.replace('/(tabs)');
             } else {
                 Alert.alert("Sign-In Issue", "Could not get authentication token. Please try signing in from the login screen instead.");
             }
         } catch (e: any) {
             if (e.code === 'ERR_REQUEST_CANCELED') return;
-            if (__DEV__) console.log('Apple signup error:', e);
             Alert.alert("Sign-In Failed", "Apple Sign-In could not be completed. Please try again.");
         }
     };
