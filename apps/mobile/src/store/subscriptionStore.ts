@@ -39,7 +39,11 @@ export const useSubscriptionStore = create<SubscriptionState>()(
                     await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
                     const customerInfo = await Purchases.getCustomerInfo();
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
-                    set({ isPremium });
+                    if (isPremium) {
+                        set({ isPremium: true });
+                    } else {
+                        set({ isPremium: false, plan: 'free', expiryDate: null });
+                    }
                 } catch (e) {
                     console.log('RevenueCat init failed:', e);
                     set({ isPremium: false, plan: 'free' });
