@@ -43,9 +43,16 @@ export default function DashboardScreen() {
                 ]);
                 setHealthData({ steps, sleep, synced: true });
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            } else {
+                Alert.alert(
+                    'Apple Health Access',
+                    'BioPoint needs permission to read your health data. Please enable access in Settings > Privacy & Security > Health > BioPoint.',
+                    [{ text: 'OK' }]
+                );
             }
         } catch (e) {
             console.log('HealthKit sync failed:', e);
+            Alert.alert('Sync Failed', 'Could not connect to Apple Health. Please try again.');
         }
     };
 

@@ -54,6 +54,12 @@
       "expo-secure-store",
       "expo-apple-authentication",
       [
+        "react-native-health",
+        {
+          "isClinicalDataEnabled": false
+        }
+      ],
+      [
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.352377085358-ks7m7bbj5ihcpknfj1ie7ttjrna2e0g3"

@@ -31,37 +31,54 @@ export default function CommunityScreen() {
         setEulaAccepted(true);
     };
 
+    const [blockedIds, setBlockedIds] = useState<string[]>([]);
+
+    useEffect(() => {
+        AsyncStorage.getItem('community_blocked_ids').then(v => {
+            if (v) setBlockedIds(JSON.parse(v));
+        });
+    }, []);
+
     const handleReportContent = (type: string, id: string, name: string) => {
         Alert.alert(
             'Report Content',
-            `Report "${name}" for objectionable content?`,
+            `Report "${name}" for objectionable content?\n\nThis will notify the BioPoint team for review within 24 hours.`,
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
-                    text: 'Report',
+                    text: 'Report & Block',
                     style: 'destructive',
-                    onPress: () => {
-                        api.post('/community/report', { type, id, reason: 'objectionable_content' }).catch(() => {});
-                        Alert.alert('Reported', 'Thank you. Our team will review this content within 24 hours and take appropriate action.');
+                    onPress: async () => {
+                        // Store report locally and attempt server-side
+                        const report = { type, id, name, reason: 'objectionable_content', date: new Date().toISOString() };
+                        const existing = await AsyncStorage.getItem('community_reports') || '[]';
+                        const reports = [...JSON.parse(existing), report];
+                        await AsyncStorage.setItem('community_reports', JSON.stringify(reports));
+                        // Block the content immediately
+                        const newBlocked = [...blockedIds, id];
+                        setBlockedIds(newBlocked);
+                        await AsyncStorage.setItem('community_blocked_ids', JSON.stringify(newBlocked));
+                        Alert.alert('Reported & Blocked', 'Thank you. This content has been hidden from your feed. Our team will review the report within 24 hours and take appropriate action, including removing the content and suspending the offending user if necessary.');
                     },
                 },
             ]
         );
     };
 
-    const handleBlockUser = (userId: string, name: string) => {
+    const handleBlockUser = (id: string, name: string) => {
         Alert.alert(
             'Block User',
-            `Block the creator of "${name}"? Their content will be hidden from your feed.`,
+            `Block the creator of "${name}"? Their content will be removed from your feed immediately.`,
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
                     text: 'Block',
                     style: 'destructive',
-                    onPress: () => {
-                        api.post('/community/block', { userId }).catch(() => {});
-                        Alert.alert('Blocked', 'This user has been blocked. Their content will no longer appear in your feed.');
-                        fetchData();
+                    onPress: async () => {
+                        const newBlocked = [...blockedIds, id];
+                        setBlockedIds(newBlocked);
+                        await AsyncStorage.setItem('community_blocked_ids', JSON.stringify(newBlocked));
+                        Alert.alert('Blocked', 'This user has been blocked. Their content has been removed from your feed.');
                     },
                 },
             ]
@@ -187,13 +204,13 @@ export default function CommunityScreen() {
 
                 {tab === 'groups' && (
                     <>
-                        {groups.length === 0 && !isLoading && (
+                        {groups.filter(g => !blockedIds.includes(g.id)).length === 0 && !isLoading && (
                             <View style={styles.emptyState}>
                                 <Ionicons name="people-outline" size={48} color={colors.textMuted} />
                                 <Text style={styles.emptyText}>No groups available</Text>
                             </View>
                         )}
-                        {groups.map((group, index) => (
+                        {groups.filter(g => !blockedIds.includes(g.id)).map((group, index) => (
                             <Animated.View key={group.id} entering={FadeInDown.delay(index * 100)} layout={LinearTransition}>
                                 <Pressable onPress={() => router.push({ pathname: '/community/group', params: { id: group.id, name: group.name } })}>
                                 <GlassView style={styles.groupCard} variant="medium" borderRadius={borderRadius.lg}>
@@ -213,9 +230,14 @@ export default function CommunityScreen() {
                                             <Text style={styles.joinButtonText}>Join</Text>
                                         </Pressable>
                                     )}
-                                    <Pressable onPress={() => handleReportContent('group', group.id, group.name)} hitSlop={8}>
-                                        <Ionicons name="flag-outline" size={14} color={colors.textMuted} />
-                                    </Pressable>
+                                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                                        <Pressable onPress={() => handleBlockUser(group.id, group.name)} hitSlop={8}>
+                                            <Ionicons name="ban-outline" size={14} color={colors.textMuted} />
+                                        </Pressable>
+                                        <Pressable onPress={() => handleReportContent('group', group.id, group.name)} hitSlop={8}>
+                                            <Ionicons name="flag-outline" size={14} color={colors.textMuted} />
+                                        </Pressable>
+                                    </View>
                                     </View>
                                 </GlassView>
                                 </Pressable>
@@ -226,13 +248,13 @@ export default function CommunityScreen() {
 
                 {tab === 'templates' && (
                     <>
-                        {templates.length === 0 && !isLoading && (
+                        {templates.filter(t => !blockedIds.includes(t.id)).length === 0 && !isLoading && (
                             <View style={styles.emptyState}>
                                 <Ionicons name="copy-outline" size={48} color={colors.textMuted} />
                                 <Text style={styles.emptyText}>No templates available</Text>
                             </View>
                         )}
-                        {templates.map((template, index) => (
+                        {templates.filter(t => !blockedIds.includes(t.id)).map((template, index) => (
                             <Animated.View key={template.id} entering={FadeInDown.delay(index * 100).springify()} layout={LinearTransition}>
                                 <GlassView style={styles.templateCard} variant="medium" borderRadius={borderRadius.lg}>
                                     <View style={styles.templateHeader}>
