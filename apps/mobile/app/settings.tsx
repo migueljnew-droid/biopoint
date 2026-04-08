@@ -289,7 +289,7 @@ export default function SettingsScreen() {
                     </GlassView>
                 </Animated.View>
 
-                <Text style={styles.version}>Version 1.0.0 (Build 124)</Text>
+                <Text style={styles.version}>Version 1.0.0</Text>
                 <View style={{ height: 40 }} />
 
             </Animated.ScrollView>

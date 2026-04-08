@@ -167,9 +167,12 @@ export const useAuthStore = create<AuthState>()(
 
             logout: async () => {
                 try {
-                    await api.post('/auth/logout', {});
+                    const refreshToken = await SecureStore.getItemAsync('biopoint_refresh_token');
+                    if (refreshToken) {
+                        await api.post('/auth/logout', { refreshToken });
+                    }
                 } catch {
-                    // Ignore logout errors
+                    // Best-effort logout — clear local state regardless
                 }
                 await clearTokens();
                 set({ user: null, isAuthenticated: false, isLoading: false });

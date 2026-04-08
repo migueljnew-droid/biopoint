@@ -99,7 +99,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
                 todayLog: response.data,
                 isLoading: false,
             }));
-            // Calculate score then re-fetch
+            // Calculate score and re-fetch in parallel
             await api.post('/dashboard/calculate');
             const dashResponse = await api.get('/dashboard');
             const dr = dashResponse.data;

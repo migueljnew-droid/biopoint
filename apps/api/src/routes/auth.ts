@@ -28,6 +28,17 @@ export async function authRoutes(app: FastifyInstance) {
     app.post('/social', async (request, reply) => {
         const { provider, fullName } = request.body as { provider: string; fullName?: string };
 
+        // Validate provider against allowlist
+        const ALLOWED_PROVIDERS = ['google', 'apple'];
+        if (!ALLOWED_PROVIDERS.includes(provider)) {
+            return reply.status(400).send({ message: `Invalid provider. Must be one of: ${ALLOWED_PROVIDERS.join(', ')}` });
+        }
+
+        // Validate fullName length if provided
+        if (fullName && fullName.length > 100) {
+            return reply.status(400).send({ message: 'Full name must be 100 characters or less' });
+        }
+
         // Get the Supabase access token from the Authorization header
         // The mobile app sends the Supabase session token
         const authHeader = request.headers.authorization;
@@ -36,8 +47,12 @@ export async function authRoutes(app: FastifyInstance) {
         }
 
         // Verify the Supabase token by calling Supabase's user endpoint
-        const supabaseUrl = process.env.SUPABASE_URL || 'https://iygpnvihbhjkwbkkkwvq.supabase.co';
-        const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Z3BudmloYmhqa3dia2trd3ZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY3NzQsImV4cCI6MjA5MDQwMjc3NH0.pSG9_QJsqR9afv8efmHcqBhUkg_QgfPH0_QmICyDnvo';
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_ANON_KEY;
+        if (!supabaseUrl || !supabaseKey) {
+            request.log.error('SUPABASE_URL or SUPABASE_ANON_KEY not configured');
+            return reply.status(503).send({ message: 'Social auth service not configured' });
+        }
 
         try {
             const supabaseResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
@@ -51,7 +66,7 @@ export async function authRoutes(app: FastifyInstance) {
                 return reply.status(401).send({ message: 'Invalid social auth token' });
             }
 
-            const supabaseUser = await supabaseResponse.json();
+            const supabaseUser = await supabaseResponse.json() as { email?: string };
             const email = supabaseUser.email;
 
             if (!email) {
@@ -104,7 +119,7 @@ export async function authRoutes(app: FastifyInstance) {
                 },
             };
         } catch (error: any) {
-            console.error('Social auth error:', error?.message, error?.code, error?.stack?.split('\n')[0]);
+            request.log.error({ msg: 'Social auth error', code: error?.code, message: error?.message });
             // Distinguish between transient vs permanent failures
             if (error?.code === 'P2002') {
                 // Unique constraint — user already exists, try to find them

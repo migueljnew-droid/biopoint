@@ -88,8 +88,8 @@ export default function LoginScreen() {
             }
         } catch (e: any) {
             if (e.code === 'ERR_REQUEST_CANCELED') return;
-            // Show real error for debugging — remove DEBUG prefix before final submission
-            Alert.alert("DEBUG Apple Error", e.message || JSON.stringify(e));
+            if (__DEV__) console.log('Apple login error:', e);
+            Alert.alert("Sign-In Failed", "Apple Sign-In could not be completed. Please try again.");
         }
     };
 

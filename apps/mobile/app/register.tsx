@@ -6,7 +6,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
 import { RegisterSchema } from '@biopoint/shared';
-import { colors, spacing, typography, borderRadius, gradients, shadows } from '../src/theme';
+import { colors, spacing, typography, borderRadius, gradients } from '../src/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { ScreenWrapper, GlassView, AnimatedButton, GradientText } from '../src/components/ui';
 import { socialAuth } from '../src/services/socialAuth';
@@ -68,9 +68,9 @@ export default function RegisterScreen() {
                 router.replace('/(tabs)');
             }
         } catch (e: any) {
-            if (e.code !== 'ERR_REQUEST_CANCELED') {
-                console.log('Apple signup error:', e);
-            }
+            if (e.code === 'ERR_REQUEST_CANCELED') return;
+            if (__DEV__) console.log('Apple signup error:', e);
+            Alert.alert("Sign-In Failed", "Apple Sign-In could not be completed. Please try again.");
         }
     };
 
@@ -271,11 +271,6 @@ const styles = StyleSheet.create({
         color: colors.textSecondary,
         marginLeft: spacing.xs,
     },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: spacing.md,
-    },
     inputBox: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -284,11 +279,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.06)',
         borderWidth: 0,
         borderColor: 'transparent',
-    },
-    inputContainerFocused: {
-        backgroundColor: colors.primary,
-        borderColor: colors.primary,
-        ...shadows.primaryGlow,
     },
     inputIcon: {
         marginRight: spacing.sm,

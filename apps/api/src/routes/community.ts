@@ -214,4 +214,37 @@ export async function communityRoutes(app: FastifyInstance) {
 
         return { id: stack.id, name: stack.name, goal: stack.goal, items: stack.items };
     });
+
+    // Report objectionable content or block user — notifies development team
+    app.post('/report', async (request) => {
+        const userId = request.userId;
+        const { type, id, name, reason, date } = request.body as {
+            type: string; id: string; name: string; reason: string; date: string;
+        };
+
+        // Log to server for moderation team review
+        request.log.warn({
+            msg: 'UGC_REPORT',
+            reportedBy: userId,
+            contentType: type,
+            contentId: id,
+            contentName: name,
+            reason,
+            reportDate: date,
+        });
+
+        // Store in database for moderation queue
+        try {
+            await prisma.$executeRaw`
+                INSERT INTO "ContentReport" ("id", "reporterId", "contentType", "contentId", "contentName", "reason", "createdAt")
+                VALUES (gen_random_uuid(), ${userId}, ${type}, ${id}, ${name}, ${reason}, NOW())
+                ON CONFLICT DO NOTHING
+            `;
+        } catch {
+            // Table may not exist yet — log-based reporting still works
+            request.log.info('ContentReport table not available, report logged only');
+        }
+
+        return { success: true, message: 'Report received. Our team will review within 24 hours.' };
+    });
 }

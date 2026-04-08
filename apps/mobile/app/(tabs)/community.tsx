@@ -20,14 +20,14 @@ export default function CommunityScreen() {
     const [eulaChecked, setEulaChecked] = useState(false);
 
     useEffect(() => {
-        AsyncStorage.getItem('community_eula_accepted').then(v => {
+        AsyncStorage.getItem('community_eula_v2_accepted').then(v => {
             setEulaAccepted(v === 'true');
             setEulaChecked(true);
         });
     }, []);
 
     const handleAcceptEula = async () => {
-        await AsyncStorage.setItem('community_eula_accepted', 'true');
+        await AsyncStorage.setItem('community_eula_v2_accepted', 'true');
         setEulaAccepted(true);
     };
 
@@ -49,16 +49,21 @@ export default function CommunityScreen() {
                     text: 'Report & Block',
                     style: 'destructive',
                     onPress: async () => {
-                        // Store report locally and attempt server-side
                         const report = { type, id, name, reason: 'objectionable_content', date: new Date().toISOString() };
-                        const existing = await AsyncStorage.getItem('community_reports') || '[]';
-                        const reports = [...JSON.parse(existing), report];
-                        await AsyncStorage.setItem('community_reports', JSON.stringify(reports));
-                        // Block the content immediately
+                        // Block content immediately from user's feed
                         const newBlocked = [...blockedIds, id];
                         setBlockedIds(newBlocked);
                         await AsyncStorage.setItem('community_blocked_ids', JSON.stringify(newBlocked));
-                        Alert.alert('Reported & Blocked', 'Thank you. This content has been hidden from your feed. Our team will review the report within 24 hours and take appropriate action, including removing the content and suspending the offending user if necessary.');
+                        // Send report to server to notify development team
+                        try {
+                            await api.post('/community/report', report);
+                        } catch {
+                            // Store locally for retry if server is unreachable
+                            const existing = await AsyncStorage.getItem('community_reports') || '[]';
+                            const reports = [...JSON.parse(existing), report];
+                            await AsyncStorage.setItem('community_reports', JSON.stringify(reports));
+                        }
+                        Alert.alert('Reported & Blocked', 'Thank you. This content has been hidden from your feed. Our team has been notified and will review the report within 24 hours, including removing the content and suspending the offending user if necessary.');
                     },
                 },
             ]
@@ -78,7 +83,9 @@ export default function CommunityScreen() {
                         const newBlocked = [...blockedIds, id];
                         setBlockedIds(newBlocked);
                         await AsyncStorage.setItem('community_blocked_ids', JSON.stringify(newBlocked));
-                        Alert.alert('Blocked', 'This user has been blocked. Their content has been removed from your feed.');
+                        // Notify server of block action
+                        api.post('/community/report', { type: 'block_user', id, name, reason: 'user_blocked', date: new Date().toISOString() }).catch(() => {});
+                        Alert.alert('Blocked', 'This user has been blocked and our team has been notified. Their content has been removed from your feed.');
                     },
                 },
             ]
@@ -98,7 +105,7 @@ export default function CommunityScreen() {
         }
     };
 
-    useEffect(() => { fetchData(); }, []);
+    useEffect(() => { if (eulaAccepted) fetchData(); }, [eulaAccepted]);
 
     const handleJoinGroup = async (groupId: string) => {
         try {

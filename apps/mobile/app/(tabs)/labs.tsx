@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, RefreshControl, Alert, ActivityIndicator, ScrollView, Modal, Dimensions, Linking } from 'react-native';
+import { View, Text, StyleSheet, Pressable, RefreshControl, Alert, ActivityIndicator, ScrollView, Modal, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';

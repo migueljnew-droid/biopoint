@@ -59,22 +59,24 @@ export default function DashboardScreen() {
     useEffect(() => {
         fetchDashboard();
         fetchStacks();
+        let cancelled = false;
         if (isIPhone) {
             (async () => {
                 try {
                     const authorized = await healthKitService.init();
-                    if (authorized) {
+                    if (authorized && !cancelled) {
                         const [sleep, steps] = await Promise.all([
                             healthKitService.getSleep(),
                             healthKitService.getSteps(),
                         ]);
-                        setHealthData({ steps, sleep, synced: true });
+                        if (!cancelled) setHealthData({ steps, sleep, synced: true });
                     }
                 } catch (e) {
                     console.log('HealthKit auto-sync failed:', e);
                 }
             })();
         }
+        return () => { cancelled = true; };
     }, []);
 
     const handleLogSubmit = async () => {
@@ -282,19 +284,19 @@ export default function DashboardScreen() {
                 <Text style={styles.sectionTitle}>Quick Actions</Text>
                 <Animated.View style={styles.actionsGrid} layout={LinearTransition.springify()}>
                     <Animated.View entering={FadeInRight.delay(200)}>
-                        <ActionButton icon="create" label="Log" onPress={() => setShowLogModal(true)} delay={0} />
+                        <ActionButton icon="create" label="Log" onPress={() => setShowLogModal(true)} />
                     </Animated.View>
                     <Animated.View entering={FadeInRight.delay(225)}>
-                        <ActionButton icon="restaurant" label="Eat" onPress={() => router.push('/(tabs)/nutrition' as any)} delay={1} />
+                        <ActionButton icon="restaurant" label="Eat" onPress={() => router.push('/(tabs)/nutrition' as any)} />
                     </Animated.View>
                     <Animated.View entering={FadeInRight.delay(250)}>
-                        <ActionButton icon="layers" label="Stack" onPress={() => router.push('/(tabs)/stacks')} delay={2} />
+                        <ActionButton icon="layers" label="Stack" onPress={() => router.push('/(tabs)/stacks')} />
                     </Animated.View>
                     <Animated.View entering={FadeInRight.delay(300)}>
-                        <ActionButton icon="flask" label="Labs" onPress={() => router.push('/(tabs)/labs')} delay={3} />
+                        <ActionButton icon="flask" label="Labs" onPress={() => router.push('/(tabs)/labs')} />
                     </Animated.View>
                     <Animated.View entering={FadeInRight.delay(350)}>
-                        <ActionButton icon="infinite" label="Breathe" onPress={() => setShowBreathing(true)} delay={4} />
+                        <ActionButton icon="infinite" label="Breathe" onPress={() => setShowBreathing(true)} />
                     </Animated.View>
                 </Animated.View>
 
@@ -395,7 +397,7 @@ export default function DashboardScreen() {
     );
 }
 
-function ActionButton({ icon, label, onPress }: { icon: string; label: string; onPress: () => void, delay: number }) {
+const ActionButton = React.memo(function ActionButton({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
     return (
         <Pressable onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -409,8 +411,7 @@ function ActionButton({ icon, label, onPress }: { icon: string; label: string; o
             </GlassView>
         </Pressable>
     );
-}
-
+});
 
 
 

@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../services/api';
 
+const ORACLE_GREETING = "Greetings. I am The Oracle. Ask me anything about your health, trends, or optimal performance protocols.\n\n*Disclaimer: The Oracle provides general wellness information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making health decisions.*";
+
 export interface Message {
     id: string;
     role: 'user' | 'assistant' | 'system';
@@ -28,7 +30,7 @@ export const useChatStore = create<ChatState>()(
             messages: [{
                 id: 'init-1',
                 role: 'assistant',
-                content: "Greetings. I am The Oracle. Ask me anything about your health, trends, or optimal performance protocols.\n\n*Disclaimer: The Oracle provides general wellness information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making health decisions.*",
+                content: ORACLE_GREETING,
                 timestamp: Date.now()
             }],
             isTyping: false,
@@ -36,7 +38,7 @@ export const useChatStore = create<ChatState>()(
 
             addMessage: (role, content) => {
                 const newMessage: Message = {
-                    id: Math.random().toString(36).substring(7),
+                    id: Date.now().toString(36) + Math.random().toString(36).substring(2),
                     role,
                     content,
                     timestamp: Date.now()
@@ -50,7 +52,7 @@ export const useChatStore = create<ChatState>()(
                 messages: [{
                     id: 'init-' + Date.now(),
                     role: 'assistant',
-                    content: "Greetings. I am The Oracle. Ask me anything about your health, trends, or optimal performance protocols.\n\n*Disclaimer: The Oracle provides general wellness information only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making health decisions.*",
+                    content: ORACLE_GREETING,
                     timestamp: Date.now()
                 }]
             }),
@@ -90,6 +92,7 @@ export const useChatStore = create<ChatState>()(
         {
             name: 'biopoint-oracle-memory',
             storage: createJSONStorage(() => AsyncStorage),
+            partialize: (state) => ({ messages: state.messages.slice(-100), aiConsentGiven: state.aiConsentGiven }),
         }
     )
 );

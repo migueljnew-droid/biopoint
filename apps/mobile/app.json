@@ -33,8 +33,7 @@
         "com.apple.security.application-groups": [
           "group.com.biopoint.app"
         ],
-        "com.apple.developer.healthkit": true,
-        "com.apple.developer.healthkit.access": []
+        "com.apple.developer.healthkit": true
       },
       "appleTeamId": "2N5WMMZMGW"
     },

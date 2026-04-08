@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Platform, Pressable, Modal, ScrollView, Linking } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Platform, Pressable, Modal, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { colors, spacing, borderRadius } from '../src/theme';
 import { ScreenWrapper, GlassView } from '../src/components';
