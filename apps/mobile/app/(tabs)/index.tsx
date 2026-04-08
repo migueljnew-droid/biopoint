@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Modal, Platform, Alert, Image } from 'react-native';
+
+const isIPhone = Platform.OS === 'ios' && !(Platform as any).isPad;
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, typography, borderRadius, shadows } from '../../src/theme';
 import { useDashboardStore } from '../../src/store/dashboardStore';
@@ -50,7 +52,7 @@ export default function DashboardScreen() {
     useEffect(() => {
         fetchDashboard();
         fetchStacks();
-        if (Platform.OS === 'ios') {
+        if (isIPhone) {
             (async () => {
                 try {
                     const authorized = await healthKitService.init();
@@ -155,7 +157,7 @@ export default function DashboardScreen() {
                 </Animated.View>
 
                 {/* Apple Health Integration — HealthKit Data */}
-                {Platform.OS === 'ios' && (
+                {isIPhone && (
                     <Animated.View entering={FadeInDown.delay(50).springify()}>
                         <GlassView variant="medium" borderRadius={borderRadius.lg} style={styles.healthCard}>
                             <View style={styles.healthHeader}>

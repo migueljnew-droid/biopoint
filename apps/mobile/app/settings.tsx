@@ -270,6 +270,18 @@ export default function SettingsScreen() {
                         />
                         <View style={styles.divider} />
                         <SettingItem
+                            icon="download-outline"
+                            label="Export My Data"
+                            onPress={() => router.push('/settings/data-export' as any)}
+                        />
+                        <View style={styles.divider} />
+                        <SettingItem
+                            icon="trash-outline"
+                            label="Delete Account"
+                            onPress={() => router.push('/settings/account-deletion' as any)}
+                        />
+                        <View style={styles.divider} />
+                        <SettingItem
                             icon="log-out-outline"
                             label="Log Out"
                             onPress={handleLogout}

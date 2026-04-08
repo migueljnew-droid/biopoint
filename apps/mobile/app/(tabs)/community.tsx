@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, RefreshControl, Alert, Modal, ScrollView } from 'react-native';
 import { colors, spacing, typography, borderRadius } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { ScreenWrapper, GlassView, CreateGroupModal, Leaderboard } from '../../src/components';
 import Animated, { LinearTransition, FadeInDown } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Group { id: string; name: string; description: string | null; memberCount: number; isMember: boolean }
 interface Template { id: string; name: string; description: string | null; goal: string | null; forkCount: number; items: { name: string; dose: number; unit: string }[] }
@@ -15,6 +16,57 @@ export default function CommunityScreen() {
     const [templates, setTemplates] = useState<Template[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [tab, setTab] = useState<'groups' | 'templates'>('groups');
+    const [eulaAccepted, setEulaAccepted] = useState(false);
+    const [eulaChecked, setEulaChecked] = useState(false);
+
+    useEffect(() => {
+        AsyncStorage.getItem('community_eula_accepted').then(v => {
+            setEulaAccepted(v === 'true');
+            setEulaChecked(true);
+        });
+    }, []);
+
+    const handleAcceptEula = async () => {
+        await AsyncStorage.setItem('community_eula_accepted', 'true');
+        setEulaAccepted(true);
+    };
+
+    const handleReportContent = (type: string, id: string, name: string) => {
+        Alert.alert(
+            'Report Content',
+            `Report "${name}" for objectionable content?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Report',
+                    style: 'destructive',
+                    onPress: () => {
+                        api.post('/community/report', { type, id, reason: 'objectionable_content' }).catch(() => {});
+                        Alert.alert('Reported', 'Thank you. Our team will review this content within 24 hours and take appropriate action.');
+                    },
+                },
+            ]
+        );
+    };
+
+    const handleBlockUser = (userId: string, name: string) => {
+        Alert.alert(
+            'Block User',
+            `Block the creator of "${name}"? Their content will be hidden from your feed.`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Block',
+                    style: 'destructive',
+                    onPress: () => {
+                        api.post('/community/block', { userId }).catch(() => {});
+                        Alert.alert('Blocked', 'This user has been blocked. Their content will no longer appear in your feed.');
+                        fetchData();
+                    },
+                },
+            ]
+        );
+    };
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -62,8 +114,39 @@ export default function CommunityScreen() {
         }
     };
 
+    if (!eulaChecked) return <ScreenWrapper withGradient={true}><View /></ScreenWrapper>;
+
     return (
         <ScreenWrapper withGradient={true}>
+            {/* Community EULA */}
+            <Modal visible={!eulaAccepted} animationType="fade" transparent>
+                <View style={styles.eulaOverlay}>
+                    <GlassView variant="heavy" borderRadius={20} style={styles.eulaCard}>
+                        <Ionicons name="people" size={32} color={colors.primary} style={{ alignSelf: 'center', marginBottom: spacing.md }} />
+                        <Text style={styles.eulaTitle}>Community Guidelines</Text>
+                        <ScrollView style={{ maxHeight: 300 }} showsVerticalScrollIndicator={false}>
+                            <Text style={styles.eulaBody}>
+                                By using BioPoint Community, you agree to the following terms:{'\n\n'}
+                                1. <Text style={styles.eulaBold}>No objectionable content.</Text> Content that is offensive, harmful, threatening, abusive, harassing, defamatory, or otherwise objectionable is strictly prohibited.{'\n\n'}
+                                2. <Text style={styles.eulaBold}>No medical advice.</Text> Community content is for informational sharing only. Do not provide medical diagnoses or treatment recommendations.{'\n\n'}
+                                3. <Text style={styles.eulaBold}>Respect all members.</Text> Harassment, bullying, hate speech, and discrimination are not tolerated.{'\n\n'}
+                                4. <Text style={styles.eulaBold}>No spam or self-promotion.</Text> Do not post irrelevant or promotional content.{'\n\n'}
+                                5. <Text style={styles.eulaBold}>Report violations.</Text> Use the report button on any content that violates these guidelines. We review all reports within 24 hours.{'\n\n'}
+                                Violation of these terms will result in content removal and account suspension.
+                            </Text>
+                        </ScrollView>
+                        <View style={styles.eulaActions}>
+                            <Pressable onPress={() => router.back()} style={styles.eulaDecline}>
+                                <Text style={styles.eulaDeclineText}>Decline</Text>
+                            </Pressable>
+                            <Pressable onPress={handleAcceptEula} style={styles.eulaAccept}>
+                                <Text style={styles.eulaAcceptText}>I Agree</Text>
+                            </Pressable>
+                        </View>
+                    </GlassView>
+                </View>
+            </Modal>
+
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.title}>Community</Text>
@@ -122,6 +205,7 @@ export default function CommunityScreen() {
                                         {group.description && <Text style={styles.groupDesc}>{group.description}</Text>}
                                         <Text style={styles.memberCount}>{group.memberCount} members</Text>
                                     </View>
+                                    <View style={{ alignItems: 'flex-end', gap: 6 }}>
                                     {group.isMember ? (
                                         <View style={styles.memberBadge}><Text style={styles.memberBadgeText}>Joined</Text></View>
                                     ) : (
@@ -129,6 +213,10 @@ export default function CommunityScreen() {
                                             <Text style={styles.joinButtonText}>Join</Text>
                                         </Pressable>
                                     )}
+                                    <Pressable onPress={() => handleReportContent('group', group.id, group.name)} hitSlop={8}>
+                                        <Ionicons name="flag-outline" size={14} color={colors.textMuted} />
+                                    </Pressable>
+                                    </View>
                                 </GlassView>
                                 </Pressable>
                             </Animated.View>
@@ -164,10 +252,15 @@ export default function CommunityScreen() {
                                         {template.items.length > 3 && <Text style={styles.moreItems}>+{template.items.length - 3} more</Text>}
                                     </View>
 
-                                    <Pressable style={styles.forkButton} onPress={() => handleForkTemplate(template.id, template.name)}>
-                                        <Ionicons name="download-outline" size={18} color={colors.textPrimary} />
-                                        <Text style={styles.forkButtonText}>Use This Stack</Text>
-                                    </Pressable>
+                                    <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                                        <Pressable style={[styles.forkButton, { flex: 1 }]} onPress={() => handleForkTemplate(template.id, template.name)}>
+                                            <Ionicons name="download-outline" size={18} color={colors.textPrimary} />
+                                            <Text style={styles.forkButtonText}>Use This Stack</Text>
+                                        </Pressable>
+                                        <Pressable style={styles.reportButton} onPress={() => handleReportContent('template', template.id, template.name)}>
+                                            <Ionicons name="flag-outline" size={16} color={colors.textMuted} />
+                                        </Pressable>
+                                    </View>
                                 </GlassView>
                             </Animated.View>
                         ))}
@@ -220,4 +313,16 @@ const styles = StyleSheet.create({
     moreItems: { ...typography.caption, color: colors.textMuted, fontStyle: 'italic' },
     forkButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, backgroundColor: colors.accent, paddingVertical: spacing.sm, borderRadius: borderRadius.md },
     forkButtonText: { ...typography.label, color: colors.background },
+    reportButton: { width: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: borderRadius.md },
+    // EULA Modal
+    eulaOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', justifyContent: 'center', padding: spacing.lg },
+    eulaCard: { padding: spacing.xl },
+    eulaTitle: { fontSize: 20, fontWeight: '700', color: colors.textPrimary, textAlign: 'center', marginBottom: spacing.md },
+    eulaBody: { fontSize: 14, color: colors.textSecondary, lineHeight: 21 },
+    eulaBold: { fontWeight: '700', color: colors.textPrimary },
+    eulaActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
+    eulaDecline: { flex: 1, paddingVertical: 14, borderRadius: borderRadius.lg, backgroundColor: 'rgba(255,255,255,0.06)', alignItems: 'center' },
+    eulaDeclineText: { fontSize: 15, fontWeight: '600', color: colors.textSecondary },
+    eulaAccept: { flex: 2, paddingVertical: 14, borderRadius: borderRadius.lg, backgroundColor: colors.primary, alignItems: 'center' },
+    eulaAcceptText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 });
