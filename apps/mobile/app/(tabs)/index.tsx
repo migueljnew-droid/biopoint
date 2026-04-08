@@ -33,7 +33,10 @@ export default function DashboardScreen() {
     });
 
 
+    const [syncing, setSyncing] = useState(false);
+
     const handleBioSync = async () => {
+        setSyncing(true);
         try {
             const authorized = await healthKitService.init();
             if (authorized) {
@@ -53,6 +56,8 @@ export default function DashboardScreen() {
         } catch (e) {
             console.log('HealthKit sync failed:', e);
             Alert.alert('Sync Failed', 'Could not connect to Apple Health. Please try again.');
+        } finally {
+            setSyncing(false);
         }
     };
 
@@ -174,9 +179,9 @@ export default function DashboardScreen() {
                                     <Ionicons name="heart" size={18} color="#FF2D55" />
                                     <Text style={styles.healthTitle}>Apple Health</Text>
                                 </View>
-                                <Pressable onPress={handleBioSync}>
-                                    <View style={{ backgroundColor: 'rgba(13, 148, 136, 0.15)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
-                                        <Text style={{ color: colors.accent, fontSize: 11, fontWeight: '600' }}>SYNC</Text>
+                                <Pressable onPress={handleBioSync} disabled={syncing}>
+                                    <View style={{ backgroundColor: 'rgba(13, 148, 136, 0.15)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, opacity: syncing ? 0.5 : 1 }}>
+                                        <Text style={{ color: colors.accent, fontSize: 11, fontWeight: '600' }}>{syncing ? 'SYNCING...' : 'SYNC'}</Text>
                                     </View>
                                 </Pressable>
                             </View>

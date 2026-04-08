@@ -24,10 +24,7 @@
       },
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://biopoint-api.onrender.com",
-        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_HoxHZASugCAhZqQWsvMjzGzqdZb",
-        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "164257154656-7eued6o6js30o0hssoc1uta310fecapi.apps.googleusercontent.com",
-        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "164257154656-jjlptq48a2rn4mndu5i4g1o92lsbecrf.apps.googleusercontent.com"
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_HoxHZASugCAhZqQWsvMjzGzqdZb"
       }
     }
   },

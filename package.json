@@ -8,6 +8,7 @@
     "db"
   ],
   "scripts": {
+    "postinstall": "npx patch-package",
     "dev:api": "doppler run -- npm run dev -w @biopoint/api",
     "dev:mobile": "doppler run -- npm run start -w @biopoint/mobile",
     "build:api": "doppler run -- npm run build -w @biopoint/api",
@@ -60,6 +61,7 @@
     "env:prod": "doppler run --config production"
   },
   "devDependencies": {
+    "patch-package": "^8.0.1",
     "turbo": "^2.0.0",
     "typescript": "^5.3.3"
   },

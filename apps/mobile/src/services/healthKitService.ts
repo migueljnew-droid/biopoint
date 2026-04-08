@@ -22,7 +22,13 @@ export const healthKitService = {
         if (Platform.OS !== 'ios') return false;
 
         return new Promise((resolve) => {
+            const timeout = setTimeout(() => {
+                console.log('[HealthKit] Init timed out after 10s');
+                resolve(false);
+            }, 10000);
+
             AppleHealthKit.initHealthKit(PERMISSIONS, (err: string) => {
+                clearTimeout(timeout);
                 if (err) {
                     console.log('[HealthKit] Error initializing:', err);
                     resolve(false);

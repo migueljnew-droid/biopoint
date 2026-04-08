@@ -95,7 +95,7 @@ export default function AccountDeletionScreen() {
     const proceedWithDeletion = async () => {
         setDeleting(true);
         try {
-            const response = await apiService.post('/user/delete-account', {
+            const response = await apiService.post<{ message: string }>('/user/delete-account', {
                 confirmationEmail: email.trim(),
                 reason: reason.trim() || undefined,
                 immediateEffect,
@@ -103,7 +103,7 @@ export default function AccountDeletionScreen() {
 
             Alert.alert(
                 'Account Deletion Requested',
-                response.message,
+                response.message || 'Your account deletion has been scheduled.',
                 [
                     { 
                         text: 'OK', 
@@ -228,7 +228,7 @@ export default function AccountDeletionScreen() {
                         <AnimatedButton
                             title="Back to Settings"
                             onPress={() => router.back()}
-                            variant="secondary"
+                            variant="primary"
                         />
                     </View>
                 </ScrollView>

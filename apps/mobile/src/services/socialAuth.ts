@@ -1,5 +1,4 @@
 import { Platform } from 'react-native';
-import * as Crypto from 'expo-crypto';
 import { supabase } from '../lib/supabase';
 
 // Safe Google Sign In Import — only used to get the ID token from native SDK
@@ -78,13 +77,6 @@ export const socialAuth = {
                 throw new Error('Apple Sign-In is not available on this device');
             }
 
-            // Generate nonce for Supabase replay-attack protection
-            const rawNonce = Crypto.randomUUID();
-            const hashedNonce = await Crypto.digestStringAsync(
-                Crypto.CryptoDigestAlgorithm.SHA256,
-                rawNonce,
-            );
-
             let credential: any;
             try {
                 credential = await AppleAuthentication.signInAsync({
@@ -92,7 +84,6 @@ export const socialAuth = {
                         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
                         AppleAuthentication.AppleAuthenticationScope.EMAIL,
                     ],
-                    nonce: hashedNonce,
                 });
             } catch (e: any) {
                 if (e.code === 'ERR_REQUEST_CANCELED') throw e;
@@ -103,11 +94,9 @@ export const socialAuth = {
                 throw new Error('No identity token from Apple');
             }
 
-            // Verify with Supabase using the raw nonce (Supabase hashes it to match Apple's)
             const { data, error } = await supabase.auth.signInWithIdToken({
                 provider: 'apple',
                 token: credential.identityToken,
-                nonce: rawNonce,
             });
 
             if (error) {
