@@ -49,22 +49,33 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             purchase: async (packageType: string) => { // 'monthly' or 'yearly'
                 set({ isLoading: true, error: null });
                 try {
-                    // Ensure RevenueCat is configured before any purchase attempt
-                    if (REVENUECAT_API_KEY) {
-                        Purchases.configure({ apiKey: REVENUECAT_API_KEY });
-                    } else {
+                    if (!REVENUECAT_API_KEY) {
                         set({ error: 'Subscription service not configured.' });
                         return;
                     }
+                    // Only configure if not already configured (prevents singleton error)
+                    if (!Purchases.isConfigured()) {
+                        Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
+                        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+                    }
                     const offerings = await Purchases.getOfferings();
-                    if (!offerings.current) {
+                    if (!offerings.current || !offerings.current.availablePackages.length) {
                         set({ error: 'No subscription plans available. Please try again later.' });
                         return;
                     }
 
-                    const packageToBuy = packageType === 'monthly'
+                    // Try standard RC identifiers first, then fall back to custom identifiers
+                    let packageToBuy = packageType === 'monthly'
                         ? offerings.current.monthly
                         : offerings.current.annual;
+
+                    // Fall back: search availablePackages by identifier
+                    if (!packageToBuy) {
+                        const searchId = packageType === 'monthly' ? 'monthly' : 'yearly';
+                        packageToBuy = offerings.current.availablePackages.find(
+                            (p) => p.identifier === searchId || p.identifier === `$rc_${packageType}`
+                        ) || null;
+                    }
 
                     if (!packageToBuy) {
                         set({ error: `${packageType} plan is not available. Please try again later.` });
@@ -93,6 +104,13 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             restorePurchases: async () => {
                 set({ isLoading: true, error: null });
                 try {
+                    if (!Purchases.isConfigured()) {
+                        if (!REVENUECAT_API_KEY) {
+                            set({ error: 'Subscription service not configured.' });
+                            return;
+                        }
+                        await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+                    }
                     const customerInfo = await Purchases.restorePurchases();
                     const isPremium = typeof customerInfo.entitlements.active['premium'] !== "undefined";
                     if (isPremium) {
