@@ -1,7 +1,10 @@
 import type { FastifyInstance } from 'fastify';
 import { prisma, Prisma } from '@biopoint/db';
-import { CreateGroupSchema, CreatePostSchema, ForkTemplateSchema } from '@biopoint/shared';
+import { CreateGroupSchema, CreateRichPostSchema, ForkTemplateSchema, UpdatePublicProfileSchema } from '@biopoint/shared';
+import type { BadgeId } from '@biopoint/shared';
 import { authMiddleware } from '../middleware/auth.js';
+import { generateUploadPresignedUrl, generateDownloadPresignedUrl, generateS3Key } from '../utils/s3.js';
+import { getUserStatsOrCompute } from '../services/badgeComputer.js';
 
 function getUserHandle(userId: string): string {
     const suffix = userId.slice(-6);
@@ -15,6 +18,88 @@ function getUserAvatar(userId: string): string {
 
 export async function communityRoutes(app: FastifyInstance) {
     app.addHook('preHandler', authMiddleware);
+
+    // ── Public Profile Routes ──
+
+    // Get my public profile
+    app.get('/profile/me', async (request) => {
+        const userId = request.userId;
+        const pub = await prisma.userPublicProfile.findUnique({ where: { userId } });
+        const stats = await getUserStatsOrCompute(userId);
+        let avatarUrl: string | null = null;
+        if (pub?.avatarS3Key) {
+            const { url } = await generateDownloadPresignedUrl(pub.avatarS3Key, 'general');
+            avatarUrl = url;
+        }
+        return {
+            userId,
+            displayName: pub?.displayName ?? null,
+            username: pub?.username ?? null,
+            avatarUrl,
+            bio: pub?.bio ?? null,
+            badges: stats.badges as BadgeId[],
+            stats: { daysLogged: stats.totalDaysLogged, stacksActive: stats.totalStacksActive, labsUploaded: stats.totalLabsUploaded },
+            currentStreak: stats.currentStreak,
+        };
+    });
+
+    // Get user public profile
+    app.get('/profile/:userId', async (request, reply) => {
+        const { userId } = request.params as { userId: string };
+        const pub = await prisma.userPublicProfile.findUnique({ where: { userId } });
+        const stats = await getUserStatsOrCompute(userId);
+        let avatarUrl: string | null = null;
+        if (pub?.avatarS3Key) {
+            const { url } = await generateDownloadPresignedUrl(pub.avatarS3Key, 'general');
+            avatarUrl = url;
+        }
+        return {
+            userId,
+            displayName: pub?.displayName ?? null,
+            username: pub?.username ?? null,
+            avatarUrl,
+            bio: pub?.bio ?? null,
+            badges: stats.badges as BadgeId[],
+            stats: { daysLogged: stats.totalDaysLogged, stacksActive: stats.totalStacksActive, labsUploaded: stats.totalLabsUploaded },
+            currentStreak: stats.currentStreak,
+        };
+    });
+
+    // Update my public profile
+    app.put('/profile', async (request, reply) => {
+        const userId = request.userId;
+        const body = UpdatePublicProfileSchema.parse(request.body);
+
+        try {
+            const pub = await prisma.userPublicProfile.upsert({
+                where: { userId },
+                update: body,
+                create: { userId, ...body },
+            });
+            let avatarUrl: string | null = null;
+            if (pub.avatarS3Key) {
+                const { url } = await generateDownloadPresignedUrl(pub.avatarS3Key, 'general');
+                avatarUrl = url;
+            }
+            return { ...pub, avatarUrl };
+        } catch (e: any) {
+            if (e.code === 'P2002') {
+                return reply.status(409).send({ statusCode: 409, error: 'Conflict', message: 'Username already taken' });
+            }
+            throw e;
+        }
+    });
+
+    // Presign avatar upload
+    app.post('/avatar/presign', async (request) => {
+        const userId = request.userId;
+        const { filename, contentType } = request.body as { filename: string; contentType: string };
+        const s3Key = generateS3Key(userId, 'photos', `avatar-${filename}`);
+        const { uploadUrl, expiresIn } = await generateUploadPresignedUrl(s3Key, contentType, 'general');
+        return { uploadUrl, s3Key, expiresIn };
+    });
+
+    // ── Leaderboard ──
 
     // Get leaderboard
     app.get('/leaderboard', async (request) => {
@@ -39,6 +124,18 @@ export async function communityRoutes(app: FastifyInstance) {
                     elite: s.score >= 90,
                     isUser: s.userId === userId
                 });
+            }
+        }
+
+        // Enrich with public profile names
+        const pubProfiles = await prisma.userPublicProfile.findMany({
+            where: { userId: { in: Array.from(uniqueLeaders.keys()) } },
+            select: { userId: true, displayName: true, username: true },
+        });
+        for (const pub of pubProfiles) {
+            const leader = uniqueLeaders.get(pub.userId);
+            if (leader) {
+                leader.name = pub.username || pub.displayName || leader.name;
             }
         }
 
@@ -140,36 +237,99 @@ export async function communityRoutes(app: FastifyInstance) {
         return { success: true };
     });
 
-    // Get group posts
+    // Get group posts (with optional category filter)
     app.get('/groups/:id/posts', async (request, reply) => {
         const { id } = request.params as { id: string };
+        const { category } = request.query as { category?: string };
         const group = await prisma.group.findUnique({ where: { id } });
         if (!group) return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Group not found' });
 
+        const where: any = { groupId: id };
+        if (category && category !== 'general') where.category = category;
+
         const posts = await prisma.post.findMany({
-            where: { groupId: id },
+            where,
             orderBy: { createdAt: 'desc' },
+            take: 50,
         });
 
-        return posts.map((p) => ({
-            id: p.id, groupId: p.groupId, userId: p.userId, authorHandle: getUserHandle(p.userId), content: p.content, createdAt: p.createdAt.toISOString(),
+        // Batch-fetch public profiles for authors
+        const authorIds = [...new Set(posts.map(p => p.userId))];
+        const pubProfiles = await prisma.userPublicProfile.findMany({
+            where: { userId: { in: authorIds } },
+            select: { userId: true, displayName: true, username: true, avatarS3Key: true },
+        });
+        const pubMap = new Map(pubProfiles.map(p => [p.userId, p]));
+
+        return Promise.all(posts.map(async (p) => {
+            const pub = pubMap.get(p.userId);
+            const mediaItems = (p.mediaJson as any[]) || [];
+            const mediaUrls = await Promise.all(
+                mediaItems.map(async (m: any) => {
+                    try {
+                        const { url } = await generateDownloadPresignedUrl(m.s3Key, 'photos');
+                        return url;
+                    } catch { return null; }
+                })
+            );
+
+            return {
+                id: p.id, groupId: p.groupId, userId: p.userId,
+                authorHandle: pub?.username || pub?.displayName || getUserHandle(p.userId),
+                authorAvatar: null,
+                content: p.content,
+                category: p.category,
+                mediaUrls: mediaUrls.filter(Boolean),
+                linkUrl: p.linkUrl,
+                stackTemplateId: p.stackTemplateId,
+                createdAt: p.createdAt.toISOString(),
+            };
         }));
     });
 
-    // Create post
+    // Create post (with media, links, stack attachments)
     app.post('/groups/:id/posts', async (request, reply) => {
         const userId = request.userId;
         const { id } = request.params as { id: string };
-        const body = CreatePostSchema.parse(request.body);
+        const body = CreateRichPostSchema.parse(request.body);
 
         const member = await prisma.groupMember.findUnique({ where: { groupId_userId: { groupId: id, userId } } });
         if (!member) return reply.status(403).send({ statusCode: 403, error: 'Forbidden', message: 'Must be a member to post' });
 
+        // Validate media S3 keys belong to this user
+        if (body.mediaJson) {
+            for (const m of body.mediaJson) {
+                if (!m.s3Key.includes(`/${userId}/`)) {
+                    return reply.status(400).send({ statusCode: 400, error: 'Bad Request', message: 'Invalid media attachment' });
+                }
+            }
+        }
+
         const post = await prisma.post.create({
-            data: { groupId: id, userId, content: body.content },
+            data: {
+                groupId: id,
+                userId,
+                content: body.content,
+                category: body.category,
+                mediaJson: body.mediaJson ? JSON.parse(JSON.stringify(body.mediaJson)) : undefined,
+                linkUrl: body.linkUrl,
+                stackTemplateId: body.stackTemplateId,
+            },
         });
 
-        return { id: post.id, groupId: post.groupId, userId: post.userId, authorHandle: getUserHandle(post.userId), content: post.content, createdAt: post.createdAt.toISOString() };
+        const pub = await prisma.userPublicProfile.findUnique({ where: { userId }, select: { username: true, displayName: true } });
+
+        return {
+            id: post.id, groupId: post.groupId, userId: post.userId,
+            authorHandle: pub?.username || pub?.displayName || getUserHandle(post.userId),
+            authorAvatar: null,
+            content: post.content,
+            category: post.category,
+            mediaUrls: [],
+            linkUrl: post.linkUrl,
+            stackTemplateId: post.stackTemplateId,
+            createdAt: post.createdAt.toISOString(),
+        };
     });
 
     // List templates

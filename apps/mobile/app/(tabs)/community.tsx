@@ -20,14 +20,14 @@ export default function CommunityScreen() {
     const [eulaChecked, setEulaChecked] = useState(false);
 
     useEffect(() => {
-        AsyncStorage.getItem('community_eula_v2_accepted').then(v => {
+        AsyncStorage.getItem('community_eula_v3_accepted').then(v => {
             setEulaAccepted(v === 'true');
             setEulaChecked(true);
         });
     }, []);
 
     const handleAcceptEula = async () => {
-        await AsyncStorage.setItem('community_eula_v2_accepted', 'true');
+        await AsyncStorage.setItem('community_eula_v3_accepted', 'true');
         setEulaAccepted(true);
     };
 
@@ -156,6 +156,7 @@ export default function CommunityScreen() {
                                 3. <Text style={styles.eulaBold}>Respect all members.</Text> Harassment, bullying, hate speech, and discrimination are not tolerated.{'\n\n'}
                                 4. <Text style={styles.eulaBold}>No spam or self-promotion.</Text> Do not post irrelevant or promotional content.{'\n\n'}
                                 5. <Text style={styles.eulaBold}>Report violations.</Text> Use the report button on any content that violates these guidelines. We review all reports within 24 hours.{'\n\n'}
+                                6. <Text style={styles.eulaBold}>Sharing disclosure.</Text> Any photos, lab results, or health data you share in BioPoint Community are shared voluntarily at your own discretion. BioPoint does not review content before it is posted. Shared health data is not medical advice and should not be interpreted as such. You are solely responsible for any personal health information you choose to share.{'\n\n'}
                                 Violation of these terms will result in content removal and account suspension.
                             </Text>
                         </ScrollView>

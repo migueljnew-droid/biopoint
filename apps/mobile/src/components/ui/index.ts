@@ -6,3 +6,4 @@ export * from './BiomarkerCard';
 export * from './GlassPicker';
 export * from './GlassAutocomplete';
 export * from './GlassDaySelector';
+export * from './BadgeChip';

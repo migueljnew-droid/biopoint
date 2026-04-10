@@ -180,6 +180,12 @@ export default function SettingsScreen() {
                         />
                         <View style={styles.divider} />
                         <SettingItem
+                            icon="people-outline"
+                            label="Community Identity"
+                            onPress={() => router.push('/settings/community-identity' as any)}
+                        />
+                        <View style={styles.divider} />
+                        <SettingItem
                             icon="barbell-outline"
                             label="My Goals"
                             onPress={() => router.push('/settings/goals' as any)}

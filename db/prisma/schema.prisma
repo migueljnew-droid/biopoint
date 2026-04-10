@@ -35,6 +35,8 @@ model User {
   mealEntries       MealEntry[]
   posts             Post[]
   profile           Profile?
+  publicProfile     UserPublicProfile?
+  userStats         UserStats?
   progressPhotos    ProgressPhoto[]
   refreshTokens     RefreshToken[]
   reminderSchedules ReminderSchedule[]
@@ -77,6 +79,33 @@ model Profile {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserPublicProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  displayName String?
+  username    String?  @unique
+  avatarS3Key String?
+  bio         String?  @db.VarChar(300)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([username])
+}
+
+model UserStats {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  currentStreak     Int      @default(0)
+  longestStreak     Int      @default(0)
+  totalDaysLogged   Int      @default(0)
+  totalStacksActive Int      @default(0)
+  totalLabsUploaded Int      @default(0)
+  badgesJson        Json     @default("[]")
+  computedAt        DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Stack {
@@ -341,21 +370,27 @@ model GroupMember {
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  groupId   String
-  userId    String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String   @id @default(cuid())
+  groupId         String
+  userId          String
+  content         String
+  category        String   @default("general")
+  mediaJson       Json?
+  linkUrl         String?
+  stackTemplateId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  group           Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([groupId, createdAt])
+  @@index([groupId, category, createdAt])
 }
 
 model StackTemplate {
   id          String   @id @default(cuid())
   groupId     String?
+  createdById String?
   name        String
   description String?
   goal        String?
