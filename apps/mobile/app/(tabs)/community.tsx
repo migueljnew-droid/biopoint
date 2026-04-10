@@ -175,12 +175,17 @@ export default function CommunityScreen() {
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.title}>Community</Text>
-                {tab === 'groups' && (
-                    <Pressable style={styles.createButton} onPress={() => setCreateModalVisible(true)}>
-                        <Ionicons name="add" size={20} color={colors.textPrimary} />
-                        <Text style={styles.createButtonText}>Create</Text>
+                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                    <Pressable style={styles.createButton} onPress={() => router.push('/settings/profile' as any)}>
+                        <Ionicons name="person-circle-outline" size={20} color={colors.textPrimary} />
                     </Pressable>
-                )}
+                    {tab === 'groups' && (
+                        <Pressable style={styles.createButton} onPress={() => setCreateModalVisible(true)}>
+                            <Ionicons name="add" size={20} color={colors.textPrimary} />
+                            <Text style={styles.createButtonText}>Create</Text>
+                        </Pressable>
+                    )}
+                </View>
             </View>
 
             {/* Tabs */}
