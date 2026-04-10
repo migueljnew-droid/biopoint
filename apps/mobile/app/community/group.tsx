@@ -97,7 +97,7 @@ export default function GroupDetailScreen() {
         if (result.canceled) return;
 
         try {
-            const presign = await api.post('/photos/presign', {
+            const presign = await api.post('/community/avatar/presign', {
                 filename: `post_${Date.now()}.jpg`,
                 contentType: 'image/jpeg',
             });
