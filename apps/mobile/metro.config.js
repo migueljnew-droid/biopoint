@@ -15,4 +15,16 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ];
 
+// Resolve .js imports to .ts source files (NodeNext requires .js extensions
+// in TS imports but Metro needs to find the actual .ts files)
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (moduleName.endsWith('.js')) {
+    const tsName = moduleName.replace(/\.js$/, '.ts');
+    try {
+      return context.resolveRequest(context, tsName, platform);
+    } catch {}
+  }
+  return context.resolveRequest(context, moduleName, platform);
+};
+
 module.exports = config;

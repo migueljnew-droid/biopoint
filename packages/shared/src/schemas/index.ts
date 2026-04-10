@@ -1,32 +1,32 @@
 // Auth
-export * from './auth';
+export * from './auth.js';
 
 // Profile
-export * from './profile';
+export * from './profile.js';
 
 // Dashboard & Logs
-export * from './dashboard';
+export * from './dashboard.js';
 
 // Stacks
-export * from './stacks';
+export * from './stacks.js';
 
 // Labs
-export * from './labs';
+export * from './labs.js';
 
 // Photos
-export * from './photos';
+export * from './photos.js';
 
 // Community
-export * from './community';
+export * from './community.js';
 
 // Reminders
-export * from './reminders';
+export * from './reminders.js';
 
 // Nutrition & Fasting
-export * from './nutrition';
+export * from './nutrition.js';
 
 // Peptides
-export * from './peptides';
+export * from './peptides.js';
 
 // Common types
 export interface PaginatedResponse<T> {
