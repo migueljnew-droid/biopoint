@@ -87,15 +87,15 @@ export default function PublicProfileScreen() {
                 {/* Stats */}
                 <Animated.View entering={FadeInDown.delay(100)} style={styles.statsRow}>
                     <GlassView variant="light" borderRadius={borderRadius.lg} style={styles.statCard}>
-                        <Text style={styles.statValue}>{profile.stats.daysLogged}</Text>
+                        <Text style={styles.statValue}>{profile.stats?.daysLogged ?? 0}</Text>
                         <Text style={styles.statLabel}>Days Logged</Text>
                     </GlassView>
                     <GlassView variant="light" borderRadius={borderRadius.lg} style={styles.statCard}>
-                        <Text style={styles.statValue}>{profile.stats.stacksActive}</Text>
+                        <Text style={styles.statValue}>{profile.stats?.stacksActive ?? 0}</Text>
                         <Text style={styles.statLabel}>Active Stacks</Text>
                     </GlassView>
                     <GlassView variant="light" borderRadius={borderRadius.lg} style={styles.statCard}>
-                        <Text style={styles.statValue}>{profile.stats.labsUploaded}</Text>
+                        <Text style={styles.statValue}>{profile.stats?.labsUploaded ?? 0}</Text>
                         <Text style={styles.statLabel}>Labs</Text>
                     </GlassView>
                 </Animated.View>
@@ -105,7 +105,7 @@ export default function PublicProfileScreen() {
                     <Text style={styles.sectionTitle}>Badges</Text>
                     <View style={styles.badgesGrid}>
                         {BADGE_DEFINITIONS.map(b => (
-                            <BadgeChip key={b.id} badgeId={b.id} earned={profile.badges.includes(b.id as any)} />
+                            <BadgeChip key={b.id} badgeId={b.id} earned={(profile.badges ?? []).includes(b.id as any)} />
                         ))}
                     </View>
                 </Animated.View>

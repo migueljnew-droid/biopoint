@@ -162,7 +162,7 @@ export default function GroupDetailScreen() {
         <View style={styles.postRow}>
             <Pressable onPress={() => router.push({ pathname: '/community/profile/[userId]' as any, params: { userId: item.userId } })}>
                 <View style={styles.postAvatar}>
-                    <Text style={styles.postAvatarText}>{item.authorHandle.charAt(0).toUpperCase()}</Text>
+                    <Text style={styles.postAvatarText}>{(item.authorHandle ?? '?').charAt(0).toUpperCase()}</Text>
                 </View>
             </Pressable>
             <View style={styles.postContent}>
@@ -182,7 +182,7 @@ export default function GroupDetailScreen() {
                 <Text style={styles.postText}>{item.content}</Text>
 
                 {/* Media photos */}
-                {item.mediaUrls.length > 0 && (
+                {(item.mediaUrls ?? []).length > 0 && (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaRow}>
                         {item.mediaUrls.map((url, i) => (
                             <Image key={i} source={{ uri: url }} style={styles.mediaImage} />
