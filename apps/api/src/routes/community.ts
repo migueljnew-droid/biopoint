@@ -109,6 +109,22 @@ export async function communityRoutes(app: FastifyInstance) {
         return { uploadUrl, s3Key, expiresIn };
     });
 
+    // Presign community photo upload (posts, any content)
+    app.post('/photos/presign', async (request, reply) => {
+        const userId = request.userId;
+        const { filename, contentType } = request.body as { filename: string; contentType: string };
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!contentType || !allowedTypes.includes(contentType)) {
+            return reply.status(400).send({ statusCode: 400, error: 'Bad Request', message: 'Content type must be image/jpeg, image/png, or image/webp' });
+        }
+        if (!filename || filename.length > 100) {
+            return reply.status(400).send({ statusCode: 400, error: 'Bad Request', message: 'Invalid filename' });
+        }
+        const s3Key = generateS3Key(userId, 'photos', `post-${filename}`);
+        const { uploadUrl, expiresIn } = await generateUploadPresignedUrl(s3Key, contentType, 'general');
+        return { uploadUrl, s3Key, expiresIn };
+    });
+
     // ── Leaderboard ──
 
     // Get leaderboard
