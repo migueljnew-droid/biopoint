@@ -5,4 +5,7 @@ module.exports = {
   bundleIdentifier: ".widget",
   deploymentTarget: "17.0",
   frameworks: ["SwiftUI", "WidgetKit"],
+  entitlements: {
+    "com.apple.security.application-groups": ["group.com.biopoint.app"],
+  },
 };

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing, borderRadius } from '../theme';
 import { GlassView } from './ui';
 import { useStacksStore } from '../store/stacksStore';
@@ -17,9 +18,18 @@ interface TodayItem {
     taken: boolean;
 }
 
+const getTodayKey = () => `taken_${new Date().toISOString().slice(0, 10)}`;
+
 export function TodayStack() {
     const { stacks, logCompliance } = useStacksStore();
     const [takenIds, setTakenIds] = useState<Set<string>>(new Set());
+
+    // Load today's checkoffs from storage
+    useEffect(() => {
+        AsyncStorage.getItem(getTodayKey()).then((val) => {
+            if (val) setTakenIds(new Set(JSON.parse(val)));
+        }).catch(() => {});
+    }, []);
 
     const todayItems: TodayItem[] = [];
     const today = new Date().getDay();
@@ -78,7 +88,9 @@ export function TodayStack() {
     const handleTake = async (item: TodayItem) => {
         if (item.taken) return;
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        setTakenIds(prev => new Set([...prev, item.id]));
+        const newIds = new Set([...takenIds, item.id]);
+        setTakenIds(newIds);
+        AsyncStorage.setItem(getTodayKey(), JSON.stringify([...newIds])).catch(() => {});
         try { await logCompliance(item.id); } catch { /* logged visually */ }
     };
 
