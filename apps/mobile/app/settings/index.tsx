@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Switch, Alert, Platform } from 'react-native';
 import { router, Stack } from 'expo-router';
-import { colors, spacing, borderRadius } from '../src/theme';
-import { useAuthStore } from '../src/store/authStore';
-import { biometricService } from '../src/services/biometricService';
-import { useAuditStore } from '../src/services/auditService';
+import { colors, spacing, borderRadius } from '../../src/theme';
+import { useAuthStore } from '../../src/store/authStore';
+import { biometricService } from '../../src/services/biometricService';
+import { useAuditStore } from '../../src/services/auditService';
 import { Ionicons } from '@expo/vector-icons';
-import { ScreenWrapper, GlassView, AnimatedButton } from '../src/components';
+import { ScreenWrapper, GlassView, AnimatedButton } from '../../src/components';
 import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { useSettingsStore } from '../src/store/settingsStore';
-import { useSubscriptionStore } from '../src/store/subscriptionStore';
+import { useSettingsStore } from '../../src/store/settingsStore';
+import { useSubscriptionStore } from '../../src/store/subscriptionStore';
 
 export default function SettingsScreen() {
     const { user, logout } = useAuthStore();
