@@ -102,3 +102,83 @@ export async function getScheduledCount(): Promise<number> {
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
     return scheduled.length;
 }
+
+// ── Engagement Notifications ──
+
+const DAILY_CHECKIN_ID = 'biopoint_daily_checkin';
+const WEEKLY_LABS_ID = 'biopoint_weekly_labs';
+const STREAK_REMINDER_ID = 'biopoint_streak';
+
+export async function scheduleDailyCheckin(hour = 9, minute = 0): Promise<void> {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    // Cancel existing before rescheduling
+    await Notifications.cancelScheduledNotificationAsync(DAILY_CHECKIN_ID).catch(() => {});
+
+    await Notifications.scheduleNotificationAsync({
+        identifier: DAILY_CHECKIN_ID,
+        content: {
+            title: 'Good morning',
+            body: 'Log your sleep, energy, and mood to keep your BioPoint score accurate.',
+            data: { type: 'daily_checkin' },
+            sound: 'default',
+        },
+        trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DAILY,
+            hour,
+            minute,
+        },
+    });
+}
+
+export async function scheduleStreakReminder(hour = 20, minute = 0): Promise<void> {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    await Notifications.cancelScheduledNotificationAsync(STREAK_REMINDER_ID).catch(() => {});
+
+    await Notifications.scheduleNotificationAsync({
+        identifier: STREAK_REMINDER_ID,
+        content: {
+            title: "Don't break your streak",
+            body: "You haven't logged today. Tap to update your health metrics.",
+            data: { type: 'streak_reminder' },
+            sound: 'default',
+        },
+        trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DAILY,
+            hour,
+            minute,
+        },
+    });
+}
+
+export async function scheduleWeeklyLabReminder(): Promise<void> {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) return;
+
+    await Notifications.cancelScheduledNotificationAsync(WEEKLY_LABS_ID).catch(() => {});
+
+    await Notifications.scheduleNotificationAsync({
+        identifier: WEEKLY_LABS_ID,
+        content: {
+            title: 'Weekly check-in',
+            body: 'Review your trends and update your stacks. Got new labs? Upload them for AI analysis.',
+            data: { type: 'weekly_labs' },
+            sound: 'default',
+        },
+        trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+            weekday: 1, // Sunday
+            hour: 10,
+            minute: 0,
+        },
+    });
+}
+
+export async function scheduleAllEngagementNotifications(): Promise<void> {
+    await scheduleDailyCheckin(9, 0);
+    await scheduleStreakReminder(20, 0);
+    await scheduleWeeklyLabReminder();
+}

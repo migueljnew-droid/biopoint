@@ -10,7 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAuthStore } from '../src/store/authStore';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { colors } from '../src/theme';
-import { requestPermissions } from '../src/services/notificationService';
+import { requestPermissions, scheduleAllEngagementNotifications } from '../src/services/notificationService';
 import { api } from '../src/services/api';
 
 export default function RootLayout() {
@@ -25,7 +25,11 @@ export default function RootLayout() {
             .then(() => {
                 if (useAuthStore.getState().isAuthenticated) {
                     initSubscription().catch(() => {});
-                    requestPermissions().catch(() => {});
+                    requestPermissions()
+                        .then((granted) => {
+                            if (granted) scheduleAllEngagementNotifications().catch(() => {});
+                        })
+                        .catch(() => {});
                 }
             })
             .catch(() => {});
