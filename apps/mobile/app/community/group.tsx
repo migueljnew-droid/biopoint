@@ -101,12 +101,22 @@ export default function GroupDetailScreen() {
                 filename: `post_${Date.now()}.jpg`,
                 contentType: 'image/jpeg',
             });
-            const blob = await (await fetch(result.assets[0].uri)).blob();
-            await fetch(presign.data.uploadUrl, { method: 'PUT', body: blob, headers: { 'Content-Type': 'image/jpeg' } });
-            setAttachedPhotos(prev => [...prev, { uri: result.assets[0].uri, s3Key: presign.data.s3Key }]);
+            const { uploadUrl, s3Key } = presign.data;
+            const response = await fetch(result.assets[0].uri);
+            const blob = await response.blob();
+            const uploadRes = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: blob,
+                headers: { 'Content-Type': 'image/jpeg', 'Content-Length': String(blob.size) },
+            });
+            if (!uploadRes.ok) {
+                const errText = await uploadRes.text().catch(() => '');
+                throw new Error(`S3 upload failed: ${uploadRes.status} ${errText.slice(0, 100)}`);
+            }
+            setAttachedPhotos(prev => [...prev, { uri: result.assets[0].uri, s3Key }]);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        } catch {
-            Alert.alert('Error', 'Failed to upload photo');
+        } catch (e: any) {
+            Alert.alert('Upload Error', e.message || 'Failed to upload photo');
         }
     };
 
