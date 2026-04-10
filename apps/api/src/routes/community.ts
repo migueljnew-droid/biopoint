@@ -137,15 +137,19 @@ export async function communityRoutes(app: FastifyInstance) {
             }
         }
 
-        // Enrich with public profile names
+        // Enrich with public profile names + avatars
         const pubProfiles = await prisma.userPublicProfile.findMany({
             where: { userId: { in: Array.from(uniqueLeaders.keys()) } },
-            select: { userId: true, displayName: true, username: true },
+            select: { userId: true, displayName: true, username: true, avatarS3Key: true },
         });
         for (const pub of pubProfiles) {
             const leader = uniqueLeaders.get(pub.userId);
             if (leader) {
                 leader.name = pub.username || pub.displayName || leader.name;
+                if (pub.avatarS3Key) {
+                    const { url } = await generateDownloadPresignedUrl(pub.avatarS3Key, 'general');
+                    leader.avatarUrl = url;
+                }
             }
         }
 

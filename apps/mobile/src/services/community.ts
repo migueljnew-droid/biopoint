@@ -6,6 +6,7 @@ export interface LeaderboardEntry {
     score: number;
     trend: string;
     avatar: string;
+    avatarUrl?: string;
     elite: boolean;
     isUser?: boolean;
 }

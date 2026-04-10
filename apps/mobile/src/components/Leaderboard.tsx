@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, typography, borderRadius } from '../theme';
 import { GlassView } from './ui/GlassView';
@@ -57,11 +57,15 @@ export function Leaderboard() {
                             <Text style={styles.rankNumber}>#{index + 1}</Text>
 
                             {/* Avatar */}
-                            <View style={[styles.avatar, user.isUser && styles.userAvatar]}>
-                                <Text style={[styles.avatarText, user.isUser && styles.userAvatarText]}>
-                                    {user.isUser ? 'YOU' : user.avatar}
-                                </Text>
-                            </View>
+                            {user.avatarUrl ? (
+                                <Image source={{ uri: user.avatarUrl }} style={[styles.avatar, user.isUser && styles.userAvatar]} />
+                            ) : (
+                                <View style={[styles.avatar, user.isUser && styles.userAvatar]}>
+                                    <Text style={[styles.avatarText, user.isUser && styles.userAvatarText]}>
+                                        {user.isUser ? 'YOU' : user.avatar}
+                                    </Text>
+                                </View>
+                            )}
 
                             {/* Name */}
                             <Text style={[styles.name, user.isUser && styles.userName]} numberOfLines={1}>
