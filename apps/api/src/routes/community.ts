@@ -43,22 +43,25 @@ export async function communityRoutes(app: FastifyInstance) {
         };
     });
 
-    // Get user public profile
+    // Get user public profile (only if user has created one)
     app.get('/profile/:userId', async (request, reply) => {
         const { userId } = request.params as { userId: string };
         const pub = await prisma.userPublicProfile.findUnique({ where: { userId } });
+        if (!pub) {
+            return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Profile not found' });
+        }
         const stats = await getUserStatsOrCompute(userId);
         let avatarUrl: string | null = null;
-        if (pub?.avatarS3Key) {
+        if (pub.avatarS3Key) {
             const { url } = await generateDownloadPresignedUrl(pub.avatarS3Key, 'general');
             avatarUrl = url;
         }
         return {
             userId,
-            displayName: pub?.displayName ?? null,
-            username: pub?.username ?? null,
+            displayName: pub.displayName ?? null,
+            username: pub.username ?? null,
             avatarUrl,
-            bio: pub?.bio ?? null,
+            bio: pub.bio ?? null,
             badges: stats.badges as BadgeId[],
             stats: { daysLogged: stats.totalDaysLogged, stacksActive: stats.totalStacksActive, labsUploaded: stats.totalLabsUploaded },
             currentStreak: stats.currentStreak,
@@ -91,9 +94,16 @@ export async function communityRoutes(app: FastifyInstance) {
     });
 
     // Presign avatar upload
-    app.post('/avatar/presign', async (request) => {
+    app.post('/avatar/presign', async (request, reply) => {
         const userId = request.userId;
         const { filename, contentType } = request.body as { filename: string; contentType: string };
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!contentType || !allowedTypes.includes(contentType)) {
+            return reply.status(400).send({ statusCode: 400, error: 'Bad Request', message: 'Content type must be image/jpeg, image/png, or image/webp' });
+        }
+        if (!filename || filename.length > 100) {
+            return reply.status(400).send({ statusCode: 400, error: 'Bad Request', message: 'Invalid filename' });
+        }
         const s3Key = generateS3Key(userId, 'photos', `avatar-${filename}`);
         const { uploadUrl, expiresIn } = await generateUploadPresignedUrl(s3Key, contentType, 'general');
         return { uploadUrl, s3Key, expiresIn };
@@ -239,13 +249,19 @@ export async function communityRoutes(app: FastifyInstance) {
 
     // Get group posts (with optional category filter)
     app.get('/groups/:id/posts', async (request, reply) => {
+        const userId = request.userId;
         const { id } = request.params as { id: string };
         const { category } = request.query as { category?: string };
-        const group = await prisma.group.findUnique({ where: { id } });
+        const group = await prisma.group.findUnique({ where: { id }, include: { members: { where: { userId } } } });
         if (!group) return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Group not found' });
+        // Private groups require membership to view posts
+        if (!group.isPublic && group.members.length === 0) {
+            return reply.status(403).send({ statusCode: 403, error: 'Forbidden', message: 'Join this group to view posts' });
+        }
 
+        const validCategories = ['general', 'peptide_protocols', 'supplement_stacks', 'lab_results', 'fasting', 'progress_photos', 'qa'];
         const where: any = { groupId: id };
-        if (category && category !== 'general') where.category = category;
+        if (category && category !== 'general' && validCategories.includes(category)) where.category = category;
 
         const posts = await prisma.post.findMany({
             where,
@@ -299,7 +315,7 @@ export async function communityRoutes(app: FastifyInstance) {
         // Validate media S3 keys belong to this user
         if (body.mediaJson) {
             for (const m of body.mediaJson) {
-                if (!m.s3Key.includes(`/${userId}/`)) {
+                if (!m.s3Key.startsWith(`photos/${userId}/`)) {
                     return reply.status(400).send({ statusCode: 400, error: 'Bad Request', message: 'Invalid media attachment' });
                 }
             }
@@ -394,16 +410,9 @@ export async function communityRoutes(app: FastifyInstance) {
         });
 
         // Store in database for moderation queue
-        try {
-            await prisma.$executeRaw`
-                INSERT INTO "ContentReport" ("id", "reporterId", "contentType", "contentId", "contentName", "reason", "createdAt")
-                VALUES (gen_random_uuid(), ${userId}, ${type}, ${id}, ${name}, ${reason}, NOW())
-                ON CONFLICT DO NOTHING
-            `;
-        } catch {
-            // Table may not exist yet — log-based reporting still works
-            request.log.info('ContentReport table not available, report logged only');
-        }
+        await prisma.contentReport.create({
+            data: { reporterId: userId, contentType: type, contentId: id, contentName: name, reason },
+        });
 
         return { success: true, message: 'Report received. Our team will review within 24 hours.' };
     });

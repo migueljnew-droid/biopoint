@@ -8,7 +8,7 @@ import { ScreenWrapper, GlassView, CreateGroupModal, Leaderboard } from '../../s
 import Animated, { LinearTransition, FadeInDown } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface Group { id: string; name: string; description: string | null; memberCount: number; isMember: boolean }
+interface Group { id: string; name: string; description: string | null; createdById?: string; memberCount: number; isMember: boolean }
 interface Template { id: string; name: string; description: string | null; goal: string | null; forkCount: number; items: { name: string; dose: number; unit: string }[] }
 
 export default function CommunityScreen() {
@@ -239,7 +239,7 @@ export default function CommunityScreen() {
                                         </Pressable>
                                     )}
                                     <View style={{ flexDirection: 'row', gap: 8 }}>
-                                        <Pressable onPress={() => handleBlockUser(group.id, group.name)} hitSlop={8}>
+                                        <Pressable onPress={() => handleBlockUser(group.createdById || group.id, group.name)} hitSlop={8}>
                                             <Ionicons name="ban-outline" size={14} color={colors.textMuted} />
                                         </Pressable>
                                         <Pressable onPress={() => handleReportContent('group', group.id, group.name)} hitSlop={8}>

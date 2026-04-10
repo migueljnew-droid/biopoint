@@ -108,6 +108,18 @@ model UserStats {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model ContentReport {
+  id          String   @id @default(cuid())
+  reporterId  String
+  contentType String
+  contentId   String
+  contentName String
+  reason      String
+  createdAt   DateTime @default(now())
+
+  @@index([contentType, contentId])
+}
+
 model Stack {
   id        String      @id @default(cuid())
   userId    String

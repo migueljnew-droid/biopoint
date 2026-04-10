@@ -12,9 +12,14 @@ function computeStreak(dates: Date[]): number {
         return copy.getTime();
     }));
 
-    let streak = 0;
+    // Start from today if logged, otherwise from yesterday (streak still alive)
     let checkDate = new Date(today);
+    if (!dateSet.has(checkDate.getTime())) {
+        checkDate.setDate(checkDate.getDate() - 1);
+        if (!dateSet.has(checkDate.getTime())) return 0;
+    }
 
+    let streak = 0;
     while (dateSet.has(checkDate.getTime())) {
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
@@ -42,9 +47,13 @@ export async function computeUserStats(userId: string) {
     if (templateCount > 0) badges.push('protocol_publisher');
     if (recentScore && recentScore.score >= 80) badges.push('bio_optimized');
 
+    // Preserve longest streak from existing record
+    const existingStats = await prisma.userStats.findUnique({ where: { userId }, select: { longestStreak: true } });
+    const longestStreak = Math.max(currentStreak, existingStats?.longestStreak ?? 0);
+
     const stats = {
         currentStreak,
-        longestStreak: currentStreak,
+        longestStreak,
         totalDaysLogged: logs.length,
         totalStacksActive: stackCount,
         totalLabsUploaded: labCount,
