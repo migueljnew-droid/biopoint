@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Modal, Platform, Alert, Image } from 'react-native';
 
 const isIPhone = Platform.OS === 'ios' && !(Platform as any).isPad;
@@ -105,6 +105,42 @@ export default function DashboardScreen() {
 
 
     const score = bioPointScore?.score ?? 0;
+
+    // Animated score counter
+    const [displayScore, setDisplayScore] = useState(0);
+    const prevScore = useRef(0);
+    useEffect(() => {
+        const target = score;
+        const start = prevScore.current;
+        if (target === start) return;
+        const diff = target - start;
+        const duration = 1200; // ms
+        const steps = 40;
+        const stepTime = duration / steps;
+        let step = 0;
+        const timer = setInterval(() => {
+            step++;
+            // Ease-out curve for premium feel
+            const progress = 1 - Math.pow(1 - step / steps, 3);
+            const current = Math.round(start + diff * progress);
+            setDisplayScore(current);
+            if (step >= steps) {
+                clearInterval(timer);
+                setDisplayScore(target);
+                prevScore.current = target;
+                // Haptic pulse when animation completes
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+        }, stepTime);
+        return () => clearInterval(timer);
+    }, [score]);
+
+    const getScoreColor = useCallback((s: number) => {
+        if (s >= 80) return colors.success;
+        if (s >= 60) return colors.warning;
+        return colors.error;
+    }, []);
+
     const getScoreVariant = () => {
         if (score >= 80) return { color: colors.success, glow: shadows.successGlow, borderColor: colors.success };
         if (score >= 60) return { color: colors.warning, glow: shadows.warningGlow, borderColor: colors.warning };
@@ -157,7 +193,7 @@ export default function DashboardScreen() {
                         </View>
 
                         <View style={styles.scoreDisplay}>
-                            <Text style={[styles.scoreValue, { color: scoreStyles.color }]}>{score}</Text>
+                            <Text style={[styles.scoreValue, { color: getScoreColor(displayScore) }]}>{displayScore}</Text>
                             <Text style={styles.scoreTotal}>/100</Text>
                         </View>
 
