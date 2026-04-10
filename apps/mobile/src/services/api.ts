@@ -67,9 +67,10 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // Don't try token refresh on auth endpoints — they handle their own auth
-        const isAuthRoute = originalRequest.url?.startsWith('/auth/');
-        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
+        // Don't try token refresh on auth login/register/refresh endpoints
+        // BUT /auth/me should still trigger refresh (it's a read endpoint)
+        const isAuthMutationRoute = originalRequest.url?.startsWith('/auth/') && !originalRequest.url?.includes('/auth/me');
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthMutationRoute) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
