@@ -93,14 +93,13 @@ export default function EditProfileScreen() {
         setSaving(true);
         try {
             // Save biometrics
-            await updateProfile({
-                ...(formData.sex ? { sex: formData.sex as any } : {}),
-                heightCm: formData.heightCm ? parseFloat(formData.heightCm) : null,
-                baselineWeightKg: formData.baselineWeightKg ? parseFloat(formData.baselineWeightKg) : null,
-                goals: formData.goals,
-                dietStyle: formData.dietStyle || null,
-                currentInterventions: formData.currentInterventions || null
-            });
+            const bioBody: any = { goals: formData.goals };
+            if (formData.sex) bioBody.sex = formData.sex;
+            if (formData.heightCm) bioBody.heightCm = parseFloat(formData.heightCm);
+            if (formData.baselineWeightKg) bioBody.baselineWeightKg = parseFloat(formData.baselineWeightKg);
+            if (formData.dietStyle) bioBody.dietStyle = formData.dietStyle;
+            if (formData.currentInterventions) bioBody.currentInterventions = formData.currentInterventions;
+            await updateProfile(bioBody);
 
             // Save community identity
             const body: any = {};
